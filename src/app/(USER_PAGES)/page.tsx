@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { LogoutButton } from "@/components/logout-button";
 import { getCurrentUser } from "@/data/current-user";
-import { UserroleToggleButton } from "@/components/role-toggle-button";
 
 export default async function Home() {
   const user = await getCurrentUser({ withFullUser: true });

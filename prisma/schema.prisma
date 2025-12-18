@@ -7,22 +7,83 @@ datasource db {
   provider = "postgresql"
 }
 
-enum Roles {
+enum UserRole {
   USER
   ADMIN
+  CHEF
+  BARTENDER
+  WAITER
+  MANAGER
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY
+  SERVED
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  ONLINE
+  WALLET
+}
+
+enum OrderType {
+  DINE_IN
+  TAKEAWAY
+  DELIVERY
+}
+
+enum ItemCategory {
+  APPETIZER
+  MAIN_COURSE
+  DESSERT
+  BEVERAGE
+  ALCOHOLIC
+  SNACK
+  SIDE_DISH
+}
+
+enum PreparationStation {
+  KITCHEN
+  BAR
+  DESSERT_STATION
+  FRY_STATION
+  GRILL_STATION
 }
 
 model User {
-  id       String  @id @default(cuid())
-  name     String
-  email    String  @unique
-  password String?
-  role     Roles   @default(USER)
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  phone     String?   @unique
+  password  String?
+  role      UserRole  @default(USER)
+  addresses Address[]
 
-  accounts Account[]
+  accounts     Account[]
+  carts        Cart[]
+  orders       Order[]
+  reservations Reservation[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  staffShifts StaffShift[]
+
+  @@index([email])
+  @@index([phone])
 }
 
 model Account {
@@ -37,4 +98,268 @@ model Account {
   updatedAt DateTime @updatedAt
 
   @@unique([provider, providerAccountId])
+}
+
+model Address {
+  id         String  @id @default(cuid())
+  userId     String
+  street     String
+  city       String
+  state      String
+  postalCode String
+  country    String  @default("US")
+  isDefault  Boolean @default(false)
+
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deliveries Order[] @relation("DeliveryAddress")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model MenuItem {
+  id                 String             @id @default(cuid())
+  name               String
+  description        String?
+  price              Float
+  category           ItemCategory
+  preparationStation PreparationStation
+  isAvailable        Boolean            @default(true)
+  isVegetarian       Boolean            @default(false)
+  isSpicy            Boolean            @default(false)
+  isAlcoholic        Boolean            @default(false)
+  preparationTime    Int // in minutes
+  imageUrl           String?
+  calories           Int?
+  ingredients        String[]
+  tags               String[]
+
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([preparationStation])
+  @@index([isAvailable])
+}
+
+model Cart {
+  id        String  @id @default(cuid())
+  userId    String
+  sessionId String? // For guest users
+
+  user  User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CartItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([sessionId])
+}
+
+model CartItem {
+  id                  String  @id @default(cuid())
+  cartId              String
+  menuItemId          String
+  quantity            Int     @default(1)
+  specialInstructions String?
+
+  cart     Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  menuItem MenuItem @relation(fields: [menuItemId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, menuItemId])
+  @@index([cartId])
+}
+
+model Order {
+  id                  String         @id @default(cuid())
+  orderNumber         String         @unique @default(uuid())
+  userId              String
+  tableNumber         Int?
+  orderType           OrderType      @default(DINE_IN)
+  status              OrderStatus    @default(PENDING)
+  paymentStatus       PaymentStatus  @default(PENDING)
+  paymentMethod       PaymentMethod?
+  totalAmount         Float
+  taxAmount           Float          @default(0)
+  discountAmount      Float          @default(0)
+  finalAmount         Float
+  deliveryAddressId   String?
+  specialInstructions String?
+
+  user            User        @relation(fields: [userId], references: [id])
+  deliveryAddress Address?    @relation("DeliveryAddress", fields: [deliveryAddressId], references: [id])
+  items           OrderItem[]
+  payments        Payment[]
+
+  estimatedReadyTime DateTime?
+  readyAt            DateTime?
+  servedAt           DateTime?
+  completedAt        DateTime?
+  cancelledAt        DateTime?
+  cancellationReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([orderNumber])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id                  String    @id @default(cuid())
+  orderId             String
+  menuItemId          String
+  quantity            Int       @default(1)
+  unitPrice           Float
+  totalPrice          Float
+  specialInstructions String?
+  isReady             Boolean   @default(false)
+  readyAt             DateTime?
+
+  order    Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItem MenuItem @relation(fields: [menuItemId], references: [id])
+
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  orderStationAssignments OrderStationAssignment[]
+
+  @@index([orderId])
+  @@index([menuItemId])
+  @@index([isReady])
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  orderId         String
+  amount          Float
+  paymentMethod   PaymentMethod
+  status          PaymentStatus @default(PENDING)
+  transactionId   String?       @unique
+  paymentGateway  String? // e.g., Stripe, PayPal
+  gatewayResponse Json? // Raw response from payment gateway
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  paidAt     DateTime?
+  refundedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([transactionId])
+  @@index([status])
+}
+
+model Reservation {
+  id              String   @id @default(cuid())
+  userId          String
+  reservationDate DateTime
+  partySize       Int
+  tableNumber     Int?
+  specialRequests String?
+  status          String   @default("CONFIRMED") // CONFIRMED, CANCELLED, COMPLETED
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  cancelledAt DateTime?
+  checkedInAt DateTime?
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tables    Table[]
+
+  @@index([userId])
+  @@index([reservationDate])
+  @@index([status])
+}
+
+model Table {
+  id          String  @id @default(cuid())
+  tableNumber Int     @unique
+  capacity    Int
+  isAvailable Boolean @default(true)
+  location    String? // e.g., "Window", "Patio", "Main Hall"
+
+  reservations Reservation[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tableNumber])
+  @@index([isAvailable])
+}
+
+model Inventory {
+  id            String    @id @default(cuid())
+  itemName      String    @unique
+  category      String
+  quantity      Float
+  unit          String // e.g., "kg", "liters", "pieces"
+  minThreshold  Float
+  lastRestocked DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([quantity])
+}
+
+// For staff assignments and shift management
+model StaffShift {
+  id        String              @id @default(cuid())
+  userId    String
+  shiftDate DateTime
+  startTime DateTime
+  endTime   DateTime
+  station   PreparationStation?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  checkedInAt  DateTime?
+  checkedOutAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([shiftDate])
+  @@index([station])
+}
+
+// For order tracking by station
+model OrderStationAssignment {
+  id                      String             @id @default(cuid())
+  orderItemId             String
+  station                 PreparationStation
+  assignedTo              String? // staff userId
+  status                  String             @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED
+  estimatedCompletionTime DateTime?
+
+  orderItem OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+
+  startedAt   DateTime?
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([orderItemId, station])
+  @@index([station])
+  @@index([status])
+  @@index([assignedTo])
 }
