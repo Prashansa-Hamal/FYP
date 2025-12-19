@@ -1,0 +1,51 @@
+[
+  {
+    "id": 1,
+    "type": "APPETIZER",
+    "title": "Appetizers",
+    "description": "Start your meal with our delicious starters",
+    "image": "https://images.unsplash.com/photo-1512654448383-47b2fe224e44?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhcHBldGl6ZXIlMjBwbGF0dGVyfGVufDF8fHx8MTc2NjAyMDU3MXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+  },
+  {
+    "id": 2,
+    "type": "MAIN_COURSE",
+    "title": "Main Course",
+    "description": "Explore our signature main dishes",
+    "image": "https://images.unsplash.com/photo-1761983723667-99c7fd98af53?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxnb3VybWV0JTIwbWFpbiUyMGNvdXJzZXxlbnwxfHx8fDE3NjYwNjU3MjF8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+  },
+  {
+    "id": 3,
+    "type": "DESSERT",
+    "title": "Desserts",
+    "description": "Sweet endings to complete your dining experience",
+    "image": "https://images.unsplash.com/photo-1582180833492-b9438fd1e151?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbGVnYW50JTIwZGVzc2VydHxlbnwxfHx8fDE3NjYwNjY5NDl8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+  },
+  {
+    "id": 4,
+    "type": "BEVERAGE",
+    "title": "Beverages",
+    "description": "Refreshing drinks to quench your thirst",
+    "image": "https://images.unsplash.com/photo-1685270386242-487b9e1c9fc7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyZWZyZXNoaW5nJTIwYmV2ZXJhZ2UlMjBkcmlua3xlbnwxfHx8fDE3NjYxMzAxMTl8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+  },
+  {
+    "id": 5,
+    "type": "ALCOHOLIC",
+    "title": "Alcoholic Beverages",
+    "description": "Premium spirits, wines, and cocktails",
+    "image": "https://images.unsplash.com/photo-1740926187089-a48587171f59?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2NrdGFpbCUyMGJhciUyMGFsY29ob2x8ZW58MXx8fHwxNzY2MTMwMTIwfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+  },
+  {
+    "id": 6,
+    "type": "SNACK",
+    "title": "Snacks",
+    "description": "Quick bites and light treats",
+    "image": "https://images.unsplash.com/photo-1632258728281-c1ec3a977bab?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzbmFja3MlMjBmaW5nZXIlMjBmb29kfGVufDF8fHx8MTc2NjEzMDEyMHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+  },
+  {
+    "id": 7,
+    "type": "SIDE_DISH",
+    "title": "Side Dishes",
+    "description": "Perfect accompaniments to your main course",
+    "image": "https://images.unsplash.com/photo-1633862033803-7abafaf9bcb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaWRlJTIwZGlzaCUyMHZlZ2V0YWJsZXN8ZW58MXx8fHwxNzY2MTMwMTIxfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+  }
+]

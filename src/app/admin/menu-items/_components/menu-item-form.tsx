@@ -49,6 +49,8 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { ImageInput } from "@/components/demo-components/demo-image-input";
+import { useCreateMenuItem } from "@/hooks/useMenuItems";
+import { useRouter } from "next/navigation";
 
 // Zod schema
 type FormValues = z.infer<typeof menuItemFormSchema>;
@@ -91,8 +93,25 @@ export default function MenuItemForm() {
     },
   });
 
-  function onSubmit(values: FormValues) {
+  const router = useRouter();
+  const createMutation = useCreateMenuItem();
+
+  async function onSubmit(values: FormValues) {
     console.log(values);
+
+    try {
+      await createMutation.mutateAsync({
+        ...values,
+        ingredients: values.ingredients,
+        tags: values.tags,
+        price: parseFloat(values.price as any),
+        preparationTime: parseInt(values.preparationTime as any),
+      });
+
+      router.push("/menu-items");
+    } catch (error) {
+      console.error("Failed to create menu item:", error);
+    }
   }
 
   return (
