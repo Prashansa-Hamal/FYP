@@ -24,7 +24,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <EdgeStoreProvider>{children}</EdgeStoreProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
+      {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       <Toaster position="bottom-right" richColors />
     </QueryClientProvider>
   );
