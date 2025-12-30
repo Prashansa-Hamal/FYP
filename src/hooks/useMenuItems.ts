@@ -1,10 +1,11 @@
 // File: /lib/hooks/useMenuItems.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { menuItemsApi } from "@/lib/api/menuItems";
+import { toast } from "sonner";
 import {
-  menuItemsApi,
   type MenuItemFilters,
   type UpdateMenuItemInput,
-} from "@/lib/api/menuItems";
+} from "@/types/menuItems";
 
 // Query keys
 export const menuItemKeys = {
@@ -38,9 +39,13 @@ export function useCreateMenuItem() {
 
   return useMutation({
     mutationFn: menuItemsApi.create,
-    onSuccess: () => {
+    onSuccess: (response) => {
       // Invalidate all menu item lists
       queryClient.invalidateQueries({ queryKey: menuItemKeys.lists() });
+      toast.success("Menu item created succesfully");
+    },
+    onError: () => {
+      toast.error("Failed to create menu item");
     },
   });
 }
@@ -58,6 +63,10 @@ export function useUpdateMenuItem() {
       });
       // Invalidate all lists
       queryClient.invalidateQueries({ queryKey: menuItemKeys.lists() });
+      toast.success("Menu item updated succesfully");
+    },
+    onError: () => {
+      toast.error("Failed to update menu item");
     },
   });
 }
@@ -67,11 +76,15 @@ export function useDeleteMenuItem() {
 
   return useMutation({
     mutationFn: (id: string) => menuItemsApi.delete(id),
-    onSuccess: (_, id) => {
+    onSuccess: (_, id, response) => {
       // Remove the item from cache
       queryClient.removeQueries({ queryKey: menuItemKeys.detail(id) });
       // Invalidate all lists
       queryClient.invalidateQueries({ queryKey: menuItemKeys.lists() });
+      toast.success("Menu item deleted succesfully");
+    },
+    onError: () => {
+      toast.error("Failed to delete Menu item");
     },
   });
 }
@@ -89,6 +102,10 @@ export function useToggleMenuItemAvailability() {
       });
       // Invalidate all lists
       queryClient.invalidateQueries({ queryKey: menuItemKeys.lists() });
+      toast.success("Menu item availability toggled succesfully");
+    },
+    onError: () => {
+      toast.error("Failed to toggle Availability");
     },
   });
 }

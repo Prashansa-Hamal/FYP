@@ -1,5 +1,6 @@
 "use client";
 
+import { CartProvider } from "@/contexts/CartContext";
 import { EdgeStoreProvider } from "@/lib/edgestore";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -23,7 +24,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <EdgeStoreProvider>{children}</EdgeStoreProvider>
+      <EdgeStoreProvider>
+        <CartProvider>{children}</CartProvider>
+      </EdgeStoreProvider>
       {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       <Toaster position="bottom-right" richColors />
     </QueryClientProvider>

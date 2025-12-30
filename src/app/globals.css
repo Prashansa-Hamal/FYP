@@ -160,3 +160,7 @@ body::-webkit-scrollbar {
 .animate-fadeInUp {
   animation: fadeInUp 0.3s ease-out;
 }
+
+::-webkit-scrollbar {
+  display: none;
+}

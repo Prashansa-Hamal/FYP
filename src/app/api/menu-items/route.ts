@@ -1,7 +1,7 @@
 // File: /app/api/menu-items/route.ts
+import { NextRequest, NextResponse } from "next/server";
 import { ItemCategory, PreparationStation } from "@/generated/prisma/enums";
 import db from "@/lib/db";
-import { NextRequest, NextResponse } from "next/server";
 
 // GET - Fetch all menu items
 export async function GET(request: NextRequest) {

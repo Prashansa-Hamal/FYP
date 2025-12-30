@@ -2,10 +2,12 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { LogoutButton } from "@/components/logout-button";
 import { getCurrentUser } from "@/data/current-user";
+import { getUser } from "@/data/user";
 
 export default async function Home() {
   const user = await getCurrentUser({ withFullUser: true });
-
+  const cookieUser = await getUser();
+  console.log("cookieUser", cookieUser);
   return (
     <div className="h-svh w-svw flex items-center  justify-center flex-col gap-2">
       {user ? (

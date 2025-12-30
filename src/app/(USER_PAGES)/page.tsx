@@ -18,6 +18,7 @@ import { ItemCategory } from "@/generated/prisma/enums";
 import { MenuItemCard } from "@/components/cards/MenuItemCard";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { CartDrawer } from "@/components/cartDrawer";
 
 // Custom hook for debounce
 const useDebounce = <T,>(value: T, delay: number): T => {
@@ -166,7 +167,7 @@ export default function App() {
         Preparing Your Menu
       </h3>
       <p className="text-gray-600 text-center max-w-sm">
-        Loading our culinary delights...
+        Loading our Dine_Ease...
       </p>
       <div className="mt-6 flex items-center gap-2 text-sm text-gray-500">
         <Clock className="w-4 h-4 animate-pulse" />
@@ -256,6 +257,8 @@ export default function App() {
           )}
         </div>
         <div className="bg-white rounded-2xl sm:rounded-t-none shadow-xl overflow-hidden">
+          <CartDrawer />
+
           {/* Hero Image */}
           <div className="relative">
             <img
@@ -271,7 +274,7 @@ export default function App() {
             {/* Title */}
             <div className="text-center mb-4 sm:mb-6">
               <h1 className="mb-1 text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 sm:mb-2">
-                Culinary Delights Menu
+                Dine Ease Menu
               </h1>
               <p className="text-gray-600 text-sm sm:text-base max-w-2xl mx-auto">
                 Discover our carefully curated selection of dishes and beverages

@@ -1,56 +1,13 @@
 // File: /lib/api/menuItems.ts
 
 import { MenuItem } from "@/generated/prisma/client";
-import { ItemCategory, PreparationStation } from "@/generated/prisma/enums";
-
-// Types
-export type CreateMenuItemInput = {
-  name: string;
-  description?: string;
-  price: number;
-  category: ItemCategory;
-  preparationStation: PreparationStation;
-  isAvailable?: boolean;
-  isVegetarian?: boolean;
-  isSpicy?: boolean;
-  isAlcoholic?: boolean;
-  preparationTime: number;
-  imageUrl?: string;
-  calories?: number;
-  ingredients: string[];
-  tags: string[];
-};
-
-export type UpdateMenuItemInput = Partial<CreateMenuItemInput>;
-
-export interface MenuItemFilters {
-  category?: ItemCategory;
-  preparationStation?: PreparationStation;
-  isAvailable?: boolean;
-  isVegetarian?: boolean;
-  isSpicy?: boolean;
-  search?: string;
-  page?: number;
-  limit?: number;
-}
-
-export interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  message?: string;
-  error?: string;
-}
-
-export interface PaginatedResponse<T> {
-  success: boolean;
-  data: T[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    pages: number;
-  };
-}
+import {
+  CreateMenuItemInput,
+  MenuItemApiResponse,
+  MenuItemFilters,
+  PaginatedResponse,
+  UpdateMenuItemInput,
+} from "@/types/menuItems";
 
 // API functions
 export const menuItemsApi = {
@@ -76,7 +33,7 @@ export const menuItemsApi = {
   },
 
   // Get single menu item
-  async getById(id: string): Promise<ApiResponse<MenuItem>> {
+  async getById(id: string): Promise<MenuItemApiResponse<MenuItem>> {
     const response = await fetch(`/api/menu-items/${id}`);
 
     if (!response.ok) {
@@ -87,7 +44,9 @@ export const menuItemsApi = {
   },
 
   // Create menu item
-  async create(data: CreateMenuItemInput): Promise<ApiResponse<MenuItem>> {
+  async create(
+    data: CreateMenuItemInput
+  ): Promise<MenuItemApiResponse<MenuItem>> {
     const response = await fetch("/api/menu-items", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -105,7 +64,7 @@ export const menuItemsApi = {
   async update(
     id: string,
     data: UpdateMenuItemInput
-  ): Promise<ApiResponse<MenuItem>> {
+  ): Promise<MenuItemApiResponse<MenuItem>> {
     const response = await fetch(`/api/menu-items/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -120,7 +79,7 @@ export const menuItemsApi = {
   },
 
   // Delete menu item
-  async delete(id: string): Promise<ApiResponse<void>> {
+  async delete(id: string): Promise<MenuItemApiResponse<void>> {
     const response = await fetch(`/api/menu-items`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
@@ -138,7 +97,7 @@ export const menuItemsApi = {
   async toggleAvailability(
     id: string,
     isAvailable: boolean
-  ): Promise<ApiResponse<MenuItem>> {
+  ): Promise<MenuItemApiResponse<MenuItem>> {
     const response = await fetch(`/api/menu-items`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },

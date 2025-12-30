@@ -149,8 +149,8 @@ model MenuItem {
 
 model Cart {
   id        String  @id @default(cuid())
-  userId    String
-  sessionId String? // For guest users
+  userId    String? @unique
+  sessionId String? @unique // For guest users
 
   user  User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
   items CartItem[]
