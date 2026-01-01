@@ -25,6 +25,7 @@ type InputProps = {
   onChange?: (file?: File) => void | Promise<void>;
   disabled?: boolean;
   dropzoneOptions?: Omit<DropzoneOptions, "disabled">;
+  imgUrl?: any;
 };
 
 const ERROR_MESSAGES = {
@@ -44,7 +45,16 @@ const ERROR_MESSAGES = {
 
 const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
   (
-    { dropzoneOptions, width, height, value, className, disabled, onChange },
+    {
+      dropzoneOptions,
+      width,
+      height,
+      value,
+      className,
+      disabled,
+      onChange,
+      imgUrl,
+    },
     ref
   ) => {
     const imageUrl = React.useMemo(() => {
@@ -126,7 +136,7 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
           {...getRootProps({
             className: dropZoneClassName,
             style: {
-              width,
+              // width: "100%",
               height,
             },
           })}
@@ -134,11 +144,13 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
           {/* Main File Input */}
           <input ref={ref} {...getInputProps()} />
 
-          {imageUrl ? (
+          {imageUrl || imgUrl ? (
             // Image Preview
             <img
-              className="h-full w-full rounded-md object-cover"
-              src={imageUrl}
+              className={`h-full rounded-md object-cover ${
+                imgUrl ? "w-[1000px]" : "w-full"
+              }`}
+              src={imgUrl || imageUrl}
               alt={acceptedFiles[0]?.name}
             />
           ) : (

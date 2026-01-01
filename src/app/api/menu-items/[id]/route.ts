@@ -2,14 +2,15 @@
 import db from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
-// GET single item
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+
     const menuItem = await db.menuItem.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!menuItem) {
@@ -35,13 +36,14 @@ export async function GET(
 // PUT - Update item
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
 
     const menuItem = await db.menuItem.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name: body.name,
         description: body.description,

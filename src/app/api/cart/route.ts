@@ -70,8 +70,6 @@ export async function GET(request: NextRequest) {
        CREATE SESSION IF GUEST HAS NONE
     ---------------------------------------------- */
     if (!user?.id && !sessionId) {
-      sessionId = `guest_${crypto.randomUUID()}`;
-
       await db.cart.create({
         data: {
           sessionId,

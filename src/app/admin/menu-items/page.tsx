@@ -1,15 +1,7 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import MenuItemDataTeble from "./_components/menuItem-data-table";
 
 const MenuItems = () => {
-  return (
-    <div className="flex items-center justify-center flex-col">
-      <h1>Admin Page</h1>
-      <Button>
-        <Link href="/admin/menu-items/new">Add Menu Item</Link>
-      </Button>
-    </div>
-  );
+  return <MenuItemDataTeble />;
 };
 
 export default MenuItems;

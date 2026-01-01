@@ -1,3 +1,4 @@
+// components/ui/data-table.tsx
 "use client";
 
 import {
@@ -64,7 +65,24 @@ import {
   Trash,
 } from "lucide-react";
 import Link from "next/link";
-import { useId, useRef, useState } from "react";
+import { useId, useRef, useState, useEffect, useCallback } from "react";
+
+// Debounce hook
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 interface DataTableProps<TData> {
   data: TData[];
@@ -77,6 +95,25 @@ interface DataTableProps<TData> {
   renderToolbar?: (
     table: ReturnType<typeof useReactTable<TData>>
   ) => React.ReactNode;
+  // Pagination props
+  manualPagination?: boolean;
+  pageCount?: number;
+  totalCount?: number;
+  onPaginationChange?: (pagination: {
+    pageIndex: number;
+    pageSize: number;
+  }) => void;
+  // Filtering props
+  manualFiltering?: boolean;
+  searchValue?: string;
+  onSearchChange?: (value: string) => void;
+  searchDebounceDelay?: number;
+  // Initial state
+  initialState?: {
+    pagination?: PaginationState;
+    sorting?: SortingState;
+    columnFilters?: ColumnFiltersState;
+  };
 }
 
 export function DataTable<TData>({
@@ -85,66 +122,190 @@ export function DataTable<TData>({
   addButton,
   pageSizeOptions = [5, 10, 25, 50],
   renderToolbar,
+  // Pagination
+  manualPagination = false,
+  pageCount = -1,
+  totalCount,
+  onPaginationChange,
+  // Filtering
+  manualFiltering = false,
+  searchValue: externalSearchValue,
+  onSearchChange,
+  searchDebounceDelay = 500,
+  // Initial state
+  initialState = {},
 }: DataTableProps<TData>) {
   const id = useId();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+  // Local search state with debouncing
+  const [localSearch, setLocalSearch] = useState(externalSearchValue || "");
+  const debouncedSearch = useDebounce(localSearch, searchDebounceDelay);
+
+  // Initialize states
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
+    initialState.columnFilters || []
+  );
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: "name", desc: false },
-  ]);
+  const [pagination, setPagination] = useState<PaginationState>(
+    initialState.pagination || {
+      pageIndex: 0,
+      pageSize: pageSizeOptions[1] || 10,
+    }
+  );
+  const [sorting, setSorting] = useState<SortingState>(
+    initialState.sorting || [{ id: "name", desc: false }]
+  );
+
+  // Sync external search value
+  useEffect(() => {
+    if (
+      externalSearchValue !== undefined &&
+      externalSearchValue !== localSearch
+    ) {
+      setLocalSearch(externalSearchValue);
+    }
+  }, [externalSearchValue]);
+
+  // When debounced search changes, notify parent
+  useEffect(() => {
+    if (
+      manualFiltering &&
+      onSearchChange &&
+      debouncedSearch !== externalSearchValue
+    ) {
+      onSearchChange(debouncedSearch);
+    }
+  }, [debouncedSearch, manualFiltering, onSearchChange, externalSearchValue]);
 
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, pagination, columnFilters, columnVisibility },
+    // Control what features are manual vs automatic
+    manualPagination,
+    manualFiltering,
+    // Set page count
+    pageCount:
+      pageCount === -1
+        ? Math.ceil((totalCount || data.length) / pagination.pageSize)
+        : pageCount,
+    // State
+    state: {
+      sorting,
+      pagination,
+      columnFilters,
+      columnVisibility,
+    },
+    // State updaters
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
+    onColumnFiltersChange: (updater) => {
+      const newFilters =
+        typeof updater === "function" ? updater(columnFilters) : updater;
+      setColumnFilters(newFilters);
+    },
     onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange: setPagination,
+    onPaginationChange: (updater) => {
+      const newPagination =
+        typeof updater === "function" ? updater(pagination) : updater;
+
+      setPagination(newPagination);
+
+      if (onPaginationChange) {
+        onPaginationChange(newPagination);
+      }
+    },
+    // Core models (only enable client-side models when not manual)
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
+    getFilteredRowModel: manualFiltering ? undefined : getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
+    getFacetedUniqueValues: manualFiltering
+      ? undefined
+      : getFacetedUniqueValues(),
   });
+
+  // Handle search input
+  const handleSearchChange = (value: string) => {
+    setLocalSearch(value);
+
+    // Update table filter for UI consistency
+    table.getColumn("name")?.setFilterValue(value);
+
+    if (!manualFiltering) {
+      // For client-side filtering
+      // Reset to page 1 when searching locally
+      if (manualPagination && onPaginationChange) {
+        onPaginationChange({
+          pageIndex: 0,
+          pageSize: pagination.pageSize,
+        });
+      }
+    }
+  };
+
+  const handleSearchClear = () => {
+    handleSearchChange("");
+  };
+
+  // Calculate display values
+  const currentPage = pagination.pageIndex;
+  const currentPageSize = pagination.pageSize;
+  const startItem =
+    totalCount && totalCount > 0 ? currentPage * currentPageSize + 1 : 0;
+  const endItem = Math.min(
+    (currentPage + 1) * currentPageSize,
+    totalCount || data.length
+  );
+  const displayTotalCount = totalCount || data.length;
+
+  // Handle page size change
+  const handlePageSizeChange = (value: string) => {
+    const newPageSize = Number(value);
+    const firstItemIndex = currentPage * currentPageSize;
+    const newPageIndex = Math.floor(firstItemIndex / newPageSize);
+
+    const newPagination = {
+      pageIndex: newPageIndex,
+      pageSize: newPageSize,
+    };
+
+    setPagination(newPagination);
+
+    if (onPaginationChange) {
+      onPaginationChange(newPagination);
+    }
+  };
 
   return (
     <div className="space-y-4 w-full">
-      {/* Customizable Toolbar */}
+      {/* Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3">
+          {/* Search Input with debouncing */}
           <div className="relative">
             <Input
               ref={inputRef}
-              className={cn(
-                "peer min-w-60 ps-9",
-                Boolean(table.getColumn("name")?.getFilterValue()) && "pe-9"
-              )}
-              placeholder="Search by name..."
-              value={
-                (table.getColumn("name")?.getFilterValue() ?? "") as string
-              }
-              onChange={(e) =>
-                table.getColumn("name")?.setFilterValue(e.target.value)
-              }
+              className={cn("peer min-w-60 ps-9", localSearch && "pe-9")}
+              placeholder="Search by name, description, or tags..."
+              value={localSearch}
+              onChange={(e) => handleSearchChange(e.target.value)}
             />
             <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
               <ListFilter className="h-4 w-4 opacity-50" />
             </div>
-            {Boolean(table.getColumn("name")?.getFilterValue()) && (
+            {localSearch && (
               <button
-                onClick={() => table.getColumn("name")?.setFilterValue("")}
-                className="absolute inset-y-0 end-0 flex items-center pe-3"
+                onClick={handleSearchClear}
+                className="absolute inset-y-0 end-0 flex items-center pe-3 hover:bg-gray-100 rounded-sm"
+                type="button"
+                aria-label="Clear search"
               >
-                <CircleX className="h-4 w-4 opacity-50" />
+                <CircleX className="h-4 w-4 opacity-50 hover:opacity-100 transition-opacity" />
               </button>
             )}
           </div>
+
+          {/* Toolbar actions */}
           <div className="flex flex-wrap gap-3">
             {renderToolbar?.(table)}
             {/* Column Visibility */}
@@ -176,6 +337,7 @@ export function DataTable<TData>({
           </div>
         </div>
 
+        {/* Add Button and Actions */}
         <div className="flex items-center justify-end gap-3">
           {table.getSelectedRowModel().rows.length > 0 && (
             <AlertDialog>
@@ -200,6 +362,7 @@ export function DataTable<TData>({
           )}
         </div>
       </div>
+
       {/* Table */}
       <div className="overflow-hidden rounded-lg w-full border">
         <Table>
@@ -221,7 +384,6 @@ export function DataTable<TData>({
                           )}
                           onClick={header.column.getToggleSortingHandler()}
                           onKeyDown={(e) => {
-                            // Enhanced keyboard handling for sorting
                             if (
                               header.column.getCanSort() &&
                               (e.key === "Enter" || e.key === " ")
@@ -290,13 +452,16 @@ export function DataTable<TData>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {localSearch
+                    ? "No results found for your search."
+                    : "No results."}
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
+
       {/* Pagination */}
       <div className="flex items-center justify-between gap-8">
         {/* Results per page */}
@@ -305,16 +470,14 @@ export function DataTable<TData>({
             Rows per page
           </Label>
           <Select
-            value={table.getState().pagination.pageSize.toString()}
-            onValueChange={(value) => {
-              table.setPageSize(Number(value));
-            }}
+            value={currentPageSize.toString()}
+            onValueChange={handlePageSizeChange}
           >
             <SelectTrigger id={id} className="w-fit whitespace-nowrap">
               <SelectValue placeholder="Select number of results" />
             </SelectTrigger>
             <SelectContent className="[&_*[role=option]>span]:end-2 [&_*[role=option]>span]:start-auto [&_*[role=option]]:pe-8 [&_*[role=option]]:ps-2">
-              {[5, 10, 25, 50].map((pageSize) => (
+              {pageSizeOptions.map((pageSize) => (
                 <SelectItem key={pageSize} value={pageSize.toString()}>
                   {pageSize}
                 </SelectItem>
@@ -322,51 +485,48 @@ export function DataTable<TData>({
             </SelectContent>
           </Select>
         </div>
+
         {/* Page number information */}
         <div className="flex grow justify-end whitespace-nowrap text-sm text-muted-foreground">
           <p
             className="whitespace-nowrap text-sm text-muted-foreground"
             aria-live="polite"
           >
-            <span className="text-foreground">
-              {table.getState().pagination.pageIndex *
-                table.getState().pagination.pageSize +
-                1}
-              -
-              {Math.min(
-                Math.max(
-                  table.getState().pagination.pageIndex *
-                    table.getState().pagination.pageSize +
-                    table.getState().pagination.pageSize,
-                  0
-                ),
-                table.getRowCount()
-              )}
-            </span>{" "}
-            of{" "}
-            <span className="text-foreground">
-              {table.getRowCount().toString()}
-            </span>
+            {displayTotalCount > 0 ? (
+              <>
+                <span className="text-foreground">
+                  {startItem}-{endItem}
+                </span>{" "}
+                of{" "}
+                <span className="text-foreground">
+                  {displayTotalCount.toLocaleString()}
+                </span>
+              </>
+            ) : (
+              <span className="text-foreground">No items</span>
+            )}
           </p>
         </div>
+
         {/* Pagination buttons */}
         <div>
           <Pagination>
             <PaginationContent>
-              {/* First page button */}
+              {/* First page */}
               <PaginationItem>
                 <Button
                   size="icon"
                   variant="outline"
                   className="disabled:pointer-events-none disabled:opacity-50"
-                  onClick={() => table.firstPage()}
+                  onClick={() => table.setPageIndex(0)}
                   disabled={!table.getCanPreviousPage()}
                   aria-label="Go to first page"
                 >
                   <ChevronFirst size={16} strokeWidth={2} aria-hidden="true" />
                 </Button>
               </PaginationItem>
-              {/* Previous page button */}
+
+              {/* Previous page */}
               <PaginationItem>
                 <Button
                   size="icon"
@@ -379,7 +539,8 @@ export function DataTable<TData>({
                   <ChevronLeft size={16} strokeWidth={2} aria-hidden="true" />
                 </Button>
               </PaginationItem>
-              {/* Next page button */}
+
+              {/* Next page */}
               <PaginationItem>
                 <Button
                   size="icon"
@@ -392,13 +553,14 @@ export function DataTable<TData>({
                   <ChevronRight size={16} strokeWidth={2} aria-hidden="true" />
                 </Button>
               </PaginationItem>
-              {/* Last page button */}
+
+              {/* Last page */}
               <PaginationItem>
                 <Button
                   size="icon"
                   variant="outline"
                   className="disabled:pointer-events-none disabled:opacity-50"
-                  onClick={() => table.lastPage()}
+                  onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                   disabled={!table.getCanNextPage()}
                   aria-label="Go to last page"
                 >

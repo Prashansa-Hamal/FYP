@@ -25,10 +25,13 @@ export function useMenuItems(filters: MenuItemFilters = {}) {
   });
 }
 
-export function useMenuItem(id: string) {
+export function useMenuItemDetail(id: string) {
   return useQuery({
     queryKey: menuItemKeys.detail(id),
-    queryFn: () => menuItemsApi.getById(id),
+    queryFn: async () => {
+      const res = await menuItemsApi.getById(id);
+      return res.data;
+    },
     enabled: !!id,
   });
 }

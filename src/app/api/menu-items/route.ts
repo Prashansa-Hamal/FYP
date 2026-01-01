@@ -1,4 +1,3 @@
-// File: /app/api/menu-items/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { ItemCategory, PreparationStation } from "@/generated/prisma/enums";
 import db from "@/lib/db";
@@ -18,8 +17,35 @@ export async function GET(request: NextRequest) {
     const isSpicy = searchParams.get("isSpicy");
     const search = searchParams.get("search");
 
-    if (category) where.category = category;
-    if (station) where.preparationStation = station;
+    // Handle category filter - support multiple categories comma-separated
+    if (category) {
+      // Split by comma and filter out empty strings
+      const categories = category.split(",").filter(Boolean);
+
+      if (categories.length === 1) {
+        // Single category
+        where.category = categories[0];
+      } else if (categories.length > 1) {
+        // Multiple categories - use "in" operator
+        where.category = { in: categories };
+      }
+    }
+
+    // Handle station filter - support multiple stations comma-separated
+    if (station) {
+      // Split by comma and filter out empty strings
+      const stations = station.split(",").filter(Boolean);
+
+      if (stations.length === 1) {
+        // Single station
+        where.preparationStation = stations[0];
+      } else if (stations.length > 1) {
+        // Multiple stations - use "in" operator
+        where.preparationStation = { in: stations };
+      }
+    }
+
+    // Handle boolean filters
     if (isAvailable !== null) where.isAvailable = isAvailable === "true";
     if (isVegetarian !== null) where.isVegetarian = isVegetarian === "true";
     if (isSpicy !== null) where.isSpicy = isSpicy === "true";

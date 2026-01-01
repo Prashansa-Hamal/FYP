@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import {
   Search,
@@ -655,9 +655,7 @@ export default function MenuItemsPage() {
                       </button>
 
                       <button
-                        onClick={() =>
-                          router.push(`/menu-items/edit/${item.id}`)
-                        }
+                        onClick={() => router.push(`/menu-items/${item.id}`)}
                         className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
                         title="Edit"
                       >

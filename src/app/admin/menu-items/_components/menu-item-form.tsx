@@ -21,14 +21,13 @@ import {
   Leaf,
   Wine,
   Clock,
-  DollarSign,
-  Hash,
-  ChefHat,
   List,
   Tag,
   Utensils,
   Thermometer,
   Zap,
+  Hash,
+  ChefHat,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -53,9 +52,9 @@ import { useCreateMenuItem } from "@/hooks/useMenuItems";
 import { useRouter } from "next/navigation";
 
 // Zod schema
-type FormValues = z.infer<typeof menuItemFormSchema>;
+export type FormValues = z.infer<typeof menuItemFormSchema>;
 
-const categoryOptions = [
+export const categoryOptions = [
   { value: "APPETIZER", label: "Appetizer" },
   { value: "MAIN_COURSE", label: "Main Course" },
   { value: "DESSERT", label: "Dessert" },
@@ -65,7 +64,7 @@ const categoryOptions = [
   { value: "SIDE_DISH", label: "Side Dish" },
 ];
 
-const preparationStationOptions = [
+export const preparationStationOptions = [
   { value: "KITCHEN", label: "Kitchen" },
   { value: "BAR", label: "Bar" },
   { value: "DESSERT_STATION", label: "Dessert Station" },
@@ -640,7 +639,7 @@ export default function MenuItemForm() {
                             </FormMessage>
                           )}
                           <p className="text-xs sm:text-sm text-muted-foreground">
-                            Press Enter or comma to add multiple ingredients
+                            Press Enter or Tab to add multiple ingredients
                           </p>
                         </FormItem>
                       );
