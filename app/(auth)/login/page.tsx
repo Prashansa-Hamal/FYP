@@ -1,7 +1,14 @@
 import AuthForm from "../_component/authForm";
 
 
-const LoginPage = () => {
+const LoginPage = async ({
+  searchParams,
+}: {
+  searchParams?: Promise<{ oauthError?: string }>;
+}) => {
+  const resolvedParams = (await searchParams) ?? {};
+  const { oauthError } = resolvedParams;
+
   return (
     <AuthForm
       title="Welcome Back"
@@ -12,6 +19,8 @@ const LoginPage = () => {
         text: "sign up",
         url: "/signup",
       }}
+      isSignup={false}
+      oauthError={oauthError}
     />
   );
 };

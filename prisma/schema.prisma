@@ -1,349 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  output   = "../lib/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
-// Enums
-enum OrderStatus {
-  PENDING
-  CONFIRMED
-  PREPARING
-  READY
-  SERVED
-  COMPLETED
-  CANCELLED
-}
-
-enum DineType {
-  DINE_IN
-  TAKEAWAY
-}
-
-enum UserRole {
+enum Roles {
+  USER
   ADMIN
-  STAFF
-  CASHIER
-  CUSTOMER
 }
 
-enum TableStatus {
-  AVAILABLE
-  BOOKED
-  OCCUPIED
-  CLEANING
-}
-
-enum PaymentMethod {
-  CASH
-  KHALTI
-}
-
-enum PaymentStatus {
-  PENDING
-  PROCESSING
-  COMPLETED
-  FAILED
-  REFUNDED
-}
-
-enum TicketStatus {
-  PENDING
-  PREPARING
-  READY
-  COMPLETED
-  CANCELLED
-}
-
-enum PromotionType {
-  PERCENTAGE_DISCOUNT
-  FIXED_DISCOUNT
-  COMBO_OFFER
-}
-
-// Models
 model User {
-  id            String   @id @default(cuid())
-  name          String
-  email         String   @unique
-  password      String
-  phone         String?
-  role          UserRole @default(CUSTOMER)
-  loyaltyPoints Int      @default(0)
-  isActive      Boolean  @default(true)
+  id       String  @id @default(cuid())
+  name     String
+  email    String  @unique
+  password String?
+  role     Roles   @default(USER)
 
-  // Relations
-  bookings            Booking[]
-  orders              Order[]
-  feedbacks           Feedback[]
-  recommendations     Recommendation[]
-  loyaltyTransactions LoyaltyTransaction[]
-  notifications       Notification[]
+  accounts Account[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Table {
-  id          String      @id @default(cuid())
-  tableNumber Int         @unique
-  capacity    Int         @default(4)
-  qrCode      String?     @unique
-  status      TableStatus @default(AVAILABLE)
+model Account {
+  id                String @id @default(cuid())
+  userId            String
+  provider          String
+  providerAccountId String
 
-  // Relations
-  bookings Booking[]
-  orders   Order[]
-
-  createdAt DateTime @default(now())
-}
-
-model Booking {
-  id              String      @id @default(cuid())
-  user            User        @relation(fields: [userId], references: [id])
-  userId          String
-  table           Table?      @relation(fields: [tableId], references: [id])
-  tableId         String?
-  guestName       String
-  guestPhone      String
-  guestEmail      String?
-  partySize       Int
-  bookingTime     DateTime
-  status          TableStatus @default(BOOKED)
-  isWaitlist      Boolean     @default(false)
-  specialRequests String?
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
 
-model MenuItem {
-  id              String  @id @default(cuid())
-  name            String
-  description     String?
-  price           Float
-  image           String?
-  category        String
-  preparationTime Int // estimated time in minutes
-  isAvailable     Boolean @default(true)
-  isVegetarian    Boolean @default(false)
-  isVegan         Boolean @default(false)
-  hasSpices       Boolean @default(false)
-
-  // Relations
-  orderItems      OrderItem[]
-  comboItems      ComboItem[]
-  promotionItems  PromotionItem[]
-  recommendations Recommendation[]
-  itemFeedbacks   ItemFeedback[]
-
-  createdAt DateTime @default(now())
-}
-
-model Combo {
-  id            String        @id @default(cuid())
-  name          String
-  description   String?
-  discountType  PromotionType @default(PERCENTAGE_DISCOUNT)
-  discountValue Float
-  isActive      Boolean       @default(true)
-  startDate     DateTime?
-  endDate       DateTime?
-
-  // Relations
-  items ComboItem[]
-
-  createdAt DateTime @default(now())
-}
-
-model ComboItem {
-  id         String   @id @default(cuid())
-  combo      Combo    @relation(fields: [comboId], references: [id])
-  comboId    String
-  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
-  menuItemId String
-  quantity   Int      @default(1)
-
-  @@unique([comboId, menuItemId])
-}
-
-model Promotion {
-  id             String        @id @default(cuid())
-  name           String
-  description    String?
-  code           String?       @unique
-  type           PromotionType
-  discountValue  Float
-  minOrderAmount Float?
-  maxDiscount    Float?
-  startDate      DateTime
-  endDate        DateTime
-  isActive       Boolean       @default(true)
-
-  // Relations
-  promotionItems PromotionItem[]
-
-  createdAt DateTime @default(now())
-}
-
-model PromotionItem {
-  id          String    @id @default(cuid())
-  promotion   Promotion @relation(fields: [promotionId], references: [id])
-  promotionId String
-  menuItem    MenuItem  @relation(fields: [menuItemId], references: [id])
-  menuItemId  String
-
-  @@unique([promotionId, menuItemId])
-}
-
-model Order {
-  id                    String         @id @default(cuid())
-  orderId               String         @unique @default(cuid()) // visible to customer for tracking
-  user                  User?          @relation(fields: [userId], references: [id])
-  userId                String?
-  table                 Table?         @relation(fields: [tableId], references: [id])
-  tableId               String?
-  dineType              DineType
-  status                OrderStatus    @default(PENDING)
-  totalAmount           Float
-  paymentMethod         PaymentMethod?
-  paymentStatus         PaymentStatus  @default(PENDING)
-  loyaltyPointsEarned   Int            @default(0)
-  loyaltyPointsRedeemed Int            @default(0)
-  estimatedTime         Int? // total estimated preparation time
-  specialInstructions   String?
-  appliedPromotionCode  String? // Store the promotion code used
-
-  // Relations
-  orderItems OrderItem[]
-  kotTickets KOT[]
-  botTickets BOT[]
-  payments   Payment[]
-  feedback   Feedback? // Overall order feedback
-
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
-  loyaltyTransactions LoyaltyTransaction[]
-}
-
-model OrderItem {
-  id                  String   @id @default(cuid())
-  order               Order    @relation(fields: [orderId], references: [id])
-  orderId             String
-  menuItem            MenuItem @relation(fields: [menuItemId], references: [id])
-  menuItemId          String
-  quantity            Int      @default(1)
-  unitPrice           Float
-  specialInstructions String?
-
-  @@unique([orderId, menuItemId])
-}
-
-model KOT {
-  id        String       @id @default(cuid())
-  order     Order        @relation(fields: [orderId], references: [id])
-  orderId   String
-  status    TicketStatus @default(PENDING)
-  priority  Int          @default(0) // For FIFO system
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-}
-
-model BOT {
-  id        String       @id @default(cuid())
-  order     Order        @relation(fields: [orderId], references: [id])
-  orderId   String
-  status    TicketStatus @default(PENDING)
-  priority  Int          @default(0) // For FIFO system
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-}
-
-model Payment {
-  id            String        @id @default(cuid())
-  order         Order         @relation(fields: [orderId], references: [id])
-  orderId       String
-  paymentMethod PaymentMethod
-  amount        Float
-  transactionId String?       @unique // For digital payments like Khalti
-  status        PaymentStatus
-  khaltiData    Json? // Store Khalti-specific response data
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model LoyaltyTransaction {
-  id      String  @id @default(cuid())
-  user    User    @relation(fields: [userId], references: [id])
-  userId  String
-  points  Int
-  type    String // EARNED, REDEEMED, etc.
-  reason  String?
-  order   Order?  @relation(fields: [orderId], references: [id])
-  orderId String?
-
-  createdAt DateTime @default(now())
-}
-
-model Feedback {
-  id      String @id @default(cuid())
-  user    User   @relation(fields: [userId], references: [id])
-  userId  String
-  order   Order  @relation(fields: [orderId], references: [id])
-  orderId String @unique
-
-  // Overall experience ratings
-  overallRating Int? // 1-5 scale for entire order
-  serviceRating Int? // 1-5 scale for service
-  comment       String?
-
-  // Individual item feedbacks
-  itemFeedbacks ItemFeedback[]
-
-  createdAt DateTime @default(now())
-}
-
-model ItemFeedback {
-  id         String   @id @default(cuid())
-  feedback   Feedback @relation(fields: [feedbackId], references: [id])
-  feedbackId String
-  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
-  menuItemId String
-  rating     Int // 1-5 scale for this specific item
-  comment    String?
-
-  createdAt DateTime @default(now())
-}
-
-model Recommendation {
-  id         String   @id @default(cuid())
-  user       User     @relation(fields: [userId], references: [id])
-  userId     String
-  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
-  menuItemId String
-  score      Float    @default(0.0) // Recommendation score
-
-  createdAt DateTime @default(now())
-
-  @@unique([userId, menuItemId])
-}
-
-model Notification {
-  id          String    @id @default(cuid())
-  user        User?     @relation(fields: [userId], references: [id])
-  userId      String?
-  staffRole   UserRole? // Send to specific staff roles
-  type        String // NEW_ORDER, ORDER_READY, NEW_BOOKING, etc.
-  title       String
-  message     String
-  isRead      Boolean   @default(false)
-  relatedId   String? // ID of related order/booking
-  relatedType String? // 'order', 'booking', etc.
-
-  createdAt DateTime @default(now())
+  @@unique([provider, providerAccountId])
 }

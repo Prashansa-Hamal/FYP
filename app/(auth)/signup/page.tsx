@@ -12,7 +12,7 @@ const SignupPage = () => {
         text: "login",
         url: "/login",
       }}
-      isSignup
+      isSignup={true}
     />
   );
 };
