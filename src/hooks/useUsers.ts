@@ -1,9 +1,5 @@
 // hooks/useUsers.ts - Enhanced version
-import {
-  useQuery,
-  keepPreviousData,
-  UseQueryOptions,
-} from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 
 interface User {
   id: string;

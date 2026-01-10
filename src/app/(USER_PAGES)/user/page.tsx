@@ -8,6 +8,7 @@ export default async function Home() {
   const user = await getCurrentUser({ withFullUser: true });
   const cookieUser = await getUser();
   console.log("cookieUser", cookieUser);
+
   return (
     <div className="h-svh w-svw flex items-center  justify-center flex-col gap-2">
       {user ? (

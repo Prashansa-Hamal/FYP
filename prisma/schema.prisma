@@ -109,6 +109,7 @@ model Address {
   postalCode String
   country    String  @default("US")
   isDefault  Boolean @default(false)
+  isArchived Boolean @default(false)
 
   user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   deliveries Order[] @relation("DeliveryAddress")
@@ -130,7 +131,7 @@ model MenuItem {
   isVegetarian       Boolean            @default(false)
   isSpicy            Boolean            @default(false)
   isAlcoholic        Boolean            @default(false)
-  preparationTime    Int // in minutes
+  preparationTime    Int
   imageUrl           String
   calories           Int?
   ingredients        String[]

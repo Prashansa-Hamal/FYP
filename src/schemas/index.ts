@@ -47,3 +47,18 @@ export const menuItemFormSchema = z.object({
   tags: z.array(z.string()).min(1, "At least one tag is required"),
   imageUrl: z.string(),
 });
+
+export const addressSchema = z.object({
+  street: z.string().min(3, "Street is required"),
+  city: z.string().min(2, "City is required"),
+  state: z.string().min(2, "State is required"),
+  postalCode: z
+    .string()
+    .min(1, { message: "Postal code is required" })
+    .max(20, { message: "Postal code is too long" })
+    .regex(/^[A-Za-z0-9\s\-]+$/, { message: "Invalid postal code format" }),
+  country: z.string().min(2, "Country is required"), // ✅ REQUIRED
+  isDefault: z.boolean().optional(),
+});
+
+export type AddressFormValues = z.infer<typeof addressSchema>;

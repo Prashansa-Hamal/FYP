@@ -2,7 +2,14 @@ import { z } from "zod";
 import { redis } from "@/lib/redis";
 import crypto from "crypto";
 
-const roleValues = ["ADMIN", "USER"] as const;
+const roleValues = [
+  "ADMIN",
+  "USER",
+  "CHEF",
+  "BARTENDER",
+  "WAITER",
+  "MANAGER",
+] as const;
 
 const userSessionSchema = z.object({
   id: z.string(),
