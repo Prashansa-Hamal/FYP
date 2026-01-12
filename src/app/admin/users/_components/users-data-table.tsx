@@ -232,6 +232,7 @@ const UsersDataTable = () => {
           pageSize: limit,
         },
       }}
+      defaultSortColumn="name"
       renderToolbar={() => renderToolbar(roles, handleRoleFilterChange)}
     />
   );

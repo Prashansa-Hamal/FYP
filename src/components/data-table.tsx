@@ -65,7 +65,7 @@ import {
   Trash,
 } from "lucide-react";
 import Link from "next/link";
-import { useId, useRef, useState, useEffect, useCallback } from "react";
+import { useId, useRef, useState, useEffect } from "react";
 
 // Debounce hook
 function useDebounce<T>(value: T, delay: number): T {
@@ -114,6 +114,7 @@ interface DataTableProps<TData> {
     sorting?: SortingState;
     columnFilters?: ColumnFiltersState;
   };
+  defaultSortColumn?: string;
 }
 
 export function DataTable<TData>({
@@ -134,6 +135,7 @@ export function DataTable<TData>({
   searchDebounceDelay = 500,
   // Initial state
   initialState = {},
+  defaultSortColumn,
 }: DataTableProps<TData>) {
   const id = useId();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -153,8 +155,10 @@ export function DataTable<TData>({
       pageSize: pageSizeOptions[1] || 10,
     }
   );
+
   const [sorting, setSorting] = useState<SortingState>(
-    initialState.sorting || [{ id: "name", desc: false }]
+    initialState.sorting ||
+      (defaultSortColumn ? [{ id: defaultSortColumn, desc: false }] : [])
   );
 
   // Sync external search value

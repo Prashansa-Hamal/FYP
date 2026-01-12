@@ -1,5 +1,10 @@
 // File: /lib/hooks/useMenuItems.ts
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  keepPreviousData,
+} from "@tanstack/react-query";
 import { menuItemsApi } from "@/lib/api/menuItems";
 import { toast } from "sonner";
 import {
@@ -22,6 +27,8 @@ export function useMenuItems(filters: MenuItemFilters = {}) {
   return useQuery({
     queryKey: menuItemKeys.list(filters),
     queryFn: () => menuItemsApi.getAll(filters),
+    placeholderData: keepPreviousData,
+    staleTime: 30 * 1000,
   });
 }
 

@@ -315,6 +315,7 @@ const MenuItemDataTable = () => {
           pageSize: limit,
         },
       }}
+      defaultSortColumn="name"
       renderToolbar={() => (
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex flex-wrap gap-2">

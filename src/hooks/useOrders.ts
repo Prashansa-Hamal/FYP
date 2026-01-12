@@ -1,67 +1,23 @@
-// types/order.ts
-export interface PlaceOrderRequest {
-  orderType?: "DINE_IN" | "TAKEAWAY" | "DELIVERY";
-  tableNumber?: number;
-  deliveryAddressId?: string;
-  specialInstructions?: string;
-  paymentMethod?: "CASH" | "CARD" | "ONLINE" | "WALLET";
-}
-
-export interface OrderItemSummary {
-  name: string;
-  quantity: number;
-  price: number;
-  total: number;
-}
-
-export interface PlaceOrderResponse {
-  success: boolean;
-  message: string;
-  order?: {
-    id: string;
-    orderNumber: string;
-    status: string;
-    paymentStatus: string;
-    orderType: string;
-    tableNumber?: number;
-    finalAmount: number;
-    estimatedReadyTime: string;
-    itemCount: number;
-    items: OrderItemSummary[];
-    createdAt: string;
-  };
-  nextSteps?: string[];
-  unavailableItems?: string[];
-  error?: string;
-}
-
 // hooks/usePlaceOrder.ts
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ordersApis } from "@/lib/api/orders";
+import {
+  OrderFilters,
+  PlaceOrderRequest,
+  PlaceOrderResponse,
+} from "@/types/orders";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  keepPreviousData,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export const usePlaceOrder = () => {
   const queryClient = useQueryClient();
 
-  const placeOrder = async (
-    orderData: PlaceOrderRequest
-  ): Promise<PlaceOrderResponse> => {
-    const response = await fetch("/api/orders/place", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(orderData),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to place order");
-    }
-
-    return response.json();
-  };
-
   return useMutation<PlaceOrderResponse, Error, PlaceOrderRequest>({
-    mutationFn: placeOrder,
+    mutationFn: ordersApis.placeOrder,
     onSuccess: (data) => {
       // Show success toast
       toast.success(data.message || "Order placed successfully!", {
@@ -80,8 +36,8 @@ export const usePlaceOrder = () => {
       }
 
       // Invalidate cart queries to clear cache
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
-      queryClient.removeQueries({ queryKey: ["cart"] });
+      queryClient.cancelQueries({ queryKey: ["cart"] });
+      queryClient.setQueryData(["cart"], null);
 
       // You can handle redirection here if needed
       console.log("Order placed successfully:", data.order?.id);
@@ -95,5 +51,34 @@ export const usePlaceOrder = () => {
       // Log error for debugging
       console.error("Order placement error:", error);
     },
+  });
+};
+
+export const useOrders = (params: OrderFilters = {}) => {
+  return useQuery({
+    queryKey: ["orders", params],
+    queryFn: () => ordersApis.getOrders(params),
+    placeholderData: keepPreviousData,
+    staleTime: 30 * 1000,
+  });
+};
+
+export const useOrderDetail = (id: string) => {
+  return useQuery({
+    queryKey: ["orderDetails", id],
+    queryFn: () => ordersApis.getOrdersById(id),
+    enabled: !!id, // Only run if id exists
+    retry: (failureCount, error) => {
+      // Don't retry on 404 errors
+      if (
+        error.message.includes("404") ||
+        error.message.includes("Order not found")
+      ) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes
   });
 };

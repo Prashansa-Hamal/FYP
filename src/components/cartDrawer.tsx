@@ -123,7 +123,7 @@ export function CartDrawer({ className }: CartDrawerProps) {
               ) : (
                 <div className="space-y-3 h-fit py-2">
                   {cartItems.map((item) => (
-                    <CartItemCard {...item} />
+                    <CartItemCard key={item.id} {...item} />
                   ))}
                 </div>
               )}

@@ -1,13 +1,3 @@
-// interface MenuItemSummary {
-//   id: string;
-//   name: string;
-//   price: number;
-//   imageUrl?: string | null;
-//   category?: string | null;
-//   isAvailable: boolean;
-//   description?: string | null;
-// }
-
 interface CartItemSummary {
   id: string;
   cartItemId: string;
@@ -63,7 +53,7 @@ interface CartSummaryError {
 }
 
 // hooks/useCartSummary.ts - SIMPLIFIED VERSION
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 const CART_QUERY_KEY = "cart";
 
