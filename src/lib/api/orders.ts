@@ -1,12 +1,13 @@
-import { OrderStatus } from "@/generated/prisma/enums";
+import { OrderDetail } from "@/types/orderDetails";
 import {
-  OrderDetail,
-  OrderDetailResponse,
   OrderFilters,
+  OrderResponse,
   OrdersResponse,
   PlaceOrderRequest,
   PlaceOrderResponse,
+  UpdateOrderStatusParams,
 } from "@/types/orders";
+import { ApiResponse } from "@/types/response";
 
 export const ordersApis = {
   async getOrders({
@@ -71,7 +72,7 @@ export const ordersApis = {
     return response.json();
   },
 
-  async getOrdersById(id: string): Promise<OrderDetailResponse<OrderDetail>> {
+  async getOrdersById(id: string): Promise<ApiResponse<OrderDetail>> {
     const response = await fetch(`/api/orders/${id}`);
 
     if (!response.ok) {
@@ -98,6 +99,27 @@ export const ordersApis = {
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || "Failed to place order");
+    }
+
+    return response.json();
+  },
+
+  async updateOrderStatus({
+    id,
+    status,
+    cancellationReason,
+  }: UpdateOrderStatusParams): Promise<OrderResponse> {
+    const response = await fetch("/api/orders/status", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id, status, cancellationReason }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to update order status");
     }
 
     return response.json();

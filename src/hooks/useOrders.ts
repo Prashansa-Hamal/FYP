@@ -2,8 +2,10 @@
 import { ordersApis } from "@/lib/api/orders";
 import {
   OrderFilters,
+  OrderResponse,
   PlaceOrderRequest,
   PlaceOrderResponse,
+  UpdateOrderStatusParams,
 } from "@/types/orders";
 import {
   useQuery,
@@ -66,7 +68,10 @@ export const useOrders = (params: OrderFilters = {}) => {
 export const useOrderDetail = (id: string) => {
   return useQuery({
     queryKey: ["orderDetails", id],
-    queryFn: () => ordersApis.getOrdersById(id),
+    queryFn: async () => {
+      const res = await ordersApis.getOrdersById(id);
+      return res.data;
+    },
     enabled: !!id, // Only run if id exists
     retry: (failureCount, error) => {
       // Don't retry on 404 errors
@@ -80,5 +85,105 @@ export const useOrderDetail = (id: string) => {
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 10, // 10 minutes
+  });
+};
+
+export const useUpdateOrderStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<OrderResponse, Error, UpdateOrderStatusParams>({
+    mutationFn: ordersApis.updateOrderStatus,
+
+    onMutate: async (variables) => {
+      // Cancel outgoing queries
+      await queryClient.cancelQueries({
+        queryKey: ["orderDetails", variables.id],
+      });
+      await queryClient.cancelQueries({ queryKey: ["orders"] });
+
+      // Snapshot previous values
+      const previousOrder = queryClient.getQueryData([
+        "orderDetails",
+        variables.id,
+      ]);
+      const previousOrders = queryClient.getQueryData(["orders"]);
+
+      // Optimistically update ONLY the status (not timestamps)
+      if (previousOrder) {
+        queryClient.setQueryData(
+          ["orderDetails", variables.id],
+          (old: any) => ({
+            ...old,
+            order: {
+              ...old.order,
+              status: variables.status,
+              ...(variables.cancellationReason && {
+                cancellationReason: variables.cancellationReason,
+              }),
+              // Only update paymentStatus if we know the server will update it
+              // ...(variables.status === "COMPLETED" &&
+              //   old.order.paymentStatus === "PENDING" && {
+              //     paymentStatus: "PAID",
+              //   }),
+              // ...(variables.status === "CANCELLED" &&
+              //   old.order.paymentStatus === "PAID" && {
+              //     paymentStatus: "REFUNDED",
+              //   }),
+            },
+          })
+        );
+      }
+
+      // Optimistically update in orders list
+      if (previousOrders) {
+        queryClient.setQueryData(["orders"], (old: any) =>
+          Array.isArray(old)
+            ? old.map((order: any) =>
+                order.id === variables.id
+                  ? {
+                      ...order,
+                      status: variables.status,
+                      // Optional: Update paymentStatus for list view too
+                      // ...(variables.status === "COMPLETED" &&
+                      //   order.paymentStatus === "PENDING" && {
+                      //     paymentStatus: "PAID",
+                      //   }),
+                      // ...(variables.status === "CANCELLED" &&
+                      //   order.paymentStatus === "PAID" && {
+                      //     paymentStatus: "REFUNDED",
+                      //   }),
+                    }
+                  : order
+              )
+            : old
+        );
+      }
+
+      return { previousOrder, previousOrders };
+    },
+
+    onError: (error, variables, context: any) => {
+      if (context?.previousOrder) {
+        queryClient.setQueryData(
+          ["orderDetails", variables.id],
+          context.previousOrder
+        );
+      }
+      if (context?.previousOrders) {
+        queryClient.setQueryData(["orders"], context.previousOrders);
+      }
+    },
+
+    onSettled: (data, error, variables) => {
+      // Invalidate queries to refetch fresh data from server
+      queryClient.invalidateQueries({
+        queryKey: ["orderDetails", variables.id],
+      });
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    },
+
+    onSuccess: (data) => {
+      console.log("Order status updated:", data.message);
+    },
   });
 };

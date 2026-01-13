@@ -1,3 +1,5 @@
+import { OrderStatus } from "@/generated/prisma/enums";
+
 // types/order.ts
 export interface PlaceOrderRequest {
   orderType?: "DINE_IN" | "TAKEAWAY" | "DELIVERY";
@@ -47,14 +49,6 @@ export interface OrderItem {
     name: string;
     price: number;
   };
-}
-
-interface Payment {
-  id: string;
-  amount: number;
-  method: string;
-  status: string;
-  transactionId?: string;
 }
 
 interface Address {
@@ -184,4 +178,20 @@ export interface OrderDetailResponse<T> {
   success: boolean;
   data: T;
   message?: string;
+}
+
+export interface UpdateOrderStatusParams {
+  id: string;
+  status: OrderStatus;
+  cancellationReason?: string;
+}
+
+export interface OrderResponse {
+  success: boolean;
+  message: string;
+  order: {
+    id: string;
+    status: OrderStatus;
+    cancellationReason?: string | null;
+  };
 }

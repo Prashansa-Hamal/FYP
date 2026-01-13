@@ -1,24 +1,12 @@
+// app/api/orders/status/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
 import { OrderStatus } from "@/generated/prisma/enums";
 
-export default async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  const body = await request.json();
-
-  if (request.method !== "PATCH") {
-    return NextResponse.json(
-      { success: false, message: "Method not allowed" },
-      { status: 405 }
-    );
-  }
-
-  const { id } = await params;
-
+export async function PATCH(request: NextRequest) {
   try {
-    const { status, cancellationReason } = body;
+    const body = await request.json();
+    const { id, status, cancellationReason } = body;
 
     if (!id || typeof id !== "string") {
       return NextResponse.json(
@@ -31,7 +19,11 @@ export default async function PATCH(
     const validStatuses = Object.values(OrderStatus);
     if (!validStatuses.includes(status)) {
       return NextResponse.json(
-        { success: false, message: "Invalid order status" },
+        {
+          success: false,
+          message: "Invalid order status",
+          validStatuses: validStatuses,
+        },
         { status: 400 }
       );
     }
@@ -48,6 +40,13 @@ export default async function PATCH(
       );
     }
 
+    if (existingOrder.status === status) {
+      return NextResponse.json(
+        { success: false, message: "Cannot set the same status" },
+        { status: 400 }
+      );
+    }
+
     // Define update data based on status
     const updateData: any = {
       status,
@@ -56,29 +55,26 @@ export default async function PATCH(
 
     // Set timestamps based on status transitions
     switch (status) {
-      case "PREPARING":
-        // You might want to set estimated ready time here
-        updateData.estimatedReadyTime = new Date(Date.now() + 30 * 60000); // 30 minutes from now
+      case OrderStatus.PENDING:
+        updateData.estimatedReadyTime = new Date(Date.now() + 30 * 60000);
         break;
-      case "READY":
+      case OrderStatus.READY:
         updateData.readyAt = new Date();
         break;
-      case "SERVED":
+      case OrderStatus.SERVED:
         updateData.servedAt = new Date();
         break;
-      case "COMPLETED":
+      case OrderStatus.COMPLETED:
         updateData.completedAt = new Date();
-        // Optionally auto-update payment status if not already paid
-        if (existingOrder.paymentStatus === "PENDING") {
-          updateData.paymentStatus = "PAID";
-        }
+        // if (existingOrder.paymentStatus === "PENDING") {
+        updateData.paymentStatus = "PAID";
+        // }
         break;
-      case "CANCELLED":
+      case OrderStatus.CANCELLED:
         updateData.cancelledAt = new Date();
         updateData.cancellationReason =
           cancellationReason || "No reason provided";
 
-        // Optional: Automatically refund if already paid
         if (existingOrder.paymentStatus === "PAID") {
           updateData.paymentStatus = "REFUNDED";
         }
@@ -89,42 +85,25 @@ export default async function PATCH(
     const updatedOrder = await db.order.update({
       where: { id },
       data: updateData,
-      include: {
-        items: {
-          include: {
-            menuItem: {
-              select: {
-                name: true,
-                price: true,
-              },
-            },
-          },
-        },
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            phone: true,
-          },
-        },
-        deliveryAddress: true,
-      },
     });
 
-    // Optional: Send notifications based on status change
-    // You can integrate with your notification service here
-    // await sendOrderStatusNotification(updatedOrder);
-
     return NextResponse.json(
-      { success: true, message: "Order status updated successfully" },
+      {
+        success: true,
+        message: "Order status updated successfully",
+        order: updatedOrder,
+      },
       { status: 200 }
     );
   } catch (error) {
     console.error("Error updating order status:", error);
 
     return NextResponse.json(
-      { success: false, message: "Internal server error" },
+      {
+        success: false,
+        message: "Internal server error",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
   }

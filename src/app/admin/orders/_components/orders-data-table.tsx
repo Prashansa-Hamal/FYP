@@ -20,14 +20,14 @@ import {
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { OrderItem, useOrders } from "@/hooks/useOrders";
+import { useOrders } from "@/hooks/useOrders";
 import { formatCurrency } from "@/lib/formatters";
+import { OrderItem } from "@/types/orders";
 import { ColumnDef, Row } from "@tanstack/react-table";
 import {
   Eye,
   Filter,
   MoreVertical,
-  Printer,
   RefreshCw,
   Truck,
   CreditCard,
@@ -536,7 +536,7 @@ const OrderActions = ({ row }: { row: Row<OrderRow> }) => {
   const invoiceItems =
     order.items?.map((item: OrderItem) => ({
       id: item.id,
-      name: item.menuItem?.name || "Item",
+      name: item.menuItem?.name,
       quantity: item.quantity,
       unitPrice: item.unitPrice,
       totalPrice: item.totalPrice,
