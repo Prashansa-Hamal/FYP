@@ -7,7 +7,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
@@ -18,20 +17,12 @@ import {
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { User, UserRole } from "@/generated/prisma/client";
 import { useUsers } from "@/hooks/useUsers";
+import { UserRole } from "@/types/enums";
 import { ColumnDef, FilterFn, Row } from "@tanstack/react-table";
-import {
-  Edit,
-  Ellipsis,
-  Eye,
-  Filter,
-  MoreVertical,
-  Trash2,
-} from "lucide-react";
-import Link from "next/link";
+import { Edit, Eye, Filter, MoreVertical, Trash2 } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 export type UserTableRow = {
   id: string;
@@ -271,11 +262,11 @@ const RowActions = ({ row }: { row: Row<UserTableRow> }) => {
 // Updated renderToolbar to use API filtering
 const renderToolbar = (
   selectedRoles: string[],
-  onRoleFilterChange: (roles: string[]) => void
+  onRoleFilterChange: (roles: string[]) => void,
 ) => {
   const userRoleValues = useMemo(
     () => ["ADMIN", "USER", "CHEF", "BARTENDER", "WAITER", "MANAGER"],
-    []
+    [],
   );
 
   const handleRoleCheckboxChange = (role: string, checked: boolean) => {

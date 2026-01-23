@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { formatCurrency } from "@/lib/formatters";
-import { Printer, Download, FileText } from "lucide-react";
+import { Printer, Download } from "lucide-react";
 import { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 

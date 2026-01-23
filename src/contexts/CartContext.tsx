@@ -86,14 +86,14 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       const item = cartItems.find((item) => item.menuItemId === menuItemId);
       return item ? item.quantity : 0;
     },
-    [cartItems]
+    [cartItems],
   );
 
   const isItemInCart = useCallback(
     (menuItemId: string): boolean => {
       return getItemQuantity(menuItemId) > 0;
     },
-    [getItemQuantity]
+    [getItemQuantity],
   );
 
   const getCartTotal = useCallback((): number => {
@@ -143,7 +143,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
           response.message ||
             (variables.quantity === 0
               ? "Item removed from cart"
-              : "Quantity updated")
+              : "Quantity updated"),
         );
       } else {
         //  Server returned success: false
@@ -171,7 +171,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
           return {
             ...oldData,
             items: oldData.items.filter(
-              (item) => item.menuItemId !== menuItemId
+              (item) => item.menuItemId !== menuItemId,
             ),
           };
         });

@@ -209,7 +209,7 @@ export default function MenuItemAdminClient({ id }: MenuItemAdminClientProps) {
   // Handle toggle availability with error handling
   const handleToggleAvailability = async (
     id: string,
-    currentStatus: boolean
+    currentStatus: boolean,
   ) => {
     await toggleMutation.mutateAsync({ id, isAvailable: !currentStatus });
   };
@@ -246,7 +246,7 @@ export default function MenuItemAdminClient({ id }: MenuItemAdminClientProps) {
     if (hasUnsavedChanges) {
       if (
         window.confirm(
-          "You have unsaved changes. Are you sure you want to cancel?"
+          "You have unsaved changes. Are you sure you want to cancel?",
         )
       ) {
         setIsEditing(false);
@@ -573,7 +573,7 @@ export default function MenuItemAdminClient({ id }: MenuItemAdminClientProps) {
                                       const value = e.target.value;
                                       const numericValue = Number(value);
                                       field.onChange(
-                                        isNaN(numericValue) ? "" : numericValue
+                                        isNaN(numericValue) ? "" : numericValue,
                                       );
                                     }}
                                     disabled={!isEditing}
@@ -693,7 +693,7 @@ export default function MenuItemAdminClient({ id }: MenuItemAdminClientProps) {
                                     const value = e.target.value;
                                     const numericValue = Number(value);
                                     field.onChange(
-                                      isNaN(numericValue) ? "" : numericValue
+                                      isNaN(numericValue) ? "" : numericValue,
                                     );
                                   }}
                                   disabled={!isEditing}
@@ -731,7 +731,7 @@ export default function MenuItemAdminClient({ id }: MenuItemAdminClientProps) {
                                       const value = e.target.value;
                                       const numericValue = Number(value);
                                       field.onChange(
-                                        isNaN(numericValue) ? "" : numericValue
+                                        isNaN(numericValue) ? "" : numericValue,
                                       );
                                     }}
                                     disabled={!isEditing}
@@ -829,7 +829,7 @@ export default function MenuItemAdminClient({ id }: MenuItemAdminClientProps) {
 
                           const handleSelectChange = (selectedOptions: any) => {
                             const ingredients = selectedOptions.map(
-                              (option: any) => option.value
+                              (option: any) => option.value,
                             );
                             onChange(ingredients);
                           };
@@ -899,11 +899,13 @@ export default function MenuItemAdminClient({ id }: MenuItemAdminClientProps) {
                       />
                     ) : (
                       <div className="flex flex-wrap gap-2">
-                        {menuItem.ingredients.map((ingredient, index) => (
-                          <Badge key={index} variant="secondary">
-                            {ingredient}
-                          </Badge>
-                        ))}
+                        {menuItem.ingredients.map(
+                          (ingredient: string, index: number) => (
+                            <Badge key={index} variant="secondary">
+                              {ingredient}
+                            </Badge>
+                          ),
+                        )}
                       </div>
                     )}
                   </CardContent>
@@ -932,7 +934,7 @@ export default function MenuItemAdminClient({ id }: MenuItemAdminClientProps) {
 
                           const handleSelectChange = (selectedOptions: any) => {
                             const tags = selectedOptions.map(
-                              (option: any) => option.value
+                              (option: any) => option.value,
                             );
                             onChange(tags);
                           };
@@ -1002,7 +1004,7 @@ export default function MenuItemAdminClient({ id }: MenuItemAdminClientProps) {
                       />
                     ) : (
                       <div className="flex flex-wrap gap-2">
-                        {menuItem.tags.map((tag, index) => (
+                        {menuItem.tags.map((tag: string, index: number) => (
                           <Badge key={index} variant="outline">
                             #{tag}
                           </Badge>

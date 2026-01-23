@@ -2,11 +2,9 @@
 
 import { PlaceOrderButton } from "@/components/placeOrderButton";
 import { CartSummarySkeleton } from "@/components/skeletons/cartSummarySkeleton";
-
 import { useCartSummary } from "@/hooks/useSummary";
 import { formatCurrency } from "@/lib/formatters";
 import { PlaceOrderRequest } from "@/types/orders";
-
 import {
   ShoppingCart,
   Package,

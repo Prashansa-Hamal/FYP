@@ -1,10 +1,10 @@
 // "use client";
-import { MenuItem } from "@/generated/prisma/client";
 import { Minus, Plus } from "lucide-react";
 import { Activity, useState } from "react";
 import { Button } from "../ui/button";
 import { formatCurrency } from "@/lib/formatters";
 import { useCart } from "@/contexts/CartContext";
+import { MenuItem } from "@/generated/client";
 
 export const MenuItemCard = ({
   id,

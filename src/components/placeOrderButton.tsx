@@ -1,6 +1,7 @@
 import { Loader2, Check } from "lucide-react";
-import { PlaceOrderRequest, usePlaceOrder } from "@/hooks/useOrders";
+import { usePlaceOrder } from "@/hooks/useOrders";
 import { Button } from "./ui/button";
+import { PlaceOrderRequest } from "@/types/orders";
 
 interface PlaceOrderButtonProps {
   orderData: PlaceOrderRequest;

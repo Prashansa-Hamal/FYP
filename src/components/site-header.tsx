@@ -25,7 +25,7 @@ export function SiteHeader() {
     const isLikelyId =
       // Check for UUID format
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        lastSegment
+        lastSegment,
       ) ||
       // Check for cuid format (starts with 'c' and has 25 chars)
       /^c[0-9a-z]{24,}$/i.test(lastSegment) ||

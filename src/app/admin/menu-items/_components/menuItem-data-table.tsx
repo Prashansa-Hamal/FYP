@@ -18,12 +18,9 @@ import {
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  MenuItem,
-  ItemCategory,
-  PreparationStation,
-} from "@/generated/prisma/client";
+import { MenuItem } from "@/generated/client";
 import { useMenuItems } from "@/hooks/useMenuItems";
+import { ItemCategory, PreparationStation } from "@/types/enums";
 import { ColumnDef, FilterFn, Row } from "@tanstack/react-table";
 import { Edit, Eye, Filter, MoreVertical, Trash2 } from "lucide-react";
 import Link from "next/link";

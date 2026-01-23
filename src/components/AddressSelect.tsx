@@ -17,7 +17,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { AddressDialog } from "./AddressDialog";
-import { Address } from "@/generated/prisma/client";
+import { Address } from "@/generated/client";
 
 interface AddressSelectProps {
   value?: string;
@@ -97,7 +97,7 @@ function AddressSelectDialog({
                       "flex cursor-pointer items-start space-x-3 rounded-xl border-2 p-4 transition-all hover:border-blue-400",
                       selectedAddressId === address.id
                         ? "border-blue-500 bg-blue-50/50"
-                        : "border-gray-200"
+                        : "border-gray-200",
                     )}
                   >
                     <div className="flex-1">
@@ -147,7 +147,7 @@ export function AddressSelect({
   const addresses = data?.addresses || [];
   const defaultAddress = addresses.find((addr) => addr.isDefault);
   const selectedAddressObj = addresses.find(
-    (addr) => addr.id === selectedAddress
+    (addr) => addr.id === selectedAddress,
   );
   const hasAddresses = addresses.length > 0;
 
@@ -200,7 +200,7 @@ export function AddressSelect({
               className={cn(
                 "flex items-start p-5 rounded-xl border-2 justify-between",
                 "bg-gradient-to-r from-blue-50/50 to-white",
-                "border-blue-500"
+                "border-blue-500",
               )}
             >
               <div className="flex-1">
