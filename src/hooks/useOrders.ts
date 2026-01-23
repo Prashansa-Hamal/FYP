@@ -5,6 +5,7 @@ import {
   OrderResponse,
   PlaceOrderRequest,
   PlaceOrderResponse,
+  UpdateOrderPaymentStatusParams,
   UpdateOrderStatusParams,
 } from "@/types/orders";
 import {
@@ -120,15 +121,6 @@ export const useUpdateOrderStatus = () => {
               ...(variables.cancellationReason && {
                 cancellationReason: variables.cancellationReason,
               }),
-              // Only update paymentStatus if we know the server will update it
-              // ...(variables.status === "COMPLETED" &&
-              //   old.order.paymentStatus === "PENDING" && {
-              //     paymentStatus: "PAID",
-              //   }),
-              // ...(variables.status === "CANCELLED" &&
-              //   old.order.paymentStatus === "PAID" && {
-              //     paymentStatus: "REFUNDED",
-              //   }),
             },
           })
         );
@@ -143,15 +135,85 @@ export const useUpdateOrderStatus = () => {
                   ? {
                       ...order,
                       status: variables.status,
-                      // Optional: Update paymentStatus for list view too
-                      // ...(variables.status === "COMPLETED" &&
-                      //   order.paymentStatus === "PENDING" && {
-                      //     paymentStatus: "PAID",
-                      //   }),
-                      // ...(variables.status === "CANCELLED" &&
-                      //   order.paymentStatus === "PAID" && {
-                      //     paymentStatus: "REFUNDED",
-                      //   }),
+                    }
+                  : order
+              )
+            : old
+        );
+      }
+
+      return { previousOrder, previousOrders };
+    },
+
+    onError: (error, variables, context: any) => {
+      if (context?.previousOrder) {
+        queryClient.setQueryData(
+          ["orderDetails", variables.id],
+          context.previousOrder
+        );
+      }
+      if (context?.previousOrders) {
+        queryClient.setQueryData(["orders"], context.previousOrders);
+      }
+    },
+
+    onSettled: (data, error, variables) => {
+      // Invalidate queries to refetch fresh data from server
+      queryClient.invalidateQueries({
+        queryKey: ["orderDetails", variables.id],
+      });
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    },
+
+    onSuccess: (data) => {
+      console.log("Order status updated:", data.message);
+    },
+  });
+};
+
+export const useUpdateOrderPaymentStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<OrderResponse, Error, UpdateOrderPaymentStatusParams>({
+    mutationFn: ordersApis.updateOrderPaymentStatus,
+
+    onMutate: async (variables) => {
+      // Cancel outgoing queries
+      await queryClient.cancelQueries({
+        queryKey: ["orderDetails", variables.id],
+      });
+      await queryClient.cancelQueries({ queryKey: ["orders"] });
+
+      // Snapshot previous values
+      const previousOrder = queryClient.getQueryData([
+        "orderDetails",
+        variables.id,
+      ]);
+      const previousOrders = queryClient.getQueryData(["orders"]);
+
+      // Optimistically update ONLY the status (not timestamps)
+      if (previousOrder) {
+        queryClient.setQueryData(
+          ["orderDetails", variables.id],
+          (old: any) => ({
+            ...old,
+            order: {
+              ...old.order,
+              status: variables.paymentMethod,
+            },
+          })
+        );
+      }
+
+      // Optimistically update in orders list
+      if (previousOrders) {
+        queryClient.setQueryData(["orders"], (old: any) =>
+          Array.isArray(old)
+            ? old.map((order: any) =>
+                order.id === variables.id
+                  ? {
+                      ...order,
+                      status: variables.paymentMethod,
                     }
                   : order
               )

@@ -113,7 +113,7 @@ export default function MenuItemsPage() {
         // Don't set page to 1 here - it will be handled by the debounce effect
       }));
     },
-    []
+    [],
   );
 
   // Handle delete with error handling
@@ -130,7 +130,7 @@ export default function MenuItemsPage() {
   // Handle toggle availability with error handling
   const handleToggleAvailability = async (
     id: string,
-    currentStatus: boolean
+    currentStatus: boolean,
   ) => {
     try {
       await toggleMutation.mutateAsync({ id, isAvailable: !currentStatus });
@@ -460,7 +460,7 @@ export default function MenuItemsPage() {
             {filters.preparationStation && (
               <span
                 className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${getStationColor(
-                  filters.preparationStation
+                  filters.preparationStation,
                 )}`}
               >
                 {filters.preparationStation.replace("_", " ")}
@@ -609,7 +609,7 @@ export default function MenuItemsPage() {
                       </span>
                       <span
                         className={`inline-flex items-center px-2 py-1 rounded text-xs ${getStationColor(
-                          item.preparationStation
+                          item.preparationStation,
                         )}`}
                       >
                         {item.preparationStation.replace("_", " ")}
@@ -682,7 +682,7 @@ export default function MenuItemsPage() {
                   Showing {(apiFilters.page - 1) * apiFilters.limit + 1} to{" "}
                   {Math.min(
                     apiFilters.page * apiFilters.limit,
-                    pagination.total
+                    pagination.total,
                   )}{" "}
                   of {pagination.total} items
                 </div>
@@ -728,7 +728,7 @@ export default function MenuItemsPage() {
                             {pageNum}
                           </button>
                         );
-                      }
+                      },
                     )}
                   </div>
 
@@ -819,7 +819,7 @@ export default function MenuItemsPage() {
                   <p className="text-2xl font-bold text-gray-900">
                     {formatPrice(
                       menuItems.reduce((sum, item) => sum + item.price, 0) /
-                        menuItems.length
+                        menuItems.length,
                     )}
                   </p>
                 </div>

@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
     console.error("GET /api/users error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch users" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

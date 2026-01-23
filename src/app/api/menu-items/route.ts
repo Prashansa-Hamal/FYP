@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { ItemCategory, PreparationStation } from "@/generated/prisma/enums";
 import db from "@/lib/db";
+import { NextRequest, NextResponse } from "next/server";
+import { ItemCategory, PreparationStation } from "@/types/enums";
 
 // GET - Fetch all menu items
 export async function GET(request: NextRequest) {
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
     console.error("GET /api/menu-items error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch menu items" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
     ) {
       return NextResponse.json(
         { success: false, message: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
     console.error("POST /api/menu-items error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to create menu item" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -161,7 +161,7 @@ export async function DELETE(request: NextRequest) {
     console.error("DELETE /api/menu-items/[id] error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to delete menu item" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -176,7 +176,7 @@ export async function PUT(request: NextRequest) {
     if (!id || typeof isAvailable !== "boolean") {
       return NextResponse.json(
         { success: false, message: "Invalid payload" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -194,7 +194,7 @@ export async function PUT(request: NextRequest) {
     console.error("PUT /api/menu-items error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to update availability" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

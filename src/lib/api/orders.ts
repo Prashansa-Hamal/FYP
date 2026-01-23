@@ -5,6 +5,7 @@ import {
   OrdersResponse,
   PlaceOrderRequest,
   PlaceOrderResponse,
+  UpdateOrderPaymentStatusParams,
   UpdateOrderStatusParams,
 } from "@/types/orders";
 import { ApiResponse } from "@/types/response";
@@ -115,6 +116,25 @@ export const ordersApis = {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ id, status, cancellationReason }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to update order status");
+    }
+
+    return response.json();
+  },
+  async updateOrderPaymentStatus({
+    id,
+    paymentMethod,
+  }: UpdateOrderPaymentStatusParams): Promise<OrderResponse> {
+    const response = await fetch("/api/orders/payment", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id, paymentMethod }),
     });
 
     if (!response.ok) {

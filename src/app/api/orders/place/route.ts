@@ -1,6 +1,6 @@
 // app/api/orders/place/route.ts
-import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
+import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getUser } from "@/data/user";
 
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
           message: "Authentication required to place an order",
           order: null,
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
           message: "Table number is required for dine-in orders",
           order: null,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
           message: "Delivery address is required for delivery orders",
           order: null,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
           message: "Your cart is empty",
           order: null,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -108,14 +108,14 @@ export async function POST(request: NextRequest) {
           unavailableItems,
           order: null,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // 6. Calculate totals
     const subtotal = cart.items.reduce(
       (sum, item) => sum + item.quantity * item.menuItem.price,
-      0
+      0,
     );
 
     // Fixed tax rate (adjust as needed)
@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
           });
 
           return orderItem;
-        })
+        }),
       );
 
       // Clear cart items
@@ -230,7 +230,7 @@ export async function POST(request: NextRequest) {
         },
         nextSteps: getNextSteps(order.orderType, order.paymentMethod!),
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Order placement error:", error);
@@ -243,7 +243,7 @@ export async function POST(request: NextRequest) {
           message: "Duplicate order detected. Please try again.",
           order: null,
         },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -255,7 +255,7 @@ export async function POST(request: NextRequest) {
         error:
           process.env.NODE_ENV === "development" ? error.message : undefined,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

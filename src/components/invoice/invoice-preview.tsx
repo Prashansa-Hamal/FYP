@@ -74,8 +74,6 @@ export function InvoicePreview({
 
   const handleDownload = () => {
     // Generate PDF using jsPDF
-    // You'll need to install jspdf: npm install jspdf
-    // See Option 2 for full implementation
     console.log("Download PDF");
   };
 

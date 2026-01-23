@@ -38,7 +38,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { UpdateOrderStatusDialog } from "./updateStatusDialoug";
+import { OrderStatus } from "@/generated/prisma/enums";
+import { ProcessPaymentDialog } from "./processPaymentDialoug";
 
 // Define the order row type
 interface OrderRow {
@@ -550,7 +553,7 @@ const OrderActions = ({ row }: { row: Row<OrderRow> }) => {
           <MoreVertical className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="flex flex-col">
         <DropdownMenuItem asChild>
           <Link href={`/admin/orders/${order.id}`}>
             <Eye className="h-4 w-4 mr-2" />
@@ -579,13 +582,39 @@ const OrderActions = ({ row }: { row: Row<OrderRow> }) => {
         </DropdownMenuItem>
 
         <Separator className="my-1" />
-        <DropdownMenuItem className="text-yellow-600">
-          <Clock className="h-4 w-4 mr-2" />
-          Update Status
+
+        <DropdownMenuItem asChild>
+          <UpdateOrderStatusDialog
+            id={order.id}
+            currentStatus={order.status as OrderStatus}
+            trigger={
+              <Button
+                variant="ghost"
+                size="sm"
+                className="px-0 group w-full justify-start font-normal text-yellow-600 hover:text-white hover:bg-yellow-600"
+              >
+                <Clock className="h-4 w-4 mr-2 text-yellow-600 group-hover:text-white" />
+                Update Status
+              </Button>
+            }
+          />
         </DropdownMenuItem>
-        <DropdownMenuItem className="text-blue-600">
-          <CreditCard className="h-4 w-4 mr-2" />
-          Process Payment
+
+        <DropdownMenuItem asChild>
+          <ProcessPaymentDialog
+            id={order.id}
+            totalAmount={order.finalAmount}
+            trigger={
+              <Button
+                variant="ghost"
+                size="sm"
+                className="px-0 group w-full w-fit justify-start font-normal text-blue-600 hover:text-white hover:bg-blue-600"
+              >
+                <CreditCard className="h-4 w-4 mr-2 text-blue-600 group-hover:text-white" />
+                Process Payment
+              </Button>
+            }
+          />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

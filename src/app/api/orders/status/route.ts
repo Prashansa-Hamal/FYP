@@ -1,7 +1,7 @@
 // app/api/orders/status/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
-import { OrderStatus } from "@/generated/prisma/enums";
+import { ORDER_STATUS } from "@/types/enums";
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -11,20 +11,19 @@ export async function PATCH(request: NextRequest) {
     if (!id || typeof id !== "string") {
       return NextResponse.json(
         { success: false, message: "Order ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Validate order status
-    const validStatuses = Object.values(OrderStatus);
-    if (!validStatuses.includes(status)) {
+    if (!ORDER_STATUS.includes(status)) {
       return NextResponse.json(
         {
           success: false,
-          message: "Invalid order status",
-          validStatuses: validStatuses,
+          message: "Invalid payment method",
+          validMethods: ORDER_STATUS,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -36,14 +35,14 @@ export async function PATCH(request: NextRequest) {
     if (!existingOrder) {
       return NextResponse.json(
         { success: false, message: "Order not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     if (existingOrder.status === status) {
       return NextResponse.json(
         { success: false, message: "Cannot set the same status" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -55,22 +54,22 @@ export async function PATCH(request: NextRequest) {
 
     // Set timestamps based on status transitions
     switch (status) {
-      case OrderStatus.PENDING:
+      case "PENDING":
         updateData.estimatedReadyTime = new Date(Date.now() + 30 * 60000);
         break;
-      case OrderStatus.READY:
+      case "READY":
         updateData.readyAt = new Date();
         break;
-      case OrderStatus.SERVED:
+      case "SERVED":
         updateData.servedAt = new Date();
         break;
-      case OrderStatus.COMPLETED:
+      case "COMPLETED":
         updateData.completedAt = new Date();
         // if (existingOrder.paymentStatus === "PENDING") {
         updateData.paymentStatus = "PAID";
         // }
         break;
-      case OrderStatus.CANCELLED:
+      case "CANCELLED":
         updateData.cancelledAt = new Date();
         updateData.cancellationReason =
           cancellationReason || "No reason provided";
@@ -93,7 +92,7 @@ export async function PATCH(request: NextRequest) {
         message: "Order status updated successfully",
         order: updatedOrder,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error updating order status:", error);
@@ -104,7 +103,7 @@ export async function PATCH(request: NextRequest) {
         message: "Internal server error",
         error: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

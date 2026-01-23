@@ -1,4 +1,4 @@
-import { OrderStatus } from "@/generated/prisma/enums";
+import { OrderStatus, PaymentMethod } from "@/generated/prisma/enums";
 
 // types/order.ts
 export interface PlaceOrderRequest {
@@ -194,4 +194,9 @@ export interface OrderResponse {
     status: OrderStatus;
     cancellationReason?: string | null;
   };
+}
+
+export interface UpdateOrderPaymentStatusParams {
+  id: string;
+  paymentMethod: PaymentMethod;
 }

@@ -58,7 +58,11 @@ export function ActionsTab({
                     key={status}
                     variant={activeStatus === status ? "default" : "outline"}
                     onClick={() => setActiveStatus(status as OrderStatus)}
-                    className="justify-start"
+                    className={`${
+                      activeStatus === status
+                        ? "bg-blue-500 hover:bg-blue-600"
+                        : ""
+                    } justify-start`}
                   >
                     {config.icon}
                     {config.label}

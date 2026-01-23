@@ -1,6 +1,6 @@
 // app/api/addresses/route.ts
-import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
+import { NextRequest, NextResponse } from "next/server";
 import { getUser } from "@/data/user";
 
 export async function GET(request: NextRequest) {
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
           message: "Authentication required",
           addresses: [],
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
         error:
           process.env.NODE_ENV === "development" ? error.message : undefined,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
           message: "Authentication required",
           address: null,
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
           message: "Street, city, state, and postal code are required",
           address: null,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
         message: "Address created successfully",
         address,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Create address error:", error);
@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
           message: "This address already exists",
           address: null,
         },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
           message: "Address already exists",
           address: null,
         },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
         error:
           process.env.NODE_ENV === "development" ? error.message : undefined,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -39,7 +39,7 @@ const multiColumnFilterFn: FilterFn<MenuItem> = (row, filterValue) => {
 const genericFilterFn: FilterFn<MenuItem> = (
   row,
   columnId,
-  filterValue: (boolean | string)[]
+  filterValue: (boolean | string)[],
 ) => {
   if (!filterValue?.length) return true;
   return filterValue.includes(row.getValue(columnId));
@@ -233,7 +233,7 @@ const MenuItemDataTable = () => {
 
   // Handle station filter change
   const handleStationFilterChange = (
-    selectedStations: PreparationStation[]
+    selectedStations: PreparationStation[],
   ) => {
     updateUrlWithFilters({
       preparationStation:

@@ -62,7 +62,6 @@ export function OrderDetailsClient({ id }: { id: string }) {
           setCancellationReason("");
         },
         onError: (error) => {
-          console.error(error);
           toast.error(error.message || "Failed to cancel order");
         },
       }
