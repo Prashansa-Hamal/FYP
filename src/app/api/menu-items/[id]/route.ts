@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -16,7 +16,7 @@ export async function GET(
     if (!menuItem) {
       return NextResponse.json(
         { success: false, message: "Menu item not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -28,7 +28,7 @@ export async function GET(
     console.error("GET /api/menu-items/[id] error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch menu item" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -36,7 +36,7 @@ export async function GET(
 // PUT - Update item
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -73,7 +73,7 @@ export async function PUT(
     console.error("PUT /api/menu-items/[id] error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to update menu item" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

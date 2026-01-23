@@ -13,7 +13,7 @@ import { cookies } from "next/headers";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ provider: string }> }
+  { params }: { params: Promise<{ provider: string }> },
 ) {
   const { provider: rawProvider } = await params;
   const code = req.nextUrl.searchParams.get("code");
@@ -29,8 +29,8 @@ export async function GET(
   ) {
     return redirect(
       `/login?oauthError=${encodeURIComponent(
-        `Failed to connect. Please try again.`
-      )}`
+        `Failed to connect. Please try again.`,
+      )}`,
     );
   }
 
@@ -47,8 +47,8 @@ export async function GET(
       `/login?oauthError=${encodeURIComponent(
         `${
           provider.data.charAt(0).toUpperCase() + provider.data.slice(1)
-        } Login failed!`
-      )}`
+        } Login failed!`,
+      )}`,
     );
   }
 
@@ -57,7 +57,7 @@ export async function GET(
 
 const connectUserToAccount = async (
   { id, name, email }: { id: string; name: string; email: string },
-  provider: OAuthProvider
+  provider: OAuthProvider,
 ) => {
   const existingUser = await getUserByEmail(email);
   if (existingUser == null) {

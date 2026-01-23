@@ -5,10 +5,11 @@ import { getUser } from "@/data/user";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const user = await getUser();
+    const { id } = await params;
 
     if (!user?.id) {
       return NextResponse.json(
@@ -17,13 +18,13 @@ export async function GET(
           message: "Authentication required",
           address: null,
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     const address = await db.address.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.id,
       },
     });
@@ -35,7 +36,7 @@ export async function GET(
           message: "Address not found",
           address: null,
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -54,7 +55,7 @@ export async function GET(
         error:
           process.env.NODE_ENV === "development" ? error.message : undefined,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -62,7 +63,7 @@ export async function GET(
 // app/api/addresses/[id]/route.ts (PUT method)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -78,7 +79,7 @@ export async function PUT(
           message: "Authentication required",
           address: null,
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -97,7 +98,7 @@ export async function PUT(
           message: "Address not found",
           address: null,
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -144,7 +145,7 @@ export async function PUT(
           message: "Address not found",
           address: null,
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -156,7 +157,7 @@ export async function PUT(
         error:
           process.env.NODE_ENV === "development" ? error.message : undefined,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -164,7 +165,7 @@ export async function PUT(
 // app/api/addresses/[id]/route.ts
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -177,7 +178,7 @@ export async function DELETE(
       console.log("No user found");
       return NextResponse.json(
         { success: false, message: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -196,7 +197,7 @@ export async function DELETE(
     if (!address) {
       return NextResponse.json(
         { success: false, message: "Address not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -223,7 +224,7 @@ export async function DELETE(
         error:
           process.env.NODE_ENV === "development" ? error.message : undefined,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

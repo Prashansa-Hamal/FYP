@@ -5,7 +5,7 @@ import db from "@/lib/db";
 // GET - Fetch single order by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -70,7 +70,7 @@ export async function GET(
           message: "Order not found",
           code: "ORDER_NOT_FOUND",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -113,7 +113,7 @@ export async function GET(
             : undefined,
         code: "ORDER_FETCH_ERROR",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

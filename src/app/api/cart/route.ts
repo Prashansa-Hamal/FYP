@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       if (userCart && guestCart && userCart.id !== guestCart.id) {
         for (const guestItem of guestCart.items) {
           const existingItem = userCart.items.find(
-            (item) => item.menuItemId === guestItem.menuItemId
+            (item) => item.menuItemId === guestItem.menuItemId,
           );
 
           if (existingItem) {
@@ -140,7 +140,7 @@ export async function GET(request: NextRequest) {
         message: "Failed to fetch cart",
         error: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
     if (!menuItemId || typeof quantity !== "number" || quantity < 1) {
       return NextResponse.json(
         { success: false, message: "Invalid payload" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -258,7 +258,7 @@ export async function POST(request: NextRequest) {
         message: "Failed to add menu item to cart",
         error: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -271,7 +271,7 @@ export async function PUT(request: NextRequest) {
     if (!menuItemId || typeof quantity !== "number" || quantity < 0) {
       return NextResponse.json(
         { success: false, message: "Invalid payload" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -282,7 +282,7 @@ export async function PUT(request: NextRequest) {
     if (!user?.id && !sessionId) {
       return NextResponse.json(
         { success: false, message: "No cart session found" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -296,7 +296,7 @@ export async function PUT(request: NextRequest) {
     if (!cart) {
       return NextResponse.json(
         { success: false, message: "Cart not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -315,7 +315,7 @@ export async function PUT(request: NextRequest) {
     if (!cartItem) {
       return NextResponse.json(
         { success: false, message: "Cart item not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -366,7 +366,7 @@ export async function PUT(request: NextRequest) {
     console.error("PUT /api/cart error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to update cart item" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -454,7 +454,7 @@ export async function DELETE(request: NextRequest) {
     console.error("DELETE /api/cart error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to delete cart" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
