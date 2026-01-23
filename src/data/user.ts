@@ -1,7 +1,7 @@
 "use server";
 
 import { getUserFromSession } from "@/cores/session";
-import { User } from "@/generated/prisma/client";
+import { User } from "@/generated/client";
 import db from "@/lib/db";
 import { cookies } from "next/headers";
 import { cache } from "react";

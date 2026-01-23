@@ -66,7 +66,7 @@ export const ordersApis = {
         message: "Failed to fetch orders",
       }));
       throw new Error(
-        error.message || `HTTP ${response.status}: Failed to fetch orders`
+        error.message || `HTTP ${response.status}: Failed to fetch orders`,
       );
     }
 
@@ -82,7 +82,7 @@ export const ordersApis = {
       }));
       throw new Error(
         errorData.message ||
-          `HTTP ${response.status}: Failed to fetch order details`
+          `HTTP ${response.status}: Failed to fetch order details`,
       );
     }
 

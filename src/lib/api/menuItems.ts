@@ -1,6 +1,6 @@
 // File: /lib/api/menuItems.ts
 
-import { MenuItem } from "@/generated/prisma/client";
+import { MenuItem } from "@/generated/client";
 import {
   CreateMenuItemInput,
   MenuItemApiResponse,
@@ -13,7 +13,7 @@ import {
 export const menuItemsApi = {
   // Get all menu items
   async getAll(
-    filters: MenuItemFilters = {}
+    filters: MenuItemFilters = {},
   ): Promise<PaginatedResponse<MenuItem>> {
     const queryParams = new URLSearchParams();
 
@@ -45,7 +45,7 @@ export const menuItemsApi = {
 
   // Create menu item
   async create(
-    data: CreateMenuItemInput
+    data: CreateMenuItemInput,
   ): Promise<MenuItemApiResponse<MenuItem>> {
     const response = await fetch("/api/menu-items", {
       method: "POST",
@@ -63,7 +63,7 @@ export const menuItemsApi = {
   // Update menu item
   async update(
     id: string,
-    data: UpdateMenuItemInput
+    data: UpdateMenuItemInput,
   ): Promise<MenuItemApiResponse<MenuItem>> {
     const response = await fetch(`/api/menu-items/${id}`, {
       method: "PUT",
@@ -96,7 +96,7 @@ export const menuItemsApi = {
   // Toggle availability
   async toggleAvailability(
     id: string,
-    isAvailable: boolean
+    isAvailable: boolean,
   ): Promise<MenuItemApiResponse<MenuItem>> {
     const response = await fetch(`/api/menu-items`, {
       method: "PUT",
