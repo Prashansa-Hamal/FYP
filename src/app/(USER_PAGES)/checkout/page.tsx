@@ -1,5 +1,5 @@
+"use client";
 export const dynamic = "force-dynamic";
-("use client");
 
 import { PlaceOrderButton } from "@/components/placeOrderButton";
 import { CartSummarySkeleton } from "@/components/skeletons/cartSummarySkeleton";
