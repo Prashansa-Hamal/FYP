@@ -4,7 +4,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useOrderDetail, useUpdateOrderStatus } from "@/hooks/useOrders";
 import { OrderDetailsSkeleton } from "@/components/skeletons/orderDetailsSkeleton";
 import NotFoundComponent from "@/components/not-found";
-import { OrderStatus } from "@/generated/prisma/enums";
 import { toast } from "sonner";
 import { useState } from "react";
 
@@ -16,6 +15,7 @@ import { PaymentsTab } from "./paymentsTab";
 import { ActionsTab } from "./actionTab";
 import { OrderDetail } from "@/types/orderDetails";
 import { OrderHeader } from "./orderDetailsHeader";
+import { OrderStatus } from "@/types/enums";
 
 export function OrderDetailsClient({ id }: { id: string }) {
   const { data, isLoading, isError } = useOrderDetail(id);
@@ -44,7 +44,7 @@ export function OrderDetailsClient({ id }: { id: string }) {
         onError: (error) => {
           toast.error(error.message || "Failed to update status");
         },
-      }
+      },
     );
   };
 
@@ -64,7 +64,7 @@ export function OrderDetailsClient({ id }: { id: string }) {
         onError: (error) => {
           toast.error(error.message || "Failed to cancel order");
         },
-      }
+      },
     );
   };
 

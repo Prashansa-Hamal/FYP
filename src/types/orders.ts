@@ -1,4 +1,4 @@
-import { OrderStatus, PaymentMethod } from "@/generated/prisma/enums";
+import { OrderStatus, PaymentMethod } from "./enums";
 
 // types/order.ts
 export interface PlaceOrderRequest {

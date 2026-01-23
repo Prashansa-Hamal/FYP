@@ -1,4 +1,4 @@
-import { ItemCategory, PreparationStation } from "@/generated/prisma/enums";
+import { ItemCategory, PreparationStation } from "./enums";
 
 export type CreateMenuItemInput = {
   name: string;

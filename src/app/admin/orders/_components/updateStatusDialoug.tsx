@@ -9,12 +9,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { OrderStatus } from "@/generated/prisma/enums";
 import { getStatusConfig } from "@/utils/orders-helper";
 import { useRef, useState } from "react";
 import { useUpdateOrderStatus } from "@/hooks/useOrders";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
+import { OrderStatus } from "@/types/enums";
 
 interface UpdateOrderStatusDialogProps {
   id: string;
@@ -48,7 +48,7 @@ export function UpdateOrderStatusDialog({
         onError: (error) => {
           toast.error(error.message || "Failed to update status");
         },
-      }
+      },
     );
   };
 

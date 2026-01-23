@@ -14,11 +14,11 @@ import {
 import { MenuCategoryCard } from "@/components/cards/MenuCategoryCard";
 import MenuCategories from "@/json/menuCategories.json";
 import { useMenuItems } from "@/hooks/useMenuItems";
-import { ItemCategory } from "@/generated/prisma/enums";
 import { MenuItemCard } from "@/components/cards/MenuItemCard";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CartDrawer } from "@/components/cartDrawer";
+import { ItemCategory } from "@/types/enums";
 
 // Custom hook for debounce
 const useDebounce = <T,>(value: T, delay: number): T => {
@@ -88,7 +88,7 @@ export default function App() {
             isVisible: hasSearch || !!state.filters.category,
           }));
         },
-        hasSearch ? 100 : 0
+        hasSearch ? 100 : 0,
       );
 
       return () => clearTimeout(timer);
@@ -113,7 +113,7 @@ export default function App() {
         },
       }));
     },
-    []
+    [],
   );
 
   const handleSelectCategory = useCallback((category: ItemCategory) => {
@@ -339,7 +339,7 @@ export default function App() {
                     "transition-all duration-300 ease-in-out",
                     shouldShowMenuItems
                       ? "opacity-0 max-h-0 overflow-hidden"
-                      : "opacity-100 max-h-[2000px]"
+                      : "opacity-100 max-h-[2000px]",
                   )}
                 >
                   <div className="grid grid-cols-1 gap-4 sm:gap-5 lg:gap-6">
@@ -364,7 +364,7 @@ export default function App() {
                     "transition-all duration-300 ease-in-out",
                     shouldShowMenuItems
                       ? "opacity-100 max-h-[5000px]"
-                      : "opacity-0 max-h-0 overflow-hidden"
+                      : "opacity-0 max-h-0 overflow-hidden",
                   )}
                 >
                   {/* Category Header */}

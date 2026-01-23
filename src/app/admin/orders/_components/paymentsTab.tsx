@@ -10,7 +10,6 @@ import { formatCurrency } from "@/lib/formatters";
 import { Badge, CreditCard } from "lucide-react";
 import { format } from "date-fns";
 import { Payment } from "@/types/orderDetails";
-import { PaymentStatus } from "@/generated/prisma/enums";
 
 interface PaymentsTabProps {
   payments: Payment[];
@@ -41,20 +40,20 @@ export function PaymentsTab({ payments }: PaymentsTabProps) {
                     <div className="flex items-center gap-3">
                       <div
                         className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                          payment.status === PaymentStatus.PAID
+                          payment.status === "PAID"
                             ? "bg-green-100"
                             : payment.status === "PENDING"
-                            ? "bg-yellow-100"
-                            : "bg-red-100"
+                              ? "bg-yellow-100"
+                              : "bg-red-100"
                         }`}
                       >
                         <CreditCard
                           className={`h-5 w-5 ${
-                            payment.status === PaymentStatus.PAID
+                            payment.status === "PAID"
                               ? "text-green-600"
                               : payment.status === "PENDING"
-                              ? "text-yellow-600"
-                              : "text-red-600"
+                                ? "text-yellow-600"
+                                : "text-red-600"
                           }`}
                         />
                       </div>
@@ -79,11 +78,11 @@ export function PaymentsTab({ payments }: PaymentsTabProps) {
                     </div>
                     <Badge
                       className={
-                        payment.status === PaymentStatus.PAID
+                        payment.status === "PAID"
                           ? "bg-green-100 text-green-800"
                           : payment.status === "PENDING"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-red-100 text-red-800"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-red-100 text-red-800"
                       }
                     >
                       {payment.status}

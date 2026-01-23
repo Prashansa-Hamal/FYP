@@ -6,8 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { OrderStatus } from "@/generated/prisma/enums";
 import { formatCurrency } from "@/lib/formatters";
+import { OrderStatus } from "@/types/enums";
 import { OrderDetail } from "@/types/orderDetails";
 import { getStatusConfig } from "@/utils/orders-helper";
 import { CreditCard, RefreshCw } from "lucide-react";

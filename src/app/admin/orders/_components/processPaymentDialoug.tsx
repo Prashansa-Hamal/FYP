@@ -9,16 +9,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { OrderStatus, PaymentMethod } from "@/generated/prisma/enums";
-import { getStatusConfig } from "@/utils/orders-helper";
 import { useRef, useState } from "react";
-import {
-  useUpdateOrderPaymentStatus,
-  useUpdateOrderStatus,
-} from "@/hooks/useOrders";
+import { useUpdateOrderPaymentStatus } from "@/hooks/useOrders";
 import { toast } from "sonner";
-import { Textarea } from "@/components/ui/textarea";
 import { formatCurrency } from "@/lib/formatters";
+import { PaymentMethod } from "@/types/enums";
 
 interface ProcessPaymentDialogProps {
   id: string;
@@ -52,7 +47,7 @@ export function ProcessPaymentDialog({
         onError: (error) => {
           toast.error(error.message || "Failed to update status");
         },
-      }
+      },
     );
   };
 

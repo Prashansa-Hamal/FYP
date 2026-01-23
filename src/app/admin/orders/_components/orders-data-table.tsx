@@ -40,8 +40,8 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { UpdateOrderStatusDialog } from "./updateStatusDialoug";
-import { OrderStatus } from "@/generated/prisma/enums";
 import { ProcessPaymentDialog } from "./processPaymentDialoug";
+import { OrderStatus } from "@/types/enums";
 
 // Define the order row type
 interface OrderRow {
@@ -335,7 +335,7 @@ export function OrdersDataTable() {
       paymentStatus: paymentStatuses.length > 0 ? paymentStatuses : undefined,
       orderType: orderTypes.length > 0 ? orderTypes : undefined,
     }),
-    [page, limit, search, statuses, paymentStatuses, orderTypes]
+    [page, limit, search, statuses, paymentStatuses, orderTypes],
   );
 
   const { data: ordersData, isLoading, refetch } = useOrders(filters);

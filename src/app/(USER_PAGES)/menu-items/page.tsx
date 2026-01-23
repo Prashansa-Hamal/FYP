@@ -21,12 +21,17 @@ import {
   Plus,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { ItemCategory, PreparationStation } from "@/generated/prisma/enums";
 import {
   useDeleteMenuItem,
   useMenuItems,
   useToggleMenuItemAvailability,
 } from "@/hooks/useMenuItems";
+import {
+  ITEM_CATEGORIES,
+  ItemCategory,
+  PREPARATION_STATIONS,
+  PreparationStation,
+} from "@/types/enums";
 
 // Debounce hook for search
 const useDebounce = (value: string, delay: number) => {
@@ -156,13 +161,13 @@ export default function MenuItemsPage() {
   // Get category icon
   const getCategoryIcon = (category: ItemCategory) => {
     const icons = {
-      [ItemCategory.APPETIZER]: <ChefHat className="w-4 h-4" />,
-      [ItemCategory.MAIN_COURSE]: <Flame className="w-4 h-4" />,
-      [ItemCategory.DESSERT]: <IceCream className="w-4 h-4" />,
-      [ItemCategory.BEVERAGE]: <Coffee className="w-4 h-4" />,
-      [ItemCategory.ALCOHOLIC]: <Wine className="w-4 h-4" />,
-      [ItemCategory.SNACK]: <Carrot className="w-4 h-4" />,
-      [ItemCategory.SIDE_DISH]: <Carrot className="w-4 h-4" />,
+      ["APPETIZER"]: <ChefHat className="w-4 h-4" />,
+      ["MAIN_COURSE"]: <Flame className="w-4 h-4" />,
+      ["DESSERT"]: <IceCream className="w-4 h-4" />,
+      ["BEVERAGE"]: <Coffee className="w-4 h-4" />,
+      ["ALCOHOLIC"]: <Wine className="w-4 h-4" />,
+      ["SNACK"]: <Carrot className="w-4 h-4" />,
+      ["SIDE_DISH"]: <Carrot className="w-4 h-4" />,
     };
     return icons[category] || <ChefHat className="w-4 h-4" />;
   };
@@ -170,11 +175,11 @@ export default function MenuItemsPage() {
   // Get station color
   const getStationColor = (station: PreparationStation) => {
     const colors = {
-      [PreparationStation.KITCHEN]: "bg-blue-100 text-blue-800",
-      [PreparationStation.BAR]: "bg-purple-100 text-purple-800",
-      [PreparationStation.DESSERT_STATION]: "bg-pink-100 text-pink-800",
-      [PreparationStation.FRY_STATION]: "bg-amber-100 text-amber-800",
-      [PreparationStation.GRILL_STATION]: "bg-orange-100 text-orange-800",
+      ["KITCHEN"]: "bg-blue-100 text-blue-800",
+      ["BAR"]: "bg-purple-100 text-purple-800",
+      ["DESSERT_STATION"]: "bg-pink-100 text-pink-800",
+      ["FRY_STATION"]: "bg-amber-100 text-amber-800",
+      ["GRILL_STATION"]: "bg-orange-100 text-orange-800",
     };
     return colors[station] || "bg-gray-100 text-gray-800";
   };
@@ -330,7 +335,7 @@ export default function MenuItemsPage() {
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                 >
                   <option value="">All Categories</option>
-                  {Object.values(ItemCategory).map((category) => (
+                  {Object.values(ITEM_CATEGORIES).map((category) => (
                     <option key={category} value={category}>
                       {category.replace("_", " ")}
                     </option>
@@ -356,7 +361,7 @@ export default function MenuItemsPage() {
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                 >
                   <option value="">All Stations</option>
-                  {Object.values(PreparationStation).map((station) => (
+                  {Object.values(PREPARATION_STATIONS).map((station) => (
                     <option key={station} value={station}>
                       {station.replace("_", " ")}
                     </option>

@@ -1,9 +1,4 @@
-import {
-  OrderStatus,
-  OrderType,
-  PaymentMethod,
-  PaymentStatus,
-} from "@/generated/prisma/enums";
+import { OrderStatus, OrderType, PaymentMethod, PaymentStatus } from "./enums";
 
 interface User {
   id: string;
