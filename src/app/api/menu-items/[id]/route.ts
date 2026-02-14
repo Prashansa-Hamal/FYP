@@ -1,4 +1,3 @@
-// File: /app/api/menu-items/[id]/route.ts
 import db from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
