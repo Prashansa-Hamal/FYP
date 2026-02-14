@@ -1,9 +1,9 @@
 import db from "@/lib/db";
 import { tableSchema } from "@/schemas";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
-  req: Request,
+  request: NextRequest,
   { params }: { params: { id: string } },
 ) {
   const { id } = await params;
@@ -27,12 +27,12 @@ export async function GET(
 }
 
 export async function PUT(
-  req: Request,
+  request: NextRequest,
   { params }: { params: { id: string } },
 ) {
   try {
     const { id } = await params;
-    const body = await req.json();
+    const body = await request.json();
 
     const parsed = tableSchema.safeParse({
       ...body,
