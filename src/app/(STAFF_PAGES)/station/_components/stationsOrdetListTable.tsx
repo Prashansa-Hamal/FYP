@@ -29,6 +29,11 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -47,17 +52,18 @@ import {
   Filter,
   ArrowUpDown,
   Cake,
+  Loader2Icon,
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { StationOrder } from "@/types/station-orders";
 import { PreparationStation } from "@/types/enums";
 import { useStationOrders } from "@/hooks/useStationOrders";
+import { formatCurrency } from "@/lib/formatters";
+import { useUpdateOrderItem } from "@/hooks/useUpdateOrderItem";
 
 interface StationOrdersTableProps {
   station: PreparationStation;
-  staffId: string;
-  staffName: string;
 }
 
 // Station icons mapping
@@ -94,11 +100,7 @@ const orderTypeConfig: Record<
   DELIVERY: { variant: "outline" },
 };
 
-export function StationOrdersTable({
-  station,
-  staffId,
-  staffName,
-}: StationOrdersTableProps) {
+export function StationOrdersTable({ station }: StationOrdersTableProps) {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "createdAt", desc: true },
   ]);
@@ -106,7 +108,8 @@ export function StationOrdersTable({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = useState("");
 
-  const { data, isLoading, error, refetch } = useStationOrders(station);
+  const { data, isLoading, error, refetch, isRefetching } =
+    useStationOrders(station);
 
   const StationIcon = STATION_ICONS[station] || ChefHat;
 
@@ -245,14 +248,65 @@ export function StationOrdersTable({
         accessorKey: "items",
         header: "Items",
         cell: ({ row }) => (
-          <div className="space-y-1">
-            <div className="font-medium">
-              {row.original.stationItemCount} items
-            </div>
-            <div className="text-sm text-gray-600">
-              ${row.original.stationSubtotal.toFixed(2)}
-            </div>
-          </div>
+          <HoverCard>
+            <HoverCardTrigger className="cursor-pointer space-y-1">
+              <div className="font-medium">
+                {row.original.stationItemCount} items
+              </div>
+              <div className="text-sm text-gray-600">
+                {formatCurrency(row.original.stationSubtotal)}
+              </div>
+            </HoverCardTrigger>
+            <HoverCardContent>
+              {row.original.items.map((item, index) => {
+                const [updatingId, setUpdatingId] = useState<string | null>(
+                  null,
+                );
+
+                const { mutate, isPending } = useUpdateOrderItem();
+
+                const handleReady = (id: string) => {
+                  setUpdatingId(id);
+
+                  mutate(
+                    { id },
+                    {
+                      onSettled: () => {
+                        setUpdatingId(null);
+                      },
+                    },
+                  );
+                };
+
+                return (
+                  <div key={index} className="flex items-center space-x-2">
+                    <div className="flex-1">
+                      <div className="font-medium">{item.name}</div>
+                      <div className="text-sm text-gray-500">
+                        Qty: {item.quantity} •{" "}
+                        {formatCurrency(item.unitPrice * item.quantity)}
+                      </div>
+                    </div>
+                    <Badge
+                      variant={item.isReady ? "default" : "outline"}
+                      onClick={() =>
+                        !item.isReady && handleReady(item.orderItemId)
+                      }
+                      className={`cursor-pointer flex items-center justify-center h-6 px-2 ${item.isReady ? "bg-green-600 text-white" : "border-gray-300 text-gray-500 hover:bg-gray-100"}`}
+                    >
+                      {updatingId === item.orderItemId ? (
+                        <Loader2Icon className="h-4 w-4 animate-spin" />
+                      ) : item.isReady ? (
+                        "Ready"
+                      ) : (
+                        "Pending"
+                      )}
+                    </Badge>
+                  </div>
+                );
+              })}
+            </HoverCardContent>
+          </HoverCard>
         ),
         size: 100,
       },
@@ -325,19 +379,6 @@ export function StationOrdersTable({
           </div>
         ),
         size: 120,
-      },
-      {
-        id: "actions",
-        cell: ({ row }) => (
-          <div className="text-right">
-            <Button variant="ghost" size="icon" asChild>
-              <a href={`/admin/orders/${row.original.orderId}`} target="_blank">
-                <Eye className="h-4 w-4" />
-              </a>
-            </Button>
-          </div>
-        ),
-        size: 60,
       },
     ],
     [],
@@ -414,7 +455,9 @@ export function StationOrdersTable({
           Error loading orders: {error.message}
         </div>
         <Button onClick={() => refetch()}>
-          <RefreshCw className="mr-2 h-4 w-4" />
+          <RefreshCw
+            className={`mr-2 h-4 w-4 ${isRefetching ? "animate-spin" : ""}`}
+          />
           Retry
         </Button>
       </div>
@@ -452,7 +495,9 @@ export function StationOrdersTable({
           </div>
 
           <Button variant="outline" size="icon" onClick={() => refetch()}>
-            <RefreshCw className="h-4 w-4" />
+            <RefreshCw
+              className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`}
+            />
           </Button>
 
           <DropdownMenu>

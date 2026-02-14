@@ -36,6 +36,8 @@ export function StationDashboardTable({
 
   const stationName = STATION_NAMES[station] || station.replace("_", " ");
 
+  console.log("Station Dashboard Data:", data);
+
   if (error) {
     return (
       <Card className="border-red-200">
@@ -132,11 +134,7 @@ export function StationDashboardTable({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <StationOrdersTable
-            station={station}
-            staffId={staffId}
-            staffName={staffName}
-          />
+          <StationOrdersTable station={station} />
         </CardContent>
       </Card>
     </div>

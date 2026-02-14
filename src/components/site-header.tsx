@@ -17,6 +17,12 @@ export function SiteHeader() {
     if (segments.length === 1 && segments[0] === "admin") {
       return "Dashboard";
     }
+    if (segments.length === 1 && segments[0] === "cashier") {
+      return "Overview";
+    }
+    if (segments.length === 1 && segments[0] === "waiter") {
+      return "Menu Items";
+    }
 
     // Get the last segment
     const lastSegment = segments[segments.length - 1];

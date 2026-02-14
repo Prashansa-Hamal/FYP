@@ -32,20 +32,10 @@ export function OrderDetailsClient({ id }: { id: string }) {
       return;
     }
 
-    updateStatus(
-      {
-        id: id,
-        status: newStatus,
-      },
-      {
-        onSuccess: (data) => {
-          toast.success(data.message || "Status updated successfully");
-        },
-        onError: (error) => {
-          toast.error(error.message || "Failed to update status");
-        },
-      },
-    );
+    updateStatus({
+      id: id,
+      status: newStatus,
+    });
   };
 
   const handleCancelOrder = () => {

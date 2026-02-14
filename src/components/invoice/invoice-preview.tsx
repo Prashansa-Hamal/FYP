@@ -1,4 +1,3 @@
-// components/invoice/invoice-preview.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -139,17 +138,21 @@ export function InvoicePreview({
             <Separator className="my-6" />
 
             {/* Customer & Order Info */}
-            <div className="grid grid-cols-2 gap-8 mb-8">
-              <div>
-                <h3 className="font-semibold text-lg mb-2">Bill To:</h3>
-                <p className="font-medium">{customerName}</p>
-                {customerEmail && (
-                  <p className="text-gray-600">{customerEmail}</p>
-                )}
-                {customerPhone && (
-                  <p className="text-gray-600">{customerPhone}</p>
-                )}
-              </div>
+            <div
+              className={`grid  gap-8 mb-8 ${customerName ? "grid-cols-2" : "grid-cols-1"}`}
+            >
+              {customerName && (
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Bill To:</h3>
+                  <p className="font-medium">{customerName}</p>
+                  {customerEmail && (
+                    <p className="text-gray-600">{customerEmail}</p>
+                  )}
+                  {customerPhone && (
+                    <p className="text-gray-600">{customerPhone}</p>
+                  )}
+                </div>
+              )}
 
               <div>
                 <h3 className="font-semibold text-lg mb-2">Order Details:</h3>

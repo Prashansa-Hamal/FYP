@@ -1,5 +1,4 @@
-// "use client";
-import { Minus, Plus } from "lucide-react";
+import { Loader2, Minus, Plus } from "lucide-react";
 import { Activity, useState } from "react";
 import { Button } from "../ui/button";
 import { formatCurrency } from "@/lib/formatters";
@@ -15,28 +14,49 @@ export const MenuItemCard = ({
   price,
 }: MenuItem) => {
   const { addItem, getItemQuantity, isItemInCart, updateQuantity } = useCart();
-  const [isLoading, setIsLoading] = useState(false);
+  const [loadingItemId, setLoadingItemId] = useState<string | null>(null);
 
-  const handleAddToCart = () => {
-    addItem.mutate({
-      menuItemId: id,
-      quantity: 1, // Optional, defaults to 1
-    });
+  const handleAddToCart = async () => {
+    setLoadingItemId(id);
+    try {
+      await addItem.mutateAsync({
+        menuItemId: id,
+        quantity: 1,
+      });
+    } catch (error) {
+      console.error("Failed to add item to cart:", error);
+    } finally {
+      setLoadingItemId(null);
+    }
   };
 
   const handleQuantityChange = async (newQuantity: number) => {
-    setIsLoading(true);
+    if (newQuantity < 0) return;
+
+    setLoadingItemId(id);
     try {
       await updateQuantity.mutateAsync({
         menuItemId: id,
         quantity: newQuantity,
       });
+    } catch (error) {
+      console.error("Failed to update quantity:", error);
     } finally {
-      setIsLoading(false);
+      setLoadingItemId(null);
     }
   };
-  const handleIncrease = () => handleQuantityChange(getItemQuantity(id) + 1);
-  const handleDecrease = () => handleQuantityChange(getItemQuantity(id) - 1);
+
+  const handleIncrease = () => {
+    if (loadingItemId === id) return;
+    handleQuantityChange(getItemQuantity(id) + 1);
+  };
+
+  const handleDecrease = () => {
+    if (loadingItemId === id) return;
+    handleQuantityChange(getItemQuantity(id) - 1);
+  };
+
+  const isLoading = loadingItemId === id;
 
   return (
     <div
@@ -78,7 +98,11 @@ export const MenuItemCard = ({
                     >
                       <Minus className="w-3 h-3" />
                     </Button>
-                    <span>{getItemQuantity(id)}</span>
+                    {isLoading ? (
+                      <Loader2 className="animate-spin w-3 h-3" />
+                    ) : (
+                      <span>{getItemQuantity(id)}</span>
+                    )}
                     <Button
                       onClick={handleIncrease}
                       disabled={isLoading}
@@ -88,6 +112,7 @@ export const MenuItemCard = ({
                       <Plus className="w-3 h-3" />
                     </Button>
                   </div>
+
                   <span className="text-[#f08167]">
                     {formatCurrency(price)}
                   </span>
@@ -98,7 +123,11 @@ export const MenuItemCard = ({
                   disabled={isLoading}
                   className="w-10 h-10 rounded-full bg-[#f08167] text-white flex items-center justify-center hover:bg-[#e07159] transition-colors shadow-md"
                 >
-                  <Plus className="w-5 h-5" />
+                  {isLoading ? (
+                    <Loader2 className="animate-spin w-4 h-4" />
+                  ) : (
+                    <Plus className="w-5 h-5" />
+                  )}
                 </Button>
               )}
             </div>

@@ -122,7 +122,7 @@ export const useUpdateOrderStatus = () => {
                 cancellationReason: variables.cancellationReason,
               }),
             },
-          })
+          }),
         );
       }
 
@@ -136,9 +136,9 @@ export const useUpdateOrderStatus = () => {
                       ...order,
                       status: variables.status,
                     }
-                  : order
+                  : order,
               )
-            : old
+            : old,
         );
       }
 
@@ -146,10 +146,11 @@ export const useUpdateOrderStatus = () => {
     },
 
     onError: (error, variables, context: any) => {
+      toast.error(error.message || "Failed to update status");
       if (context?.previousOrder) {
         queryClient.setQueryData(
           ["orderDetails", variables.id],
-          context.previousOrder
+          context.previousOrder,
         );
       }
       if (context?.previousOrders) {
@@ -163,9 +164,11 @@ export const useUpdateOrderStatus = () => {
         queryKey: ["orderDetails", variables.id],
       });
       queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["station-orders"] });
     },
 
     onSuccess: (data) => {
+      toast.success(data.message || "Status updated successfully");
       console.log("Order status updated:", data.message);
     },
   });
@@ -201,7 +204,7 @@ export const useUpdateOrderPaymentStatus = () => {
               ...old.order,
               status: variables.paymentMethod,
             },
-          })
+          }),
         );
       }
 
@@ -215,9 +218,9 @@ export const useUpdateOrderPaymentStatus = () => {
                       ...order,
                       status: variables.paymentMethod,
                     }
-                  : order
+                  : order,
               )
-            : old
+            : old,
         );
       }
 
@@ -228,7 +231,7 @@ export const useUpdateOrderPaymentStatus = () => {
       if (context?.previousOrder) {
         queryClient.setQueryData(
           ["orderDetails", variables.id],
-          context.previousOrder
+          context.previousOrder,
         );
       }
       if (context?.previousOrders) {

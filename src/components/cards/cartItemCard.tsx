@@ -13,7 +13,7 @@ export const CartItemCard = ({ ...item }: CartItem) => {
 
   const handleQuantityChange = async (
     menuItemId: string,
-    newQuantity: number
+    newQuantity: number,
   ) => {
     setIsUpdating(true);
     try {

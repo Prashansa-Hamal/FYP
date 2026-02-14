@@ -288,11 +288,19 @@ model Reservation {
   @@index([status])
 }
 
+// enum TableStatus {
+//   AVAILABLE
+//   OCCUPIED
+//   RESERVED
+//   OUT_OF_SERVICE
+// }
+
 model Table {
   id          String  @id @default(cuid())
   tableNumber Int     @unique
   capacity    Int
   isAvailable Boolean @default(true)
+  // status      TableStatus @default(AVAILABLE)
   location    String? // e.g., "Window", "Patio", "Main Hall"
 
   reservations Reservation[]

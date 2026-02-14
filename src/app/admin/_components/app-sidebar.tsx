@@ -4,16 +4,12 @@ import * as React from "react";
 import {
   IconDashboard,
   IconFileAi,
-  IconHelp,
   IconInnerShadowTop,
   IconReport,
-  IconSearch,
-  IconSettings,
   IconUsers,
 } from "@tabler/icons-react";
 
 import { NavMain } from "@/components/nav-main";
-import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
@@ -24,12 +20,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { LayoutDashboard, ShoppingCart, Table2 } from "lucide-react";
 
 const data = {
   user: {
     name: "shadcn",
     email: "m@example.com",
-    // avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
     {
@@ -38,37 +34,24 @@ const data = {
       icon: IconDashboard,
     },
     {
+      title: "Tables",
+      url: "/admin/tables",
+      icon: Table2,
+    },
+    {
       title: "Orders",
       url: "/admin/orders",
-      icon: IconReport,
+      icon: ShoppingCart,
     },
     {
       title: "Menu Items",
       url: "/admin/menu-items",
-      icon: IconFileAi,
+      icon: LayoutDashboard,
     },
     {
       title: "Users",
       url: "/admin/users",
       icon: IconUsers,
-    },
-  ],
-
-  navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: IconSettings,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: IconHelp,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
     },
   ],
 };
@@ -92,9 +75,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        {/* <NavDocuments items={data.documents} /> */}
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavMain items={data.navMain} quickCreate />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

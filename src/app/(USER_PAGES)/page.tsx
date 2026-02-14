@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CartDrawer } from "@/components/cartDrawer";
 import { ItemCategory } from "@/types/enums";
+import { Input } from "@/components/ui/input";
 
 // Custom hook for debounce
 const useDebounce = <T,>(value: T, delay: number): T => {
@@ -304,12 +305,12 @@ export default function App() {
             {/* Search Bar */}
             <div className="max-w-2xl mx-auto sm:mb-8 mb-6">
               <div className="relative">
-                <input
+                <Input
                   type="text"
                   placeholder="Search dishes or categories..."
                   value={state.filters.search}
                   onChange={handleSearchChange}
-                  className="w-full bg-gray-50/80 border border-gray-200 rounded-xl px-4 sm:px-5 py-3 sm:py-4 pr-12 text-sm sm:text-base outline-none focus:border-[#f08167] focus:ring-2 focus:ring-[#f08167]/20 transition-all duration-200 placeholder:text-gray-400 backdrop-blur-sm"
+                  className="w-full h-12 bg-gray-50/80 border border-gray-200 rounded-xl px-4 sm:px-5 py-3 sm:py-4 pr-12 text-sm sm:text-base outline-none focus:border-[#f08167] focus:ring-2 focus:ring-[#f08167]/20 transition-all duration-200 placeholder:text-gray-400 backdrop-blur-sm"
                   aria-label="Search menu items"
                 />
                 <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />

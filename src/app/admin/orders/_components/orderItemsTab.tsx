@@ -19,12 +19,19 @@ import { format } from "date-fns";
 import { getItemBadges } from "@/utils/orders-helper";
 import { Badge } from "@/components/ui/badge";
 import { OrderItem } from "@/types/orderDetails";
+import { useUpdateOrderItem } from "@/hooks/useUpdateOrderItem";
 
 interface OrderItemsTabProps {
   items: OrderItem[];
 }
 
 export function OrderItemsTab({ items }: OrderItemsTabProps) {
+  const { mutate, isPending } = useUpdateOrderItem();
+
+  const handleReady = (id: string) => {
+    mutate({ id });
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -127,7 +134,10 @@ export function OrderItemsTab({ items }: OrderItemsTabProps) {
                         {item.quantity} × {formatCurrency(item.unitPrice)}
                       </div>
                       <div className="flex sm:justify-end gap-2">
-                        <Badge variant={isReady ? "default" : "outline"}>
+                        <Badge
+                          variant={isReady ? "default" : "outline"}
+                          className={`${isReady ? "bg-green-100 text-green-700" : ""} text-xs`}
+                        >
                           {isReady ? "Ready" : "Preparing"}
                         </Badge>
                         {item.readyAt && (
@@ -138,8 +148,14 @@ export function OrderItemsTab({ items }: OrderItemsTabProps) {
                         )}
                       </div>
                       {!isReady && (
-                        <Button variant="outline" size="sm" className="mt-2">
-                          {isReady ? "Mark as Not Ready" : "Mark as Ready"}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="mt-2 bg-green-200 hover:bg-green-300"
+                          onClick={() => handleReady(item.id)}
+                          disabled={isPending}
+                        >
+                          {isPending ? "Updating..." : "Mark as Ready"}
                         </Button>
                       )}
                     </div>

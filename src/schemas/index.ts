@@ -30,11 +30,11 @@ export const menuItemFormSchema = z.object({
       "SNACK",
       "SIDE_DISH",
     ],
-    { message: "Category is required" }
+    { message: "Category is required" },
   ),
   preparationStation: z.enum(
     ["KITCHEN", "BAR", "DESSERT_STATION", "FRY_STATION", "GRILL_STATION"],
-    { message: "Preparation station is required" }
+    { message: "Preparation station is required" },
   ),
   isVegetarian: z.boolean(),
   isSpicy: z.boolean(),
@@ -62,3 +62,20 @@ export const addressSchema = z.object({
 });
 
 export type AddressFormValues = z.infer<typeof addressSchema>;
+
+export const tableSchema = z.object({
+  tableNumber: z
+    .number({ message: "Table number must be a number" })
+    .int()
+    .min(1, "Table number is required"),
+  capacity: z
+    .number({ message: "Capacity must be a number" })
+    .int()
+    .min(1, "Capacity must be at least 1"),
+
+  isAvailable: z.boolean().optional(),
+
+  location: z.string().optional(),
+});
+
+export type TableFormValues = z.infer<typeof tableSchema>;
