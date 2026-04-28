@@ -10,6 +10,8 @@ import {
   Clock,
   AlertCircle,
   ChefHat,
+  ShoppingCart,
+  User,
 } from "lucide-react";
 import { MenuCategoryCard } from "@/components/cards/MenuCategoryCard";
 import MenuCategories from "@/json/menuCategories.json";
@@ -17,9 +19,11 @@ import { useMenuItems } from "@/hooks/useMenuItems";
 import { MenuItemCard } from "@/components/cards/MenuItemCard";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { CartDrawer } from "@/components/cartDrawer";
 import { ItemCategory } from "@/types/enums";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import { useCart } from "@/contexts/CartContext";
+import { NotificationBell } from "@/components/NotificationBell.tsx";
 
 // Custom hook for debounce
 const useDebounce = <T,>(value: T, delay: number): T => {
@@ -47,6 +51,11 @@ interface FilterState {
 
 // Main component
 export default function App() {
+  const { cartItems, getItemCount } = useCart();
+
+  const itemCount = getItemCount();
+  const hasItems = cartItems.length > 0;
+
   // Combined state for better performance
   const [state, setState] = useState<{
     isVisible: boolean;
@@ -257,9 +266,35 @@ export default function App() {
             </Button>
           )}
         </div>
-        <div className="bg-white rounded-2xl sm:rounded-t-none shadow-xl overflow-hidden">
-          <CartDrawer />
 
+        <div className="absolute min-h-svh right-3 top-3">
+          {hasItems && itemCount > 0 && (
+            <Link href="/cart" className="sticky top-6 ml-3 z-50 left-3">
+              <Button
+                aria-label="Go back to categories"
+                className="relative bg-white/40 hover:bg-white backdrop-blur-sm  rounded-full h-10 w-10 shadow-lg transition-all duration-200"
+              >
+                <span className="absolute top-1 right-1 bg-red-500 w-4 text-xs aspect-square rounded-full">
+                  {itemCount}
+                </span>
+                <ShoppingCart className="h-6 w-6  text-gray-800" />
+              </Button>
+            </Link>
+          )}
+
+          <NotificationBell />
+
+          <Link href="/user" className="sticky top-6 ml-2 z-50 right-3">
+            <Button
+              aria-label="Go back to categories"
+              className="relative bg-white/40 hover:bg-white backdrop-blur-sm  rounded-full h-10 w-10 shadow-lg transition-all duration-200"
+            >
+              <User className="h-6 w-6  text-gray-800" />
+            </Button>
+          </Link>
+        </div>
+
+        <div className="bg-white rounded-2xl sm:rounded-t-none shadow-xl overflow-hidden">
           {/* Hero Image */}
           <div className="relative">
             <img

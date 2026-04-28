@@ -1,65 +1,153 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
+import {
+  ArrowLeft,
+  Utensils,
+  Package,
+  Truck,
+  CreditCard,
+  Wallet,
+} from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { AddressSelect } from "./AddressSelect";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
+import { useCart } from "@/contexts/CartContext";
+import { formatCurrency } from "@/lib/formatters";
+import { useTables } from "@/hooks/useTables";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 export const CheckoutForm = () => {
   const router = useRouter();
+  const { getCartTotal, getItemCount } = useCart();
   const [orderType, setOrderType] = useState<
     "DINE_IN" | "TAKEAWAY" | "DELIVERY"
   >("DINE_IN");
   const [tableNumber, setTableNumber] = useState("");
-  const [specialInstructions, setSpecialInstructions] = useState("");
+  const [specialInstruction, setSpecialInstruction] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<
-    "CASH" | "CARD" | "ONLINE" | "WALLET"
-  >("CASH");
+    "COD" | "KHALTI" | "ESEWA"
+  >("COD");
   const [deliveryAddressId, setDeliveryAddressId] = useState<string>("");
+
+  const subtotal = getCartTotal();
+  const totalAmount = subtotal;
 
   const orderData = {
     orderType,
     tableNumber:
       orderType === "DINE_IN" ? parseInt(tableNumber) || undefined : undefined,
-    specialInstructions,
+    specialInstruction,
     paymentMethod,
     deliveryAddressId,
   };
 
+  const { data: tablesData, isLoading: tablesLoading } = useTables();
+
   const params = new URLSearchParams(
-    Object.entries(orderData).reduce((acc, [key, value]) => {
-      if (value !== undefined && value !== "") {
-        acc[key] = String(value);
-      }
-      return acc;
-    }, {} as Record<string, string>)
+    Object.entries(orderData).reduce(
+      (acc, [key, value]) => {
+        if (value !== undefined && value !== "") {
+          acc[key] = String(value);
+        }
+        return acc;
+      },
+      {} as Record<string, string>,
+    ),
   );
 
   const canPlaceOrder = () => {
     if (orderType === "DINE_IN" && !tableNumber) return false;
+    if (orderType === "DELIVERY" && !deliveryAddressId) return false;
     return true;
   };
 
+  const orderTypeOptions = [
+    {
+      value: "DINE_IN",
+      label: "Dine In",
+      icon: Utensils,
+      description: "Enjoy at our restaurant",
+    },
+    {
+      value: "TAKEAWAY",
+      label: "Takeaway",
+      icon: Package,
+      description: "Pick up your order",
+    },
+    {
+      value: "DELIVERY",
+      label: "Delivery",
+      icon: Truck,
+      description: "Get it delivered",
+    },
+  ];
+
+  const paymentOptions = [
+    {
+      value: "COD",
+      label: "Cash on Delivery",
+      icon: Wallet,
+      description: "Pay when you receive",
+    },
+    {
+      value: "KHALTI",
+      label: "Khalti",
+      icon: CreditCard,
+      description: "Pay via Khalti wallet",
+    },
+    {
+      value: "ESEWA",
+      label: "eSewa",
+      icon: CreditCard,
+      description: "Pay via Khalti wallet",
+    },
+  ];
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Order Type Selection */}
       <div>
-        <h3 className="text-lg font-semibold mb-3">Order Type</h3>
-        <div className="grid grid-cols-3 gap-3">
-          {(["DINE_IN", "TAKEAWAY", "DELIVERY"] as const).map((type) => (
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Order Type
+        </label>
+        <div className="grid grid-cols-3 gap-2">
+          {orderTypeOptions.map((type) => (
             <button
-              key={type}
+              key={type.value}
               type="button"
-              onClick={() => setOrderType(type)}
-              className={`p-2 rounded-lg border text-center transition-colors ${
-                orderType === type
-                  ? "bg-blue-50 border-blue-500 text-blue-700"
-                  : "border-gray-300 hover:bg-gray-50"
+              onClick={() => setOrderType(type.value as typeof orderType)}
+              className={`group p-3 rounded-xl border text-center transition-all duration-200 ${
+                orderType === type.value
+                  ? "border-amber-500 bg-amber-50 shadow-sm"
+                  : "border-gray-200 hover:border-amber-200 hover:bg-amber-50/30"
               }`}
             >
-              {type.replace("_", " ")}
+              <type.icon
+                className={`h-5 w-5 mx-auto mb-1 ${
+                  orderType === type.value
+                    ? "text-amber-600"
+                    : "text-gray-400 group-hover:text-amber-500"
+                }`}
+              />
+              <p
+                className={`text-xs font-medium ${
+                  orderType === type.value ? "text-amber-700" : "text-gray-600"
+                }`}
+              >
+                {type.label}
+              </p>
+              <p className="text-[10px] text-gray-400 mt-0.5 hidden sm:block">
+                {type.description}
+              </p>
             </button>
           ))}
         </div>
@@ -68,75 +156,140 @@ export const CheckoutForm = () => {
       {/* Table Number (for DINE_IN) */}
       {orderType === "DINE_IN" && (
         <div>
-          <label className="block text-sm font-medium mb-2">Table Number</label>
-          <input
-            type="number"
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Table Number <span className="text-red-500">*</span>
+          </label>
+
+          <Select
             value={tableNumber}
-            onChange={(e) => setTableNumber(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg"
-            placeholder="Enter table number"
-            min="1"
-          />
+            onValueChange={(value) => setTableNumber(value)}
+            disabled={tablesLoading}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select Table Number" />
+            </SelectTrigger>
+            <SelectContent className="w-full">
+              <SelectGroup>
+                {tablesData?.data.map((table) => (
+                  <SelectItem key={table.id} value={String(table.tableNumber)}>
+                    Table {table.tableNumber}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
       )}
+
+      {/* Delivery Address */}
       {orderType === "DELIVERY" && (
-        <AddressSelect
-          onChange={(addressId: string) => {
-            console.log("selectedId", addressId);
-            setDeliveryAddressId(addressId);
-          }}
-        />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Delivery Address <span className="text-red-500">*</span>
+          </label>
+          <AddressSelect
+            onChange={(addressId: string) => {
+              setDeliveryAddressId(addressId);
+            }}
+          />
+        </div>
       )}
 
       {/* Special Instructions */}
       <div>
-        <label className="block text-sm font-medium mb-2">
-          Special Instructions (Optional)
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Special Instructions
         </label>
         <textarea
-          value={specialInstructions}
-          onChange={(e) => setSpecialInstructions(e.target.value)}
-          className="w-full px-4 py-2 border rounded-lg"
-          rows={3}
+          value={specialInstruction}
+          onChange={(e) => setSpecialInstruction(e.target.value)}
+          className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all resize-none"
+          rows={2}
           placeholder="Any special requests or dietary restrictions..."
         />
       </div>
 
       {/* Payment Method */}
       <div>
-        <h3 className="text-lg font-semibold mb-3">Payment Method</h3>
-        <div className="grid grid-cols-2 gap-3">
-          {(["CASH", "CARD", "ONLINE", "WALLET"] as const).map((method) => (
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Payment Method
+        </label>
+        <div className="grid grid-cols-3 gap-2">
+          {paymentOptions.map((method) => (
             <button
-              key={method}
+              key={method.value}
               type="button"
-              onClick={() => setPaymentMethod(method)}
-              className={`py-3 px-4 rounded-lg border text-center transition-colors ${
-                paymentMethod === method
-                  ? "bg-blue-50 border-blue-500 text-blue-700"
-                  : "border-gray-300 hover:bg-gray-50"
+              onClick={() =>
+                setPaymentMethod(method.value as typeof paymentMethod)
+              }
+              className={`group p-3 rounded-xl border text-center transition-all duration-200 ${
+                paymentMethod === method.value
+                  ? "border-amber-500 bg-amber-50 shadow-sm"
+                  : "border-gray-200 hover:border-amber-200 hover:bg-amber-50/30"
               }`}
             >
-              {method}
+              <method.icon
+                className={`h-5 w-5 mx-auto mb-1 ${
+                  paymentMethod === method.value
+                    ? "text-amber-600"
+                    : "text-gray-400 group-hover:text-amber-500"
+                }`}
+              />
+              <p
+                className={`text-xs font-medium ${
+                  paymentMethod === method.value
+                    ? "text-amber-700"
+                    : "text-gray-600"
+                }`}
+              >
+                {method.label}
+              </p>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="space-y-3">
+      {/* Order Summary */}
+      <div className="bg-amber-50/50 rounded-xl p-4 space-y-2">
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-600">
+            Subtotal ({getItemCount()} items)
+          </span>
+          <span className="font-medium text-gray-900">
+            {formatCurrency(subtotal)}
+          </span>
+        </div>
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-600">Delivery Fee</span>
+          <span className="text-green-600 font-medium">FREE</span>
+        </div>
+        <div className="pt-2 border-t border-amber-200">
+          <div className="flex justify-between items-center">
+            <span className="font-semibold text-gray-900">Total to Pay</span>
+            <div className="text-xl font-bold text-amber-600">
+              {formatCurrency(totalAmount)}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="space-y-3 pt-2">
         <Button
           onClick={() => router.push(`/checkout?${params.toString()}`)}
           disabled={!canPlaceOrder()}
-          className="w-full py-3 h-12 text-lg font-normal text-md bg-blue-600 text-white text-center rounded-xl hover:bg-blue-700 transition-colors"
+          className="w-full bg-amber-500 hover:bg-amber-600 text-white py-6 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
         >
           Proceed to Checkout
         </Button>
-        <Link
-          href="/"
-          className="block w-full h-12 py-3 border text-md border-gray-300 text-gray-700 text-center font-medium rounded-xl hover:bg-gray-50 transition-colors"
-        >
-          <ArrowLeft className="inline mr-2 h-4 w-4" />
-          Continue Shopping
+        <Link href="/">
+          <Button
+            variant="outline"
+            className="w-full border-gray-200 text-gray-700 hover:bg-gray-50 py-6 rounded-xl"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Continue Menu
+          </Button>
         </Link>
       </div>
     </div>

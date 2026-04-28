@@ -1,4 +1,3 @@
-// app/api/addresses/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
 import { getUser } from "@/data/user";
@@ -68,7 +67,21 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { street, city, state, postalCode, country, isDefault } = body;
+    const { name, phone, street, city, state, postalCode, country, isDefault } =
+      body;
+
+    // Validation
+    if (!street || !city || !state || !postalCode || !name || !phone) {
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Name, phone, street, city, state, and postal code are required",
+          address: null,
+        },
+        { status: 400 },
+      );
+    }
 
     const user = await getUser();
 
@@ -118,6 +131,8 @@ export async function PUT(
       const address = await tx.address.update({
         where: { id: id },
         data: {
+          name,
+          phone,
           street,
           city,
           state,

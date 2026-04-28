@@ -1,0 +1,123 @@
+{
+  "provinces": [
+    {
+      "id": 1,
+      "name": "Koshi Province",
+      "districts": [
+        "Bhojpur",
+        "Dhankuta",
+        "Ilam",
+        "Jhapa",
+        "Khotang",
+        "Morang",
+        "Okhaldhunga",
+        "Panchthar",
+        "Sankhuwasabha",
+        "Solukhumbu",
+        "Sunsari",
+        "Taplejung",
+        "Terhathum",
+        "Udayapur"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Madhesh Province",
+      "districts": [
+        "Bara",
+        "Dhanusha",
+        "Mahottari",
+        "Parsa",
+        "Rautahat",
+        "Saptari",
+        "Sarlahi",
+        "Siraha"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Bagmati Province",
+      "districts": [
+        "Bhaktapur",
+        "Chitwan",
+        "Dhading",
+        "Dolakha",
+        "Kathmandu",
+        "Kavrepalanchok",
+        "Lalitpur",
+        "Makwanpur",
+        "Nuwakot",
+        "Ramechhap",
+        "Rasuwa",
+        "Sindhuli",
+        "Sindhupalchok"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Gandaki Province",
+      "districts": [
+        "Baglung",
+        "Gorkha",
+        "Kaski",
+        "Lamjung",
+        "Manang",
+        "Mustang",
+        "Myagdi",
+        "Nawalpur",
+        "Parbat",
+        "Syangja",
+        "Tanahun"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Lumbini Province",
+      "districts": [
+        "Arghakhanchi",
+        "Banke",
+        "Bardiya",
+        "Dang",
+        "Eastern Rukum",
+        "Gulmi",
+        "Kapilvastu",
+        "Parasi",
+        "Palpa",
+        "Pyuthan",
+        "Rolpa",
+        "Rupandehi"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Karnali Province",
+      "districts": [
+        "Dailekh",
+        "Dolpa",
+        "Humla",
+        "Jajarkot",
+        "Jumla",
+        "Kalikot",
+        "Mugu",
+        "Salyan",
+        "Surkhet",
+        "Western Rukum"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Sudurpashchim Province",
+      "districts": [
+        "Achham",
+        "Baitadi",
+        "Bajhang",
+        "Bajura",
+        "Dadeldhura",
+        "Darchula",
+        "Doti",
+        "Kailali",
+        "Kanchanpur"
+      ]
+    }
+  ]
+}

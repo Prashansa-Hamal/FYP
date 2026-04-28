@@ -19,3 +19,18 @@ export const formatNumber = (number: number) => {
 export const formatDate = (dateString: string) => {
   return format(new Date(dateString), "PPpp");
 };
+
+/**
+ * Converts price from cents/paisa to rupees
+ * (Use if you store prices in cents)
+ */
+export const formatPriceFromCents = (priceInCents: number): number => {
+  return priceInCents / 100;
+};
+
+/**
+ * Converts price to cents/paisa for storage
+ */
+export const formatPriceToCents = (price: number): number => {
+  return Math.round(price * 100);
+};

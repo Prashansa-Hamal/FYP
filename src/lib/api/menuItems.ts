@@ -1,5 +1,3 @@
-// File: /lib/api/menuItems.ts
-
 import { MenuItem } from "@/generated/client";
 import {
   CreateMenuItemInput,

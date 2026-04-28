@@ -1,4 +1,3 @@
-// hooks/usePlaceOrder.ts
 import { ordersApis } from "@/lib/api/orders";
 import {
   OrderFilters,
@@ -15,18 +14,34 @@ import {
   keepPreviousData,
 } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useKhaltiPayment } from "./useKhaltiPayment";
 
 export const usePlaceOrder = () => {
   const queryClient = useQueryClient();
 
+  // const { mutate: initiatePayment, isPending } = useKhaltiPayment();
+  const payWithKhalti = useKhaltiPayment();
+
   return useMutation<PlaceOrderResponse, Error, PlaceOrderRequest>({
     mutationFn: ordersApis.placeOrder,
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       // Show success toast
       toast.success(data.message || "Order placed successfully!", {
         description: `Order #${data.order?.orderNumber}`,
         duration: 5000,
       });
+
+      console.log("order placed response", data);
+
+      // Invalidate cart queries to clear cache
+      queryClient.cancelQueries({ queryKey: ["cart"] });
+      queryClient.setQueryData(["cart"], null);
+
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      queryClient.invalidateQueries({ queryKey: ["summary"] });
+
+      // You can handle redirection here if needed
+      console.log("Order placed successfully:", data.order?.id);
 
       // Show next steps toast after a delay
       if (data.nextSteps && data.nextSteps.length > 0) {
@@ -38,12 +53,15 @@ export const usePlaceOrder = () => {
         }, 1000);
       }
 
-      // Invalidate cart queries to clear cache
-      queryClient.cancelQueries({ queryKey: ["cart"] });
-      queryClient.setQueryData(["cart"], null);
+      const orderId = data.order?.id as string;
 
-      // You can handle redirection here if needed
-      console.log("Order placed successfully:", data.order?.id);
+      // initiate Khalti payment
+      if (
+        data.paymentInfo?.requiresPayment &&
+        data.paymentInfo.paymentMethod === "KHALTI"
+      ) {
+        await payWithKhalti.mutateAsync(orderId);
+      }
     },
     onError: (error) => {
       // Show error toast
@@ -168,8 +186,11 @@ export const useUpdateOrderStatus = () => {
     },
 
     onSuccess: (data) => {
-      toast.success(data.message || "Status updated successfully");
+      // toast.success(data.message || "Status updated successfully");
       console.log("Order status updated:", data.message);
+      queryClient.invalidateQueries({
+        queryKey: ["userOrders"],
+      });
     },
   });
 };

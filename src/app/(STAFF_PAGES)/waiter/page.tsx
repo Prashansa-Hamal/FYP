@@ -31,6 +31,7 @@ import {
 import { MenuItemCardWaiter } from "@/components/cards/menuItemCardWaiter";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { CartDrawer } from "@/components/cartDrawer";
 
 // Debounce hook for search
 const useDebounce = (value: string, delay: number) => {
@@ -234,6 +235,8 @@ export default function MenuItemsPageWaiter() {
             >
               Clear All
             </Button>
+
+            <CartDrawer />
           </div>
         </div>
 

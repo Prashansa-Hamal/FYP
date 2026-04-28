@@ -80,12 +80,12 @@ export type PrismaVersion = {
 }
 
 /**
- * Prisma Client JS version: 7.2.0
- * Query Engine version: 0c8ef2ce45c83248ab3df073180d5eda9e8be7a3
+ * Prisma Client JS version: 7.6.0
+ * Query Engine version: 75cbdc1eb7150937890ad5465d861175c6624711
  */
 export const prismaVersion: PrismaVersion = {
-  client: "7.2.0",
-  engine: "0c8ef2ce45c83248ab3df073180d5eda9e8be7a3"
+  client: "7.6.0",
+  engine: "75cbdc1eb7150937890ad5465d861175c6624711"
 }
 
 /**
@@ -385,6 +385,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
+  LoyaltyTransaction: 'LoyaltyTransaction',
   Account: 'Account',
   Address: 'Address',
   MenuItem: 'MenuItem',
@@ -397,7 +398,8 @@ export const ModelName = {
   Table: 'Table',
   Inventory: 'Inventory',
   StaffShift: 'StaffShift',
-  OrderStationAssignment: 'OrderStationAssignment'
+  OrderStationAssignment: 'OrderStationAssignment',
+  Notification: 'Notification'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -413,7 +415,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "account" | "address" | "menuItem" | "cart" | "cartItem" | "order" | "orderItem" | "payment" | "reservation" | "table" | "inventory" | "staffShift" | "orderStationAssignment"
+    modelProps: "user" | "loyaltyTransaction" | "account" | "address" | "menuItem" | "cart" | "cartItem" | "order" | "orderItem" | "payment" | "reservation" | "table" | "inventory" | "staffShift" | "orderStationAssignment" | "notification"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -488,6 +490,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    LoyaltyTransaction: {
+      payload: Prisma.$LoyaltyTransactionPayload<ExtArgs>
+      fields: Prisma.LoyaltyTransactionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LoyaltyTransactionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoyaltyTransactionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LoyaltyTransactionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoyaltyTransactionPayload>
+        }
+        findFirst: {
+          args: Prisma.LoyaltyTransactionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoyaltyTransactionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LoyaltyTransactionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoyaltyTransactionPayload>
+        }
+        findMany: {
+          args: Prisma.LoyaltyTransactionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoyaltyTransactionPayload>[]
+        }
+        create: {
+          args: Prisma.LoyaltyTransactionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoyaltyTransactionPayload>
+        }
+        createMany: {
+          args: Prisma.LoyaltyTransactionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LoyaltyTransactionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoyaltyTransactionPayload>[]
+        }
+        delete: {
+          args: Prisma.LoyaltyTransactionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoyaltyTransactionPayload>
+        }
+        update: {
+          args: Prisma.LoyaltyTransactionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoyaltyTransactionPayload>
+        }
+        deleteMany: {
+          args: Prisma.LoyaltyTransactionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LoyaltyTransactionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LoyaltyTransactionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoyaltyTransactionPayload>[]
+        }
+        upsert: {
+          args: Prisma.LoyaltyTransactionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoyaltyTransactionPayload>
+        }
+        aggregate: {
+          args: Prisma.LoyaltyTransactionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLoyaltyTransaction>
+        }
+        groupBy: {
+          args: Prisma.LoyaltyTransactionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LoyaltyTransactionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LoyaltyTransactionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LoyaltyTransactionCountAggregateOutputType> | number
         }
       }
     }
@@ -1453,6 +1529,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Notification: {
+      payload: Prisma.$NotificationPayload<ExtArgs>
+      fields: Prisma.NotificationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.NotificationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.NotificationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>
+        }
+        findFirst: {
+          args: Prisma.NotificationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.NotificationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>
+        }
+        findMany: {
+          args: Prisma.NotificationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+        }
+        create: {
+          args: Prisma.NotificationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>
+        }
+        createMany: {
+          args: Prisma.NotificationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.NotificationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+        }
+        delete: {
+          args: Prisma.NotificationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>
+        }
+        update: {
+          args: Prisma.NotificationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>
+        }
+        deleteMany: {
+          args: Prisma.NotificationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.NotificationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.NotificationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+        }
+        upsert: {
+          args: Prisma.NotificationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>
+        }
+        aggregate: {
+          args: Prisma.NotificationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateNotification>
+        }
+        groupBy: {
+          args: Prisma.NotificationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NotificationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.NotificationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NotificationCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1498,12 +1648,27 @@ export const UserScalarFieldEnum = {
   email: 'email',
   phone: 'phone',
   password: 'password',
+  emailVerified: 'emailVerified',
   role: 'role',
+  loyalityPoints: 'loyalityPoints',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const LoyaltyTransactionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  points: 'points',
+  type: 'type',
+  orderId: 'orderId',
+  description: 'description',
+  createdAt: 'createdAt'
+} as const
+
+export type LoyaltyTransactionScalarFieldEnum = (typeof LoyaltyTransactionScalarFieldEnum)[keyof typeof LoyaltyTransactionScalarFieldEnum]
 
 
 export const AccountScalarFieldEnum = {
@@ -1521,6 +1686,8 @@ export type AccountScalarFieldEnum = (typeof AccountScalarFieldEnum)[keyof typeo
 export const AddressScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  name: 'name',
+  phone: 'phone',
   street: 'street',
   city: 'city',
   state: 'state',
@@ -1668,6 +1835,7 @@ export const TableScalarFieldEnum = {
   tableNumber: 'tableNumber',
   capacity: 'capacity',
   isAvailable: 'isAvailable',
+  status: 'status',
   location: 'location',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1721,6 +1889,21 @@ export const OrderStationAssignmentScalarFieldEnum = {
 } as const
 
 export type OrderStationAssignmentScalarFieldEnum = (typeof OrderStationAssignmentScalarFieldEnum)[keyof typeof OrderStationAssignmentScalarFieldEnum]
+
+
+export const NotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  orderId: 'orderId',
+  type: 'type',
+  title: 'title',
+  message: 'message',
+  isRead: 'isRead',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1785,6 +1968,20 @@ export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMod
 
 
 /**
+ * Reference to a field of type 'DateTime'
+ */
+export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+    
+
+
+/**
+ * Reference to a field of type 'DateTime[]'
+ */
+export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+/**
  * Reference to a field of type 'UserRole'
  */
 export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
@@ -1799,16 +1996,16 @@ export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$Pri
 
 
 /**
- * Reference to a field of type 'DateTime'
+ * Reference to a field of type 'Int'
  */
-export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
     
 
 
 /**
- * Reference to a field of type 'DateTime[]'
+ * Reference to a field of type 'Int[]'
  */
-export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -1858,20 +2055,6 @@ export type EnumPreparationStationFieldRefInput<$PrismaModel> = FieldRefInputTyp
  * Reference to a field of type 'PreparationStation[]'
  */
 export type ListEnumPreparationStationFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PreparationStation[]'>
-    
-
-
-/**
- * Reference to a field of type 'Int'
- */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-/**
- * Reference to a field of type 'Int[]'
- */
-export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -1942,6 +2125,34 @@ export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'J
  * Reference to a field of type 'QueryMode'
  */
 export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'TableStatus'
+ */
+export type EnumTableStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TableStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'TableStatus[]'
+ */
+export type ListEnumTableStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TableStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'NotificationType'
+ */
+export type EnumNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationType'>
+    
+
+
+/**
+ * Reference to a field of type 'NotificationType[]'
+ */
+export type ListEnumNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationType[]'>
     
 
 /**
@@ -2040,6 +2251,7 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
+  loyaltyTransaction?: Prisma.LoyaltyTransactionOmit
   account?: Prisma.AccountOmit
   address?: Prisma.AddressOmit
   menuItem?: Prisma.MenuItemOmit
@@ -2053,6 +2265,7 @@ export type GlobalOmitConfig = {
   inventory?: Prisma.InventoryOmit
   staffShift?: Prisma.StaffShiftOmit
   orderStationAssignment?: Prisma.OrderStationAssignmentOmit
+  notification?: Prisma.NotificationOmit
 }
 
 /* Types for Logging */

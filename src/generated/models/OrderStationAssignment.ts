@@ -193,7 +193,7 @@ export type OrderStationAssignmentGroupByOutputType = {
   _max: OrderStationAssignmentMaxAggregateOutputType | null
 }
 
-type GetOrderStationAssignmentGroupByPayload<T extends OrderStationAssignmentGroupByArgs> = Prisma.PrismaPromise<
+export type GetOrderStationAssignmentGroupByPayload<T extends OrderStationAssignmentGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<OrderStationAssignmentGroupByOutputType, T['by']> &
       {
@@ -1303,6 +1303,11 @@ export type OrderStationAssignmentFindManyArgs<ExtArgs extends runtime.Types.Ext
    * Skip the first `n` OrderStationAssignments.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of OrderStationAssignments.
+   */
   distinct?: Prisma.OrderStationAssignmentScalarFieldEnum | Prisma.OrderStationAssignmentScalarFieldEnum[]
 }
 

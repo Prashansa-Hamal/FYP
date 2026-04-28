@@ -52,6 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  LoyaltyTransaction: 'LoyaltyTransaction',
   Account: 'Account',
   Address: 'Address',
   MenuItem: 'MenuItem',
@@ -64,7 +65,8 @@ export const ModelName = {
   Table: 'Table',
   Inventory: 'Inventory',
   StaffShift: 'StaffShift',
-  OrderStationAssignment: 'OrderStationAssignment'
+  OrderStationAssignment: 'OrderStationAssignment',
+  Notification: 'Notification'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -73,12 +75,12 @@ export type ModelName = (typeof ModelName)[keyof typeof ModelName]
  * Enums
  */
 
-export const TransactionIsolationLevel = {
+export const TransactionIsolationLevel = runtime.makeStrictEnum({
   ReadUncommitted: 'ReadUncommitted',
   ReadCommitted: 'ReadCommitted',
   RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
-} as const
+} as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
@@ -89,12 +91,27 @@ export const UserScalarFieldEnum = {
   email: 'email',
   phone: 'phone',
   password: 'password',
+  emailVerified: 'emailVerified',
   role: 'role',
+  loyalityPoints: 'loyalityPoints',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const LoyaltyTransactionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  points: 'points',
+  type: 'type',
+  orderId: 'orderId',
+  description: 'description',
+  createdAt: 'createdAt'
+} as const
+
+export type LoyaltyTransactionScalarFieldEnum = (typeof LoyaltyTransactionScalarFieldEnum)[keyof typeof LoyaltyTransactionScalarFieldEnum]
 
 
 export const AccountScalarFieldEnum = {
@@ -112,6 +129,8 @@ export type AccountScalarFieldEnum = (typeof AccountScalarFieldEnum)[keyof typeo
 export const AddressScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  name: 'name',
+  phone: 'phone',
   street: 'street',
   city: 'city',
   state: 'state',
@@ -259,6 +278,7 @@ export const TableScalarFieldEnum = {
   tableNumber: 'tableNumber',
   capacity: 'capacity',
   isAvailable: 'isAvailable',
+  status: 'status',
   location: 'location',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -314,6 +334,21 @@ export const OrderStationAssignmentScalarFieldEnum = {
 export type OrderStationAssignmentScalarFieldEnum = (typeof OrderStationAssignmentScalarFieldEnum)[keyof typeof OrderStationAssignmentScalarFieldEnum]
 
 
+export const NotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  orderId: 'orderId',
+  type: 'type',
+  title: 'title',
+  message: 'message',
+  isRead: 'isRead',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -323,8 +358,8 @@ export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
 export const NullableJsonNullValueInput = {
-  DbNull: 'DbNull',
-  JsonNull: 'JsonNull'
+  DbNull: DbNull,
+  JsonNull: JsonNull
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
@@ -347,9 +382,9 @@ export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
 export const JsonNullValueFilter = {
-  DbNull: 'DbNull',
-  JsonNull: 'JsonNull',
-  AnyNull: 'AnyNull'
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
 } as const
 
 export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]

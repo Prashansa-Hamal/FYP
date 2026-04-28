@@ -1,5 +1,4 @@
 import { cookies } from "next/headers";
-
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { CashierSidebar } from "./_components/cashier-sidebar";

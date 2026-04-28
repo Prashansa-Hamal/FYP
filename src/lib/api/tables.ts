@@ -1,52 +1,172 @@
-export type Table = {
-  id: string;
-  tableNumber: number;
-  capacity: number;
-  isAvailable: boolean;
-  location: string | null;
-  createdAt: string;
-  updatedAt: string;
-  _count: {
-    reservations: number;
-  };
-};
+import {
+  ApiResponse,
+  Table,
+  TableAvailabilityRequest,
+  TableAvailabilityResponse,
+  TableStats,
+  TableWithOrders,
+  CreateTableRequest,
+  UpdateTableRequest,
+  UpdateTableStatusRequest,
+} from "@/types/tables";
 
-export type TablesResponse = {
-  success: boolean;
-  data: Table[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    pages: number;
-  };
-};
+const API_BASE = "/api/tables";
 
-export type TablesQueryParams = {
-  page?: number;
-  limit?: number;
-  sortBy?: "tableNumber" | "capacity" | "createdAt";
-  sortOrder?: "asc" | "desc";
-  isAvailable?: boolean;
-  location?: string;
-};
+export const tableApi = {
+  // Get all tables
+  getTables: async (params?: {
+    status?: string;
+    isAvailable?: boolean;
+    location?: string;
+  }): Promise<ApiResponse<Table[]>> => {
+    const searchParams = new URLSearchParams();
+    if (params?.status) searchParams.append("status", params.status);
+    if (params?.isAvailable !== undefined)
+      searchParams.append("isAvailable", String(params.isAvailable));
+    if (params?.location) searchParams.append("location", params.location);
 
-export async function fetchTables(
-  params: TablesQueryParams,
-): Promise<TablesResponse> {
-  const query = new URLSearchParams();
+    const url = `${API_BASE}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
+    const response = await fetch(url);
 
-  Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined) {
-      query.set(key, String(value));
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Failed to fetch tables");
     }
-  });
 
-  const res = await fetch(`/api/tables?${query.toString()}`);
+    return response.json();
+  },
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch tables");
-  }
+  // Get single table
+  getTableById: async (id: string): Promise<ApiResponse<Table>> => {
+    const response = await fetch(`${API_BASE}/${id}`);
 
-  return res.json();
-}
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Failed to fetch table");
+    }
+
+    return response.json();
+  },
+
+  // Create table
+  createTable: async (
+    data: CreateTableRequest,
+  ): Promise<ApiResponse<Table>> => {
+    const response = await fetch(API_BASE, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Failed to create table");
+    }
+
+    return response.json();
+  },
+
+  // Update table
+  updateTable: async (
+    id: string,
+    data: UpdateTableRequest,
+  ): Promise<ApiResponse<Table>> => {
+    const response = await fetch(`${API_BASE}/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Failed to update table");
+    }
+
+    return response.json();
+  },
+
+  // Delete table
+  deleteTable: async (id: string): Promise<ApiResponse<null>> => {
+    const response = await fetch(`${API_BASE}/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Failed to delete table");
+    }
+
+    return response.json();
+  },
+
+  // Update table status
+  updateTableStatus: async (
+    id: string,
+    data: UpdateTableStatusRequest,
+  ): Promise<ApiResponse<Table>> => {
+    const response = await fetch(`${API_BASE}/${id}/status`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Failed to update table status");
+    }
+
+    return response.json();
+  },
+
+  // Check table availability
+  checkAvailability: async (
+    params: TableAvailabilityRequest,
+  ): Promise<ApiResponse<TableAvailabilityResponse>> => {
+    const searchParams = new URLSearchParams({
+      date: params.date,
+      timeSlot: params.timeSlot,
+      partySize: String(params.partySize),
+    });
+
+    const response = await fetch(
+      `${API_BASE}/availability?${searchParams.toString()}`,
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Failed to check availability");
+    }
+
+    return response.json();
+  },
+
+  // Get table statistics
+  getTableStats: async (): Promise<ApiResponse<TableStats>> => {
+    const response = await fetch(`${API_BASE}/stats`);
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Failed to fetch table statistics");
+    }
+
+    return response.json();
+  },
+
+  // Get tables with active orders
+  getTablesWithOrders: async (): Promise<ApiResponse<TableWithOrders[]>> => {
+    const response = await fetch(`${API_BASE}/with-orders`);
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Failed to fetch tables with orders");
+    }
+
+    return response.json();
+  },
+};

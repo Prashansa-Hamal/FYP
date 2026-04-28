@@ -1,7 +1,9 @@
+"use client";
+
 import { useCart } from "@/contexts/CartContext";
 import { formatCurrency } from "@/lib/formatters";
 import { CartItem } from "@/types/cart";
-import { Loader2, Minus, Package, Plus, Trash2 } from "lucide-react";
+import { Loader2, Minus, Package, Plus, Trash2, ChefHat } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -27,7 +29,6 @@ export const CartItemCard = ({ ...item }: CartItem) => {
 
   const handleRemoveItem = async (menuItemId: string) => {
     setIsUpdating(true);
-
     try {
       await removeItem.mutateAsync(menuItemId);
       toast.success("Item removed from cart");
@@ -49,10 +50,11 @@ export const CartItemCard = ({ ...item }: CartItem) => {
       handleQuantityChange(menuItemId, currentQuantity - 1);
     }
   };
+
   return (
-    <div className="flex gap-4 rounded-xl border bg-white p-4 transition hover:shadow-sm">
+    <div className="group flex gap-4 rounded-xl border border-gray-100 bg-white p-4 transition-all duration-200 hover:shadow-md hover:border-amber-200">
       {/* Image */}
-      <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-gray-100 ring-1 ring-gray-200">
+      <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-gradient-to-br from-amber-50 to-orange-50 ring-1 ring-gray-100 group-hover:ring-amber-200 transition-all">
         {item.menuItem?.imageUrl ? (
           <Image
             src={item.menuItem.imageUrl}
@@ -62,8 +64,8 @@ export const CartItemCard = ({ ...item }: CartItem) => {
             sizes="96px"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center">
-            <Package className="h-8 w-8 text-gray-400" />
+          <div className="flex h-full w-full flex-col items-center justify-center">
+            <ChefHat className="h-8 w-8 text-amber-300" />
           </div>
         )}
       </div>
@@ -72,19 +74,26 @@ export const CartItemCard = ({ ...item }: CartItem) => {
       <div className="flex min-w-0 flex-1 flex-col justify-between">
         {/* Top */}
         <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <h4 className="truncate text-sm font-semibold text-gray-900">
+          <div className="min-w-0 flex-1">
+            <h4 className="text-sm font-semibold text-gray-900 line-clamp-1">
               {item.menuItem?.name}
             </h4>
-            <p className="text-xs text-gray-500">
-              {formatCurrency(item.menuItem?.price)}
-            </p>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
+                {formatCurrency(item.menuItem?.price)}
+              </span>
+              {/* {item.menuItem?.isVegetarian && (
+                <span className="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+                  Veg
+                </span>
+              )} */}
+            </div>
           </div>
 
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-gray-400 hover:text-red-500"
+            className="h-8 w-8 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
             onClick={() => handleRemoveItem(item.menuItemId)}
             disabled={isUpdating}
           >
@@ -98,19 +107,19 @@ export const CartItemCard = ({ ...item }: CartItem) => {
 
         {/* Bottom */}
         <div className="mt-3 flex items-center justify-between">
-          {/* Quantity */}
-          <div className="flex items-center overflow-hidden rounded-lg border">
+          {/* Quantity Controls */}
+          <div className="flex items-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
             <Button
               variant="ghost"
               size="icon"
-              className="h-9 w-9"
+              className="h-9 w-9 rounded-none hover:bg-gray-100 hover:text-amber-600"
               onClick={() => handleDecrease(item.menuItemId, item.quantity)}
               disabled={isUpdating || item.quantity <= 1}
             >
               <Minus className="h-3.5 w-3.5" />
             </Button>
 
-            <div className="flex h-9 w-10 items-center justify-center text-sm font-medium">
+            <div className="flex h-9 w-10 items-center justify-center text-sm font-medium text-gray-700">
               {isUpdating ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
               ) : (
@@ -121,7 +130,7 @@ export const CartItemCard = ({ ...item }: CartItem) => {
             <Button
               variant="ghost"
               size="icon"
-              className="h-9 w-9"
+              className="h-9 w-9 rounded-none hover:bg-gray-100 hover:text-amber-600"
               onClick={() => handleIncrease(item.menuItemId, item.quantity)}
               disabled={isUpdating}
             >
@@ -129,10 +138,13 @@ export const CartItemCard = ({ ...item }: CartItem) => {
             </Button>
           </div>
 
-          {/* Total */}
+          {/* Total Price */}
           <div className="text-right">
-            <p className="text-sm font-semibold text-gray-900">
+            <p className="text-sm font-bold text-gray-900">
               {formatCurrency(item.menuItem.price * item.quantity)}
+            </p>
+            <p className="text-xs text-gray-400">
+              {item.quantity} × {formatCurrency(item.menuItem.price)}
             </p>
           </div>
         </div>

@@ -49,6 +49,8 @@ export const menuItemFormSchema = z.object({
 });
 
 export const addressSchema = z.object({
+  name: z.string().min(3, "Name is required"),
+  phone: z.string().min(10, "Phone Number is required"),
   street: z.string().min(3, "Street is required"),
   city: z.string().min(2, "City is required"),
   state: z.string().min(2, "State is required"),
@@ -79,3 +81,31 @@ export const tableSchema = z.object({
 });
 
 export type TableFormValues = z.infer<typeof tableSchema>;
+
+export const createReservationSchema = z.object({
+  reservationDate: z.string().min(1, "Reservation date is required"),
+  timeSlot: z.string().min(1, "Time slot is required"),
+  partySize: z
+    .number()
+    .min(1, "Party size must be at least 1")
+    .max(20, "Party size cannot exceed 20"),
+  specialRequests: z.string().optional(),
+});
+
+export const updateReservationSchema = z.object({
+  reservationDate: z.string().optional(),
+  timeSlot: z.string().optional(),
+  partySize: z.number().min(1).max(20).optional(),
+  specialRequests: z.string().optional(),
+  status: z.enum(["CONFIRMED", "CANCELLED", "COMPLETED"]).optional(),
+});
+
+export const checkAvailabilitySchema = z.object({
+  date: z.string().min(1, "Date is required"),
+  timeSlot: z.string().min(1, "Time slot is required"),
+  partySize: z.number().min(1, "Party size is required"),
+});
+
+export type CreateReservationInput = z.infer<typeof createReservationSchema>;
+export type UpdateReservationInput = z.infer<typeof updateReservationSchema>;
+export type CheckAvailabilityInput = z.infer<typeof checkAvailabilitySchema>;

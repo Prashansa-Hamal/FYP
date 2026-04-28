@@ -1,4 +1,3 @@
-// components/ui/data-table.tsx
 "use client";
 
 import {
@@ -93,7 +92,7 @@ interface DataTableProps<TData> {
     label: string;
   };
   renderToolbar?: (
-    table: ReturnType<typeof useReactTable<TData>>
+    table: ReturnType<typeof useReactTable<TData>>,
   ) => React.ReactNode;
   // Pagination props
   manualPagination?: boolean;
@@ -146,19 +145,19 @@ export function DataTable<TData>({
 
   // Initialize states
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
-    initialState.columnFilters || []
+    initialState.columnFilters || [],
   );
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [pagination, setPagination] = useState<PaginationState>(
     initialState.pagination || {
       pageIndex: 0,
       pageSize: pageSizeOptions[1] || 10,
-    }
+    },
   );
 
   const [sorting, setSorting] = useState<SortingState>(
     initialState.sorting ||
-      (defaultSortColumn ? [{ id: defaultSortColumn, desc: false }] : [])
+      (defaultSortColumn ? [{ id: defaultSortColumn, desc: false }] : []),
   );
 
   // Sync external search value
@@ -258,7 +257,7 @@ export function DataTable<TData>({
     totalCount && totalCount > 0 ? currentPage * currentPageSize + 1 : 0;
   const endItem = Math.min(
     (currentPage + 1) * currentPageSize,
-    totalCount || data.length
+    totalCount || data.length,
   );
   const displayTotalCount = totalCount || data.length;
 
@@ -384,7 +383,7 @@ export function DataTable<TData>({
                         <div
                           className={cn(
                             header.column.getCanSort() &&
-                              "flex h-full cursor-pointer select-none items-center justify-between gap-2"
+                              "flex h-full cursor-pointer select-none items-center justify-between gap-2",
                           )}
                           onClick={header.column.getToggleSortingHandler()}
                           onKeyDown={(e) => {
@@ -400,7 +399,7 @@ export function DataTable<TData>({
                         >
                           {flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                           {{
                             asc: (
@@ -424,7 +423,7 @@ export function DataTable<TData>({
                       ) : (
                         flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )
                       )}
                     </TableHead>
@@ -444,7 +443,7 @@ export function DataTable<TData>({
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

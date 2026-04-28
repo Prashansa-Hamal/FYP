@@ -23,6 +23,11 @@ export * from './enums';
  */
 export type User = Prisma.UserModel
 /**
+ * Model LoyaltyTransaction
+ * 
+ */
+export type LoyaltyTransaction = Prisma.LoyaltyTransactionModel
+/**
  * Model Account
  * 
  */
@@ -87,3 +92,8 @@ export type StaffShift = Prisma.StaffShiftModel
  * 
  */
 export type OrderStationAssignment = Prisma.OrderStationAssignmentModel
+/**
+ * Model Notification
+ * 
+ */
+export type Notification = Prisma.NotificationModel

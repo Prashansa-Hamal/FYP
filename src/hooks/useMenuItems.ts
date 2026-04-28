@@ -1,4 +1,3 @@
-// File: /lib/hooks/useMenuItems.ts
 import {
   useQuery,
   useMutation,

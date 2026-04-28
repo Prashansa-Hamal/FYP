@@ -1,15 +1,16 @@
-// app/api/orders/place/route.ts
 import db from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getUser } from "@/data/user";
+import { CartItem } from "@/types/cart";
+import { EmailService } from "@/lib/email-service";
 
 interface PlaceOrderRequest {
   orderType?: "DINE_IN" | "TAKEAWAY" | "DELIVERY";
   tableNumber?: number;
   deliveryAddressId?: string;
-  specialInstructions?: string;
-  paymentMethod?: "CASH" | "CARD" | "ONLINE" | "WALLET";
+  specialInstruction: string;
+  paymentMethod?: "COD" | "ESEWA" | "KHALTI";
 }
 
 export async function POST(request: NextRequest) {
@@ -19,13 +20,22 @@ export async function POST(request: NextRequest) {
     const cookieStore = await cookies();
     const sessionId = cookieStore.get("cart_session_id")?.value;
 
-    if (!user?.id && !sessionId) {
+    if (!user && !sessionId) {
       return NextResponse.json(
         {
           success: false,
           message: "Authentication required to place an order",
           order: null,
         },
+        { status: 401 },
+      );
+    }
+
+    const currentUser = await db.user.findUnique({ where: { id: user?.id } });
+
+    if (!currentUser && user?.id) {
+      return NextResponse.json(
+        { success: false, message: "User not found" },
         { status: 401 },
       );
     }
@@ -119,7 +129,7 @@ export async function POST(request: NextRequest) {
     );
 
     // Fixed tax rate (adjust as needed)
-    const TAX_RATE = 0.08;
+    const TAX_RATE = 0.13;
     const taxAmount = subtotal * TAX_RATE;
     const discountAmount = 0; // You can add discount logic later
     const finalAmount = subtotal + taxAmount - discountAmount;
@@ -136,7 +146,7 @@ export async function POST(request: NextRequest) {
           orderType: body.orderType || "DINE_IN",
           tableNumber: body.tableNumber,
           deliveryAddressId: body.deliveryAddressId,
-          specialInstructions: body.specialInstructions,
+          specialInstructions: body.specialInstruction,
           status: "PENDING",
           paymentStatus: "PENDING",
           paymentMethod: body.paymentMethod,
@@ -150,7 +160,7 @@ export async function POST(request: NextRequest) {
 
       // Create order items
       const orderItems = await Promise.all(
-        cart.items.map(async (cartItem: any) => {
+        cart.items.map(async (cartItem: CartItem) => {
           const orderItem = await tx.orderItem.create({
             data: {
               orderId: newOrder.id,
@@ -158,7 +168,6 @@ export async function POST(request: NextRequest) {
               quantity: cartItem.quantity,
               unitPrice: cartItem.menuItem.price,
               totalPrice: cartItem.quantity * cartItem.menuItem.price,
-              specialInstructions: cartItem.specialInstructions,
             },
           });
 
@@ -166,7 +175,7 @@ export async function POST(request: NextRequest) {
           await tx.orderStationAssignment.create({
             data: {
               orderItemId: orderItem.id,
-              station: cartItem.menuItem.preparationStation,
+              station: cartItem.menuItem.preparationStation!,
               status: "PENDING",
             },
           });
@@ -187,6 +196,21 @@ export async function POST(request: NextRequest) {
         });
       }
 
+      // Create notification for user only (if logged in)
+      if (user?.id) {
+        await tx.notification.create({
+          data: {
+            userId: user.id,
+            type: "ORDER_PLACED",
+            title: "Order Placed Successfully! 🎉",
+            message: `Your order #${newOrder.orderNumber} has been placed successfully. You will be notified when your order is ready.`,
+            orderId: newOrder.id,
+            isRead: false,
+          },
+        });
+        console.log("Notification created for user:", user.id);
+      }
+
       return {
         ...newOrder,
         items: orderItems,
@@ -194,7 +218,7 @@ export async function POST(request: NextRequest) {
     });
 
     // 9. If payment method is not CASH, create payment record
-    if (body.paymentMethod && body.paymentMethod !== "CASH") {
+    if (body.paymentMethod && body.paymentMethod !== "COD") {
       await db.payment.create({
         data: {
           orderId: order.id,
@@ -205,7 +229,32 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // 10. Return success response
+    // 10. Send confirmation email to customer (if logged in)
+    if (currentUser?.email && user?.id) {
+      try {
+        const orderItemsForEmail = cart.items.map((item) => ({
+          name: item.menuItem.name,
+          quantity: item.quantity,
+          price: item.menuItem.price,
+        }));
+
+        await EmailService.sendOrderConfirmationEmail(
+          currentUser.email,
+          currentUser.name || "Valued Customer",
+          order.orderNumber,
+          orderItemsForEmail,
+          order.finalAmount,
+          order.orderType,
+          order.estimatedReadyTime || undefined,
+        );
+        console.log("Order confirmation email sent to:", currentUser.email);
+      } catch (emailError) {
+        console.error("Failed to send order confirmation email:", emailError);
+        // Don't fail the order if email fails
+      }
+    }
+
+    // 11. Return success response
     return NextResponse.json(
       {
         success: true,
@@ -227,6 +276,13 @@ export async function POST(request: NextRequest) {
             total: item.quantity * item.menuItem.price,
           })),
           createdAt: order.createdAt,
+        },
+        paymentInfo: {
+          requiresPayment: body.paymentMethod && body.paymentMethod !== "COD",
+          paymentMethod: body.paymentMethod,
+          amount: finalAmount,
+          // Add this if you want to initiate payment immediately
+          initiatePayment: body.paymentMethod !== "COD",
         },
         nextSteps: getNextSteps(order.orderType, order.paymentMethod!),
       },
@@ -264,7 +320,7 @@ export async function POST(request: NextRequest) {
 function getNextSteps(orderType: string, paymentMethod?: string) {
   const steps: string[] = [];
 
-  if (!paymentMethod || paymentMethod === "CASH") {
+  if (!paymentMethod || paymentMethod === "COD") {
     steps.push("Payment will be collected upon pickup/delivery");
   } else {
     steps.push("Payment will be processed shortly");

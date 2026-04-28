@@ -1,4 +1,3 @@
-// app/api/orders/payment/route.ts
 import db from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { PAYMENT_METHODS } from "@/types/enums";

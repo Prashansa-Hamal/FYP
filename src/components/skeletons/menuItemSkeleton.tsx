@@ -1,4 +1,3 @@
-// app/(ADMIN_PAGES)/admin/menu-items/[id]/MenuItemAdminSkeleton.tsx
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 

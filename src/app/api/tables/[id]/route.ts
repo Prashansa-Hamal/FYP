@@ -1,81 +1,150 @@
-import db from "@/lib/db";
-import { tableSchema } from "@/schemas";
 import { NextRequest, NextResponse } from "next/server";
+import db from "@/lib/db";
+import { getUser } from "@/data/user";
 
-// ================= GET =================
+// GET /api/tables/[id] - Get a single table
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> },
+  { params }: { params: { id: string } },
 ) {
-  const { id } = await context.params;
-
   try {
     const table = await db.table.findUnique({
-      where: { id },
+      where: { id: params.id },
+      include: {
+        reservations: {
+          where: {
+            reservationDate: {
+              gte: new Date(),
+            },
+            status: "CONFIRMED",
+          },
+          orderBy: {
+            reservationDate: "asc",
+          },
+          take: 10,
+        },
+      },
     });
 
     if (!table) {
       return NextResponse.json({ error: "Table not found" }, { status: 404 });
     }
 
-    return NextResponse.json(table);
+    return NextResponse.json({
+      success: true,
+      data: table,
+    });
   } catch (error) {
+    console.error("Error fetching table:", error);
     return NextResponse.json(
-      { error: "Failed to fetch table" },
+      {
+        error: "Failed to fetch table",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }
 }
 
-// ================= PUT =================
+// PUT /api/tables/[id] - Update a table
 export async function PUT(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> },
+  { params }: { params: { id: string } },
 ) {
-  const { id } = await context.params;
-
   try {
-    const body = await request.json();
+    const user = await getUser();
 
-    const parsed = tableSchema.safeParse({
-      ...body,
-      tableNumber: Number(body.tableNumber),
-      capacity: Number(body.capacity),
-    });
-
-    if (!parsed.success) {
+    // Check if user is admin
+    if (!user || user.role !== "ADMIN") {
       return NextResponse.json(
-        { error: parsed.error.flatten() },
-        { status: 400 },
+        { error: "Unauthorized. Admin access required." },
+        { status: 401 },
       );
     }
 
-    const table = await db.table.update({
-      where: { id },
-      data: parsed.data,
+    const body = await request.json();
+    const { tableNumber, capacity, location, status, isAvailable } = body;
+
+    // Check if table exists
+    const existingTable = await db.table.findUnique({
+      where: { id: params.id },
     });
 
-    return NextResponse.json(table);
+    if (!existingTable) {
+      return NextResponse.json({ error: "Table not found" }, { status: 404 });
+    }
+
+    // Check if new table number conflicts with another table
+    if (tableNumber && tableNumber !== existingTable.tableNumber) {
+      const conflictTable = await db.table.findUnique({
+        where: { tableNumber },
+      });
+
+      if (conflictTable) {
+        return NextResponse.json(
+          { error: "Table number already exists" },
+          { status: 409 },
+        );
+      }
+    }
+
+    const table = await db.table.update({
+      where: { id: params.id },
+      data: {
+        tableNumber: tableNumber !== undefined ? tableNumber : undefined,
+        capacity: capacity !== undefined ? capacity : undefined,
+        location: location !== undefined ? location : undefined,
+        status: status !== undefined ? status : undefined,
+        isAvailable:
+          isAvailable !== undefined ? isAvailable : status === "AVAILABLE",
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: table,
+      message: "Table updated successfully",
+    });
   } catch (error) {
+    console.error("Error updating table:", error);
     return NextResponse.json(
-      { error: "Failed to update table" },
+      {
+        error: "Failed to update table",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }
 }
 
-// ================= DELETE =================
+// DELETE /api/tables/[id] - Delete a table
 export async function DELETE(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> },
+  { params }: { params: { id: string } },
 ) {
-  const { id } = await context.params;
-
   try {
+    const user = await getUser();
+
+    // Check if user is admin
+    if (!user || user.role !== "ADMIN") {
+      return NextResponse.json(
+        { error: "Unauthorized. Admin access required." },
+        { status: 401 },
+      );
+    }
+
+    // Check if table exists
     const existingTable = await db.table.findUnique({
-      where: { id },
+      where: { id: params.id },
       include: {
-        reservations: true,
+        reservations: {
+          where: {
+            reservationDate: {
+              gte: new Date(),
+            },
+            status: "CONFIRMED",
+          },
+        },
       },
     });
 
@@ -83,23 +152,29 @@ export async function DELETE(
       return NextResponse.json({ error: "Table not found" }, { status: 404 });
     }
 
+    // Check if table has upcoming reservations
     if (existingTable.reservations.length > 0) {
       return NextResponse.json(
-        { error: "Cannot delete table with existing reservations" },
+        { error: "Cannot delete table with upcoming reservations" },
         { status: 400 },
       );
     }
 
     await db.table.delete({
-      where: { id },
+      where: { id: params.id },
     });
 
     return NextResponse.json({
+      success: true,
       message: "Table deleted successfully",
     });
   } catch (error) {
+    console.error("Error deleting table:", error);
     return NextResponse.json(
-      { error: "Failed to delete table" },
+      {
+        error: "Failed to delete table",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }

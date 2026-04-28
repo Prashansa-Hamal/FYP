@@ -30,7 +30,7 @@ export const PAYMENT_STATUS = [
 
 export type PaymentStatus = (typeof PAYMENT_STATUS)[number];
 
-export const PAYMENT_METHODS = ["CASH", "CARD", "ONLINE", "WALLET"] as const;
+export const PAYMENT_METHODS = ["COD", "ESEWA", "KHALTI"] as const;
 
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 
@@ -59,3 +59,22 @@ export const PREPARATION_STATIONS = [
 ] as const;
 
 export type PreparationStation = (typeof PREPARATION_STATIONS)[number];
+
+export const NOTIFICATION_TYPES = [
+  "ORDER_PLACED",
+  "ORDER_CONFIRMED",
+  "ORDER_PREPARING",
+  "ORDER_READY",
+  "ORDER_SERVED",
+  "ORDER_COMPLETED",
+  "ORDER_CANCELLED",
+  "PAYMENT_RECEIVED",
+  "PAYMENT_FAILED",
+  "RESERVATION_CONFIRMED",
+  "RESERVATION_CANCELLED",
+  "LOYALTY_POINTS_EARNED",
+  "LOYALTY_POINTS_REDEEMED",
+  "GENERAL_ANNOUNCEMENT",
+] as const;
+
+export type NotificationType = (typeof NOTIFICATION_TYPES)[number];

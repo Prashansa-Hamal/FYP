@@ -193,7 +193,7 @@ export type StaffShiftGroupByOutputType = {
   _max: StaffShiftMaxAggregateOutputType | null
 }
 
-type GetStaffShiftGroupByPayload<T extends StaffShiftGroupByArgs> = Prisma.PrismaPromise<
+export type GetStaffShiftGroupByPayload<T extends StaffShiftGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<StaffShiftGroupByOutputType, T['by']> &
       {
@@ -1301,6 +1301,11 @@ export type StaffShiftFindManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Skip the first `n` StaffShifts.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of StaffShifts.
+   */
   distinct?: Prisma.StaffShiftScalarFieldEnum | Prisma.StaffShiftScalarFieldEnum[]
 }
 

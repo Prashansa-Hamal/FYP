@@ -1,4 +1,3 @@
-// app/api/addresses/route.ts
 import db from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { getUser } from "@/data/user";
@@ -65,6 +64,8 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const {
+      name,
+      phone,
       street,
       city,
       state,
@@ -74,11 +75,12 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validation
-    if (!street || !city || !state || !postalCode) {
+    if (!street || !city || !state || !postalCode || !name || !phone) {
       return NextResponse.json(
         {
           success: false,
-          message: "Street, city, state, and postal code are required",
+          message:
+            "Name, phone, street, city, state, and postal code are required",
           address: null,
         },
         { status: 400 },
@@ -86,10 +88,12 @@ export async function POST(request: NextRequest) {
     }
 
     const address = await db.$transaction(async (tx) => {
-      // 🔍 Check for existing identical address
+      // Check for existing identical address
       const existingAddress = await tx.address.findFirst({
         where: {
           userId: user.id,
+          name,
+          phone,
           street,
           city,
           state,
@@ -114,6 +118,8 @@ export async function POST(request: NextRequest) {
       return tx.address.create({
         data: {
           userId: user.id,
+          name,
+          phone,
           street,
           city,
           state,

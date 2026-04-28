@@ -1,4 +1,3 @@
-// components/ui/animated-skeleton-data-table.tsx
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import {
@@ -99,11 +98,11 @@ export function AnimatedSkeletonDataTable({
                           "h-4 transition-all duration-300",
                           rowIndex % 3 === 0 && "w-32",
                           rowIndex % 3 === 1 && "w-24",
-                          rowIndex % 3 === 2 && "w-40"
+                          rowIndex % 3 === 2 && "w-40",
                         )}
                       />
                     </TableCell>
-                  )
+                  ),
                 )}
               </TableRow>
             ))}

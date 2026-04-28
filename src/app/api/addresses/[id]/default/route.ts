@@ -1,4 +1,3 @@
-// app/api/addresses/[id]/default/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
 import { getUser } from "@/data/user";

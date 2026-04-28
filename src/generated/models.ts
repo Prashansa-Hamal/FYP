@@ -9,6 +9,7 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User'
+export type * from './models/LoyaltyTransaction'
 export type * from './models/Account'
 export type * from './models/Address'
 export type * from './models/MenuItem'
@@ -22,4 +23,5 @@ export type * from './models/Table'
 export type * from './models/Inventory'
 export type * from './models/StaffShift'
 export type * from './models/OrderStationAssignment'
+export type * from './models/Notification'
 export type * from './commonInputTypes'

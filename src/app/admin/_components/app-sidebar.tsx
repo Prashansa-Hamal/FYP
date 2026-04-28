@@ -20,7 +20,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, ShoppingCart, Table2 } from "lucide-react";
+import { Calendar, LayoutDashboard, ShoppingCart, Table2 } from "lucide-react";
 
 const data = {
   user: {
@@ -37,6 +37,11 @@ const data = {
       title: "Tables",
       url: "/admin/tables",
       icon: Table2,
+    },
+    {
+      title: "Reservations",
+      url: "/admin/reservations",
+      icon: Calendar,
     },
     {
       title: "Orders",

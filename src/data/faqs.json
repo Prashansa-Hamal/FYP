@@ -1,0 +1,184 @@
+{
+  "faqs": [
+    {
+      "id": 1,
+      "category": "General",
+      "question": "What are your opening hours?",
+      "answer": "We are open daily from 11:00 AM to 10:00 PM. Last order is taken at 9:30 PM."
+    },
+    {
+      "id": 2,
+      "category": "Reservations",
+      "question": "How do I make a reservation?",
+      "answer": "You can make a reservation through our Reservations page. Simply select your preferred date, time, and party size. You'll receive a confirmation email once your table is booked."
+    },
+    {
+      "id": 3,
+      "category": "Delivery",
+      "question": "Do you offer delivery?",
+      "answer": "Yes, we offer delivery services within 5km of our restaurant. Delivery charges may apply based on distance. Estimated delivery time is 30-45 minutes."
+    },
+    {
+      "id": 4,
+      "category": "Payments",
+      "question": "What payment methods do you accept?",
+      "answer": "We accept Cash on Delivery (COD), eSewa, and Khalti for online payments. For dine-in, we also accept credit/debit cards."
+    },
+    {
+      "id": 5,
+      "category": "Menu",
+      "question": "Do you have vegetarian options?",
+      "answer": "Yes, we have a wide variety of vegetarian dishes clearly marked with a 'Veg' badge on our menu. Our kitchen also takes extra care to avoid cross-contamination."
+    },
+    {
+      "id": 6,
+      "category": "Orders",
+      "question": "Can I cancel my order?",
+      "answer": "Orders can be cancelled within 5 minutes of placing them. Please contact our support team immediately if you need to cancel. Once the order is being prepared, cancellation may not be possible."
+    },
+    {
+      "id": 7,
+      "category": "Orders",
+      "question": "How do I track my order?",
+      "answer": "You can track your order status in real-time from your Orders page. You'll receive notifications when your order is confirmed, being prepared, ready, and delivered/served."
+    },
+    {
+      "id": 8,
+      "category": "Promotions",
+      "question": "Do you offer special discounts?",
+      "answer": "Yes! We offer special discounts for birthdays, anniversaries, and loyalty program members. Follow us on social media for seasonal promotions and offers."
+    },
+    {
+      "id": 9,
+      "category": "Loyalty",
+      "question": "Is there a loyalty program?",
+      "answer": "Yes, we have a loyalty points program. You earn 10 points for every NPR 100 spent. Points can be redeemed for discounts on future orders."
+    },
+    {
+      "id": 10,
+      "category": "Facilities",
+      "question": "Do you have parking facilities?",
+      "answer": "Yes, we have free parking available for our dine-in customers. Our parking area can accommodate up to 20 vehicles."
+    },
+    {
+      "id": 11,
+      "category": "Menu",
+      "question": "Do you cater to dietary restrictions?",
+      "answer": "Yes, we accommodate various dietary restrictions including gluten-free, vegan, and nut allergies. Please mention your requirements in the special instructions when ordering."
+    },
+    {
+      "id": 12,
+      "category": "Support",
+      "question": "How do I contact customer support?",
+      "answer": "You can reach our customer support team at +977 9801234567 or email support@dineease.com. We're available 24/7 to assist you."
+    },
+    {
+      "id": 13,
+      "category": "Reservations",
+      "question": "What is your cancellation policy?",
+      "answer": "Reservations can be cancelled up to 1 hour before the booking time. Food orders can be cancelled within 5 minutes of placing. No-shows may be charged a fee."
+    },
+    {
+      "id": 14,
+      "category": "Menu",
+      "question": "Do you serve alcohol?",
+      "answer": "Yes, we have a full bar serving beer, wine, and cocktails. We also have non-alcoholic beverages and mocktails."
+    },
+    {
+      "id": 15,
+      "category": "Menu",
+      "question": "Is there a kids menu?",
+      "answer": "Yes, we have a special kids menu with child-friendly portions and prices. Kids under 10 eat free on Sundays!"
+    },
+    {
+      "id": 16,
+      "category": "Reservations",
+      "question": "Do you accept group bookings?",
+      "answer": "Yes, we accept group bookings for parties of 10 or more. Please contact us at least 3 days in advance for special arrangements."
+    },
+    {
+      "id": 17,
+      "category": "Pricing",
+      "question": "What is your average price per person?",
+      "answer": "The average price per person is around NPR 800-1200 depending on your order. We have options for every budget!"
+    },
+    {
+      "id": 18,
+      "category": "Facilities",
+      "question": "Do you have WiFi?",
+      "answer": "Yes, free WiFi is available for all dine-in customers. Network: DineEase, Password: dine@123"
+    },
+    {
+      "id": 19,
+      "category": "Orders",
+      "question": "Do you offer takeaway?",
+      "answer": "Yes, takeaway is available. Simply place your order online and select 'Takeaway' option. Your order will be ready in 20-30 minutes."
+    },
+    {
+      "id": 20,
+      "category": "General",
+      "question": "What are your busiest hours?",
+      "answer": "Our busiest hours are 7:00 PM - 9:00 PM on weekends. For faster service, we recommend visiting between 11:00 AM - 1:00 PM or 2:00 PM - 5:00 PM."
+    },
+    {
+      "id": 21,
+      "category": "Facilities",
+      "question": "Do you have private dining rooms?",
+      "answer": "Yes, we have 2 private dining rooms that can accommodate up to 15 people each. Perfect for business meetings or family gatherings."
+    },
+    {
+      "id": 22,
+      "category": "General",
+      "question": "Can I bring my own cake?",
+      "answer": "Yes, you can bring your own cake for celebrations. We charge a small corkage fee of NPR 200."
+    },
+    {
+      "id": 23,
+      "category": "Gifts",
+      "question": "Do you have gift cards?",
+      "answer": "Yes, we offer digital gift cards in denominations of NPR 500, 1000, 2000, and 5000. They make perfect gifts!"
+    },
+    {
+      "id": 24,
+      "category": "Facilities",
+      "question": "Is your restaurant wheelchair accessible?",
+      "answer": "Yes, our restaurant is fully wheelchair accessible with ramps and accessible restrooms."
+    },
+    {
+      "id": 25,
+      "category": "General",
+      "question": "Do you have a dress code?",
+      "answer": "We have a smart casual dress code. No beachwear or sportswear, please."
+    },
+    {
+      "id": 26,
+      "category": "Reservations",
+      "question": "What happens if I'm late for my reservation?",
+      "answer": "We hold reservations for 15 minutes. Please call us if you're running late, and we'll do our best to accommodate you."
+    },
+    {
+      "id": 27,
+      "category": "Catering",
+      "question": "Do you offer catering services?",
+      "answer": "Yes, we offer catering for events and parties. Please contact our events team for a customized quote."
+    },
+    {
+      "id": 28,
+      "category": "Orders",
+      "question": "Can I order online?",
+      "answer": "Yes! You can order directly through our website or mobile app. We accept online payments via eSewa and Khalti."
+    },
+    {
+      "id": 29,
+      "category": "Promotions",
+      "question": "Do you have happy hours?",
+      "answer": "Yes, we have happy hours from 4:00 PM - 6:00 PM on weekdays with 20% off on select beverages."
+    },
+    {
+      "id": 30,
+      "category": "Safety",
+      "question": "What safety measures do you have?",
+      "answer": "We follow strict hygiene protocols, regular sanitization, and staff health checks. Your safety is our priority."
+    }
+  ]
+}

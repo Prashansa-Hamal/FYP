@@ -20,8 +20,18 @@ export type UserModel = runtime.Types.Result.DefaultSelection<Prisma.$UserPayloa
 
 export type AggregateUser = {
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
+}
+
+export type UserAvgAggregateOutputType = {
+  loyalityPoints: number | null
+}
+
+export type UserSumAggregateOutputType = {
+  loyalityPoints: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -30,7 +40,9 @@ export type UserMinAggregateOutputType = {
   email: string | null
   phone: string | null
   password: string | null
+  emailVerified: Date | null
   role: $Enums.UserRole | null
+  loyalityPoints: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -41,7 +53,9 @@ export type UserMaxAggregateOutputType = {
   email: string | null
   phone: string | null
   password: string | null
+  emailVerified: Date | null
   role: $Enums.UserRole | null
+  loyalityPoints: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -52,12 +66,22 @@ export type UserCountAggregateOutputType = {
   email: number
   phone: number
   password: number
+  emailVerified: number
   role: number
+  loyalityPoints: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
+
+export type UserAvgAggregateInputType = {
+  loyalityPoints?: true
+}
+
+export type UserSumAggregateInputType = {
+  loyalityPoints?: true
+}
 
 export type UserMinAggregateInputType = {
   id?: true
@@ -65,7 +89,9 @@ export type UserMinAggregateInputType = {
   email?: true
   phone?: true
   password?: true
+  emailVerified?: true
   role?: true
+  loyalityPoints?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -76,7 +102,9 @@ export type UserMaxAggregateInputType = {
   email?: true
   phone?: true
   password?: true
+  emailVerified?: true
   role?: true
+  loyalityPoints?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -87,7 +115,9 @@ export type UserCountAggregateInputType = {
   email?: true
   phone?: true
   password?: true
+  emailVerified?: true
   role?: true
+  loyalityPoints?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -131,6 +161,18 @@ export type UserAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: UserAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: UserSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: UserMinAggregateInputType
@@ -161,6 +203,8 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: UserCountAggregateInputType | true
+  _avg?: UserAvgAggregateInputType
+  _sum?: UserSumAggregateInputType
   _min?: UserMinAggregateInputType
   _max?: UserMaxAggregateInputType
 }
@@ -171,15 +215,19 @@ export type UserGroupByOutputType = {
   email: string
   phone: string | null
   password: string | null
+  emailVerified: Date | null
   role: $Enums.UserRole
+  loyalityPoints: number
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
 }
 
-type GetUserGroupByPayload<T extends UserGroupByArgs> = Prisma.PrismaPromise<
+export type GetUserGroupByPayload<T extends UserGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<UserGroupByOutputType, T['by']> &
       {
@@ -203,7 +251,9 @@ export type UserWhereInput = {
   email?: Prisma.StringFilter<"User"> | string
   phone?: Prisma.StringNullableFilter<"User"> | string | null
   password?: Prisma.StringNullableFilter<"User"> | string | null
+  emailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFilter<"User"> | number
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   addresses?: Prisma.AddressListRelationFilter
@@ -211,7 +261,9 @@ export type UserWhereInput = {
   carts?: Prisma.CartListRelationFilter
   orders?: Prisma.OrderListRelationFilter
   reservations?: Prisma.ReservationListRelationFilter
+  notifications?: Prisma.NotificationListRelationFilter
   staffShifts?: Prisma.StaffShiftListRelationFilter
+  loyaltyTransactions?: Prisma.LoyaltyTransactionListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -220,7 +272,9 @@ export type UserOrderByWithRelationInput = {
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   password?: Prisma.SortOrderInput | Prisma.SortOrder
+  emailVerified?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
+  loyalityPoints?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   addresses?: Prisma.AddressOrderByRelationAggregateInput
@@ -228,7 +282,9 @@ export type UserOrderByWithRelationInput = {
   carts?: Prisma.CartOrderByRelationAggregateInput
   orders?: Prisma.OrderOrderByRelationAggregateInput
   reservations?: Prisma.ReservationOrderByRelationAggregateInput
+  notifications?: Prisma.NotificationOrderByRelationAggregateInput
   staffShifts?: Prisma.StaffShiftOrderByRelationAggregateInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -240,7 +296,9 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   name?: Prisma.StringFilter<"User"> | string
   password?: Prisma.StringNullableFilter<"User"> | string | null
+  emailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFilter<"User"> | number
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   addresses?: Prisma.AddressListRelationFilter
@@ -248,7 +306,9 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   carts?: Prisma.CartListRelationFilter
   orders?: Prisma.OrderListRelationFilter
   reservations?: Prisma.ReservationListRelationFilter
+  notifications?: Prisma.NotificationListRelationFilter
   staffShifts?: Prisma.StaffShiftListRelationFilter
+  loyaltyTransactions?: Prisma.LoyaltyTransactionListRelationFilter
 }, "id" | "email" | "phone">
 
 export type UserOrderByWithAggregationInput = {
@@ -257,12 +317,16 @@ export type UserOrderByWithAggregationInput = {
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   password?: Prisma.SortOrderInput | Prisma.SortOrder
+  emailVerified?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
+  loyalityPoints?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
+  _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
+  _sum?: Prisma.UserSumOrderByAggregateInput
 }
 
 export type UserScalarWhereWithAggregatesInput = {
@@ -274,7 +338,9 @@ export type UserScalarWhereWithAggregatesInput = {
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
   phone?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   password?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  emailVerified?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   role?: Prisma.EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
+  loyalityPoints?: Prisma.IntWithAggregatesFilter<"User"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -285,7 +351,9 @@ export type UserCreateInput = {
   email: string
   phone?: string | null
   password?: string | null
+  emailVerified?: Date | string | null
   role?: $Enums.UserRole
+  loyalityPoints?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
@@ -293,7 +361,9 @@ export type UserCreateInput = {
   carts?: Prisma.CartCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   staffShifts?: Prisma.StaffShiftCreateNestedManyWithoutUserInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -302,7 +372,9 @@ export type UserUncheckedCreateInput = {
   email: string
   phone?: string | null
   password?: string | null
+  emailVerified?: Date | string | null
   role?: $Enums.UserRole
+  loyalityPoints?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
@@ -310,7 +382,9 @@ export type UserUncheckedCreateInput = {
   carts?: Prisma.CartUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   staffShifts?: Prisma.StaffShiftUncheckedCreateNestedManyWithoutUserInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -319,7 +393,9 @@ export type UserUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
@@ -327,7 +403,9 @@ export type UserUpdateInput = {
   carts?: Prisma.CartUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   staffShifts?: Prisma.StaffShiftUpdateManyWithoutUserNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -336,7 +414,9 @@ export type UserUncheckedUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
@@ -344,7 +424,9 @@ export type UserUncheckedUpdateInput = {
   carts?: Prisma.CartUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   staffShifts?: Prisma.StaffShiftUncheckedUpdateManyWithoutUserNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -353,7 +435,9 @@ export type UserCreateManyInput = {
   email: string
   phone?: string | null
   password?: string | null
+  emailVerified?: Date | string | null
   role?: $Enums.UserRole
+  loyalityPoints?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -364,7 +448,9 @@ export type UserUpdateManyMutationInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -375,7 +461,9 @@ export type UserUncheckedUpdateManyInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -386,9 +474,15 @@ export type UserCountOrderByAggregateInput = {
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  emailVerified?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  loyalityPoints?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type UserAvgOrderByAggregateInput = {
+  loyalityPoints?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -397,7 +491,9 @@ export type UserMaxOrderByAggregateInput = {
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  emailVerified?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  loyalityPoints?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -408,9 +504,15 @@ export type UserMinOrderByAggregateInput = {
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  emailVerified?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  loyalityPoints?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type UserSumOrderByAggregateInput = {
+  loyalityPoints?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -431,12 +533,38 @@ export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
 }
 
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
 export type EnumUserRoleFieldUpdateOperationsInput = {
   set?: $Enums.UserRole
 }
 
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
+}
+
+export type UserCreateNestedOneWithoutLoyaltyTransactionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutLoyaltyTransactionsInput, Prisma.UserUncheckedCreateWithoutLoyaltyTransactionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLoyaltyTransactionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutLoyaltyTransactionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutLoyaltyTransactionsInput, Prisma.UserUncheckedCreateWithoutLoyaltyTransactionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLoyaltyTransactionsInput
+  upsert?: Prisma.UserUpsertWithoutLoyaltyTransactionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutLoyaltyTransactionsInput, Prisma.UserUpdateWithoutLoyaltyTransactionsInput>, Prisma.UserUncheckedUpdateWithoutLoyaltyTransactionsInput>
 }
 
 export type UserCreateNestedOneWithoutAccountsInput = {
@@ -525,20 +653,134 @@ export type UserUpdateOneRequiredWithoutStaffShiftsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutStaffShiftsInput, Prisma.UserUpdateWithoutStaffShiftsInput>, Prisma.UserUncheckedUpdateWithoutStaffShiftsInput>
 }
 
+export type UserCreateNestedOneWithoutNotificationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutNotificationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationsInput
+  upsert?: Prisma.UserUpsertWithoutNotificationsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNotificationsInput, Prisma.UserUpdateWithoutNotificationsInput>, Prisma.UserUncheckedUpdateWithoutNotificationsInput>
+}
+
+export type UserCreateWithoutLoyaltyTransactionsInput = {
+  id?: string
+  name: string
+  email: string
+  phone?: string | null
+  password?: string | null
+  emailVerified?: Date | string | null
+  role?: $Enums.UserRole
+  loyalityPoints?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  carts?: Prisma.CartCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  reservations?: Prisma.ReservationCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  staffShifts?: Prisma.StaffShiftCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutLoyaltyTransactionsInput = {
+  id?: string
+  name: string
+  email: string
+  phone?: string | null
+  password?: string | null
+  emailVerified?: Date | string | null
+  role?: $Enums.UserRole
+  loyalityPoints?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  staffShifts?: Prisma.StaffShiftUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutLoyaltyTransactionsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutLoyaltyTransactionsInput, Prisma.UserUncheckedCreateWithoutLoyaltyTransactionsInput>
+}
+
+export type UserUpsertWithoutLoyaltyTransactionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutLoyaltyTransactionsInput, Prisma.UserUncheckedUpdateWithoutLoyaltyTransactionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutLoyaltyTransactionsInput, Prisma.UserUncheckedCreateWithoutLoyaltyTransactionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutLoyaltyTransactionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutLoyaltyTransactionsInput, Prisma.UserUncheckedUpdateWithoutLoyaltyTransactionsInput>
+}
+
+export type UserUpdateWithoutLoyaltyTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  carts?: Prisma.CartUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  reservations?: Prisma.ReservationUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  staffShifts?: Prisma.StaffShiftUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutLoyaltyTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  staffShifts?: Prisma.StaffShiftUncheckedUpdateManyWithoutUserNestedInput
+}
+
 export type UserCreateWithoutAccountsInput = {
   id?: string
   name: string
   email: string
   phone?: string | null
   password?: string | null
+  emailVerified?: Date | string | null
   role?: $Enums.UserRole
+  loyalityPoints?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
   carts?: Prisma.CartCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   staffShifts?: Prisma.StaffShiftCreateNestedManyWithoutUserInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -547,14 +789,18 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   email: string
   phone?: string | null
   password?: string | null
+  emailVerified?: Date | string | null
   role?: $Enums.UserRole
+  loyalityPoints?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
   carts?: Prisma.CartUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   staffShifts?: Prisma.StaffShiftUncheckedCreateNestedManyWithoutUserInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -579,14 +825,18 @@ export type UserUpdateWithoutAccountsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
   carts?: Prisma.CartUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   staffShifts?: Prisma.StaffShiftUpdateManyWithoutUserNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -595,14 +845,18 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
   carts?: Prisma.CartUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   staffShifts?: Prisma.StaffShiftUncheckedUpdateManyWithoutUserNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAddressesInput = {
@@ -611,14 +865,18 @@ export type UserCreateWithoutAddressesInput = {
   email: string
   phone?: string | null
   password?: string | null
+  emailVerified?: Date | string | null
   role?: $Enums.UserRole
+  loyalityPoints?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   carts?: Prisma.CartCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   staffShifts?: Prisma.StaffShiftCreateNestedManyWithoutUserInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAddressesInput = {
@@ -627,14 +885,18 @@ export type UserUncheckedCreateWithoutAddressesInput = {
   email: string
   phone?: string | null
   password?: string | null
+  emailVerified?: Date | string | null
   role?: $Enums.UserRole
+  loyalityPoints?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   carts?: Prisma.CartUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   staffShifts?: Prisma.StaffShiftUncheckedCreateNestedManyWithoutUserInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAddressesInput = {
@@ -659,14 +921,18 @@ export type UserUpdateWithoutAddressesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   carts?: Prisma.CartUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   staffShifts?: Prisma.StaffShiftUpdateManyWithoutUserNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAddressesInput = {
@@ -675,14 +941,18 @@ export type UserUncheckedUpdateWithoutAddressesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   carts?: Prisma.CartUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   staffShifts?: Prisma.StaffShiftUncheckedUpdateManyWithoutUserNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCartsInput = {
@@ -691,14 +961,18 @@ export type UserCreateWithoutCartsInput = {
   email: string
   phone?: string | null
   password?: string | null
+  emailVerified?: Date | string | null
   role?: $Enums.UserRole
+  loyalityPoints?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   staffShifts?: Prisma.StaffShiftCreateNestedManyWithoutUserInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCartsInput = {
@@ -707,14 +981,18 @@ export type UserUncheckedCreateWithoutCartsInput = {
   email: string
   phone?: string | null
   password?: string | null
+  emailVerified?: Date | string | null
   role?: $Enums.UserRole
+  loyalityPoints?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   staffShifts?: Prisma.StaffShiftUncheckedCreateNestedManyWithoutUserInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCartsInput = {
@@ -739,14 +1017,18 @@ export type UserUpdateWithoutCartsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   staffShifts?: Prisma.StaffShiftUpdateManyWithoutUserNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCartsInput = {
@@ -755,14 +1037,18 @@ export type UserUncheckedUpdateWithoutCartsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   staffShifts?: Prisma.StaffShiftUncheckedUpdateManyWithoutUserNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutOrdersInput = {
@@ -771,14 +1057,18 @@ export type UserCreateWithoutOrdersInput = {
   email: string
   phone?: string | null
   password?: string | null
+  emailVerified?: Date | string | null
   role?: $Enums.UserRole
+  loyalityPoints?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   carts?: Prisma.CartCreateNestedManyWithoutUserInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   staffShifts?: Prisma.StaffShiftCreateNestedManyWithoutUserInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutOrdersInput = {
@@ -787,14 +1077,18 @@ export type UserUncheckedCreateWithoutOrdersInput = {
   email: string
   phone?: string | null
   password?: string | null
+  emailVerified?: Date | string | null
   role?: $Enums.UserRole
+  loyalityPoints?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   carts?: Prisma.CartUncheckedCreateNestedManyWithoutUserInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   staffShifts?: Prisma.StaffShiftUncheckedCreateNestedManyWithoutUserInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutOrdersInput = {
@@ -819,14 +1113,18 @@ export type UserUpdateWithoutOrdersInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   carts?: Prisma.CartUpdateManyWithoutUserNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   staffShifts?: Prisma.StaffShiftUpdateManyWithoutUserNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -835,14 +1133,18 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   carts?: Prisma.CartUncheckedUpdateManyWithoutUserNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   staffShifts?: Prisma.StaffShiftUncheckedUpdateManyWithoutUserNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutReservationsInput = {
@@ -851,14 +1153,18 @@ export type UserCreateWithoutReservationsInput = {
   email: string
   phone?: string | null
   password?: string | null
+  emailVerified?: Date | string | null
   role?: $Enums.UserRole
+  loyalityPoints?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   carts?: Prisma.CartCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   staffShifts?: Prisma.StaffShiftCreateNestedManyWithoutUserInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReservationsInput = {
@@ -867,14 +1173,18 @@ export type UserUncheckedCreateWithoutReservationsInput = {
   email: string
   phone?: string | null
   password?: string | null
+  emailVerified?: Date | string | null
   role?: $Enums.UserRole
+  loyalityPoints?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   carts?: Prisma.CartUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   staffShifts?: Prisma.StaffShiftUncheckedCreateNestedManyWithoutUserInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReservationsInput = {
@@ -899,14 +1209,18 @@ export type UserUpdateWithoutReservationsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   carts?: Prisma.CartUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   staffShifts?: Prisma.StaffShiftUpdateManyWithoutUserNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReservationsInput = {
@@ -915,14 +1229,18 @@ export type UserUncheckedUpdateWithoutReservationsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   carts?: Prisma.CartUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   staffShifts?: Prisma.StaffShiftUncheckedUpdateManyWithoutUserNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutStaffShiftsInput = {
@@ -931,7 +1249,9 @@ export type UserCreateWithoutStaffShiftsInput = {
   email: string
   phone?: string | null
   password?: string | null
+  emailVerified?: Date | string | null
   role?: $Enums.UserRole
+  loyalityPoints?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
@@ -939,6 +1259,8 @@ export type UserCreateWithoutStaffShiftsInput = {
   carts?: Prisma.CartCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutStaffShiftsInput = {
@@ -947,7 +1269,9 @@ export type UserUncheckedCreateWithoutStaffShiftsInput = {
   email: string
   phone?: string | null
   password?: string | null
+  emailVerified?: Date | string | null
   role?: $Enums.UserRole
+  loyalityPoints?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
@@ -955,6 +1279,8 @@ export type UserUncheckedCreateWithoutStaffShiftsInput = {
   carts?: Prisma.CartUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutStaffShiftsInput = {
@@ -979,7 +1305,9 @@ export type UserUpdateWithoutStaffShiftsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
@@ -987,6 +1315,8 @@ export type UserUpdateWithoutStaffShiftsInput = {
   carts?: Prisma.CartUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStaffShiftsInput = {
@@ -995,7 +1325,9 @@ export type UserUncheckedUpdateWithoutStaffShiftsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
@@ -1003,6 +1335,104 @@ export type UserUncheckedUpdateWithoutStaffShiftsInput = {
   carts?: Prisma.CartUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutNotificationsInput = {
+  id?: string
+  name: string
+  email: string
+  phone?: string | null
+  password?: string | null
+  emailVerified?: Date | string | null
+  role?: $Enums.UserRole
+  loyalityPoints?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  carts?: Prisma.CartCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  reservations?: Prisma.ReservationCreateNestedManyWithoutUserInput
+  staffShifts?: Prisma.StaffShiftCreateNestedManyWithoutUserInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutNotificationsInput = {
+  id?: string
+  name: string
+  email: string
+  phone?: string | null
+  password?: string | null
+  emailVerified?: Date | string | null
+  role?: $Enums.UserRole
+  loyalityPoints?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutUserInput
+  staffShifts?: Prisma.StaffShiftUncheckedCreateNestedManyWithoutUserInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutNotificationsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>
+}
+
+export type UserUpsertWithoutNotificationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutNotificationsInput, Prisma.UserUncheckedUpdateWithoutNotificationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutNotificationsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutNotificationsInput, Prisma.UserUncheckedUpdateWithoutNotificationsInput>
+}
+
+export type UserUpdateWithoutNotificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  carts?: Prisma.CartUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  reservations?: Prisma.ReservationUpdateManyWithoutUserNestedInput
+  staffShifts?: Prisma.StaffShiftUpdateManyWithoutUserNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutNotificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  loyalityPoints?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutUserNestedInput
+  staffShifts?: Prisma.StaffShiftUncheckedUpdateManyWithoutUserNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -1016,7 +1446,9 @@ export type UserCountOutputType = {
   carts: number
   orders: number
   reservations: number
+  notifications: number
   staffShifts: number
+  loyaltyTransactions: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1025,7 +1457,9 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   carts?: boolean | UserCountOutputTypeCountCartsArgs
   orders?: boolean | UserCountOutputTypeCountOrdersArgs
   reservations?: boolean | UserCountOutputTypeCountReservationsArgs
+  notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
   staffShifts?: boolean | UserCountOutputTypeCountStaffShiftsArgs
+  loyaltyTransactions?: boolean | UserCountOutputTypeCountLoyaltyTransactionsArgs
 }
 
 /**
@@ -1076,8 +1510,22 @@ export type UserCountOutputTypeCountReservationsArgs<ExtArgs extends runtime.Typ
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NotificationWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountStaffShiftsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.StaffShiftWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountLoyaltyTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LoyaltyTransactionWhereInput
 }
 
 
@@ -1087,7 +1535,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   email?: boolean
   phone?: boolean
   password?: boolean
+  emailVerified?: boolean
   role?: boolean
+  loyalityPoints?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   addresses?: boolean | Prisma.User$addressesArgs<ExtArgs>
@@ -1095,7 +1545,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   carts?: boolean | Prisma.User$cartsArgs<ExtArgs>
   orders?: boolean | Prisma.User$ordersArgs<ExtArgs>
   reservations?: boolean | Prisma.User$reservationsArgs<ExtArgs>
+  notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   staffShifts?: boolean | Prisma.User$staffShiftsArgs<ExtArgs>
+  loyaltyTransactions?: boolean | Prisma.User$loyaltyTransactionsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1105,7 +1557,9 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   email?: boolean
   phone?: boolean
   password?: boolean
+  emailVerified?: boolean
   role?: boolean
+  loyalityPoints?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -1116,7 +1570,9 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   email?: boolean
   phone?: boolean
   password?: boolean
+  emailVerified?: boolean
   role?: boolean
+  loyalityPoints?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -1127,19 +1583,23 @@ export type UserSelectScalar = {
   email?: boolean
   phone?: boolean
   password?: boolean
+  emailVerified?: boolean
   role?: boolean
+  loyalityPoints?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "phone" | "password" | "role" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "phone" | "password" | "emailVerified" | "role" | "loyalityPoints" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   addresses?: boolean | Prisma.User$addressesArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   carts?: boolean | Prisma.User$cartsArgs<ExtArgs>
   orders?: boolean | Prisma.User$ordersArgs<ExtArgs>
   reservations?: boolean | Prisma.User$reservationsArgs<ExtArgs>
+  notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   staffShifts?: boolean | Prisma.User$staffShiftsArgs<ExtArgs>
+  loyaltyTransactions?: boolean | Prisma.User$loyaltyTransactionsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1153,7 +1613,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     carts: Prisma.$CartPayload<ExtArgs>[]
     orders: Prisma.$OrderPayload<ExtArgs>[]
     reservations: Prisma.$ReservationPayload<ExtArgs>[]
+    notifications: Prisma.$NotificationPayload<ExtArgs>[]
     staffShifts: Prisma.$StaffShiftPayload<ExtArgs>[]
+    loyaltyTransactions: Prisma.$LoyaltyTransactionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1161,7 +1623,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     email: string
     phone: string | null
     password: string | null
+    emailVerified: Date | null
     role: $Enums.UserRole
+    loyalityPoints: number
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -1563,7 +2027,9 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   carts<T extends Prisma.User$cartsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$cartsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CartPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   orders<T extends Prisma.User$ordersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reservations<T extends Prisma.User$reservationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reservationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  notifications<T extends Prisma.User$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   staffShifts<T extends Prisma.User$staffShiftsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$staffShiftsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffShiftPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  loyaltyTransactions<T extends Prisma.User$loyaltyTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$loyaltyTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LoyaltyTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1598,7 +2064,9 @@ export interface UserFieldRefs {
   readonly email: Prisma.FieldRef<"User", 'String'>
   readonly phone: Prisma.FieldRef<"User", 'String'>
   readonly password: Prisma.FieldRef<"User", 'String'>
+  readonly emailVerified: Prisma.FieldRef<"User", 'DateTime'>
   readonly role: Prisma.FieldRef<"User", 'UserRole'>
+  readonly loyalityPoints: Prisma.FieldRef<"User", 'Int'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
@@ -1797,6 +2265,11 @@ export type UserFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    * Skip the first `n` Users.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Users.
+   */
   distinct?: Prisma.UserScalarFieldEnum | Prisma.UserScalarFieldEnum[]
 }
 
@@ -2109,6 +2582,30 @@ export type User$reservationsArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
+ * User.notifications
+ */
+export type User$notificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Notification
+   */
+  select?: Prisma.NotificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Notification
+   */
+  omit?: Prisma.NotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NotificationInclude<ExtArgs> | null
+  where?: Prisma.NotificationWhereInput
+  orderBy?: Prisma.NotificationOrderByWithRelationInput | Prisma.NotificationOrderByWithRelationInput[]
+  cursor?: Prisma.NotificationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NotificationScalarFieldEnum | Prisma.NotificationScalarFieldEnum[]
+}
+
+/**
  * User.staffShifts
  */
 export type User$staffShiftsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2130,6 +2627,30 @@ export type User$staffShiftsArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.StaffShiftScalarFieldEnum | Prisma.StaffShiftScalarFieldEnum[]
+}
+
+/**
+ * User.loyaltyTransactions
+ */
+export type User$loyaltyTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LoyaltyTransaction
+   */
+  select?: Prisma.LoyaltyTransactionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LoyaltyTransaction
+   */
+  omit?: Prisma.LoyaltyTransactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LoyaltyTransactionInclude<ExtArgs> | null
+  where?: Prisma.LoyaltyTransactionWhereInput
+  orderBy?: Prisma.LoyaltyTransactionOrderByWithRelationInput | Prisma.LoyaltyTransactionOrderByWithRelationInput[]
+  cursor?: Prisma.LoyaltyTransactionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LoyaltyTransactionScalarFieldEnum | Prisma.LoyaltyTransactionScalarFieldEnum[]
 }
 
 /**

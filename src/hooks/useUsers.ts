@@ -1,4 +1,3 @@
-// hooks/useUsers.ts - Enhanced version
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 
 interface User {
@@ -9,6 +8,7 @@ interface User {
   role: string;
   addresses: any[];
   orders: any[];
+  loyalityPoints: number;
   createdAt: string;
   updatedAt: string;
 }

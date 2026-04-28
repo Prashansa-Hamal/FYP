@@ -1,9 +1,17 @@
-const AdminPage = async () => {
-  return (
-    <div className="flex items-center justify-center flex-col">
-      <h1>Admin Page</h1>
-    </div>
-  );
+import { Suspense } from "react";
+import { Metadata } from "next";
+import { DashboardOverview } from "@/components/dashboard/DashboardOverview";
+import { DashboardSkeleton } from "@/components/skeletons/DashboardSkeleton";
+
+export const metadata: Metadata = {
+  title: "Dashboard | Restaurant Management",
+  description: "Real-time restaurant dashboard with analytics and insights",
 };
 
-export default AdminPage;
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<DashboardSkeleton />}>
+      <DashboardOverview />
+    </Suspense>
+  );
+}

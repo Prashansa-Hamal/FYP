@@ -41,6 +41,7 @@ export type TableMinAggregateOutputType = {
   tableNumber: number | null
   capacity: number | null
   isAvailable: boolean | null
+  status: $Enums.TableStatus | null
   location: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -51,6 +52,7 @@ export type TableMaxAggregateOutputType = {
   tableNumber: number | null
   capacity: number | null
   isAvailable: boolean | null
+  status: $Enums.TableStatus | null
   location: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -61,6 +63,7 @@ export type TableCountAggregateOutputType = {
   tableNumber: number
   capacity: number
   isAvailable: number
+  status: number
   location: number
   createdAt: number
   updatedAt: number
@@ -83,6 +86,7 @@ export type TableMinAggregateInputType = {
   tableNumber?: true
   capacity?: true
   isAvailable?: true
+  status?: true
   location?: true
   createdAt?: true
   updatedAt?: true
@@ -93,6 +97,7 @@ export type TableMaxAggregateInputType = {
   tableNumber?: true
   capacity?: true
   isAvailable?: true
+  status?: true
   location?: true
   createdAt?: true
   updatedAt?: true
@@ -103,6 +108,7 @@ export type TableCountAggregateInputType = {
   tableNumber?: true
   capacity?: true
   isAvailable?: true
+  status?: true
   location?: true
   createdAt?: true
   updatedAt?: true
@@ -200,6 +206,7 @@ export type TableGroupByOutputType = {
   tableNumber: number
   capacity: number
   isAvailable: boolean
+  status: $Enums.TableStatus
   location: string | null
   createdAt: Date
   updatedAt: Date
@@ -210,7 +217,7 @@ export type TableGroupByOutputType = {
   _max: TableMaxAggregateOutputType | null
 }
 
-type GetTableGroupByPayload<T extends TableGroupByArgs> = Prisma.PrismaPromise<
+export type GetTableGroupByPayload<T extends TableGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<TableGroupByOutputType, T['by']> &
       {
@@ -233,6 +240,7 @@ export type TableWhereInput = {
   tableNumber?: Prisma.IntFilter<"Table"> | number
   capacity?: Prisma.IntFilter<"Table"> | number
   isAvailable?: Prisma.BoolFilter<"Table"> | boolean
+  status?: Prisma.EnumTableStatusFilter<"Table"> | $Enums.TableStatus
   location?: Prisma.StringNullableFilter<"Table"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Table"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Table"> | Date | string
@@ -244,6 +252,7 @@ export type TableOrderByWithRelationInput = {
   tableNumber?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
   isAvailable?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   location?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -258,6 +267,7 @@ export type TableWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.TableWhereInput | Prisma.TableWhereInput[]
   capacity?: Prisma.IntFilter<"Table"> | number
   isAvailable?: Prisma.BoolFilter<"Table"> | boolean
+  status?: Prisma.EnumTableStatusFilter<"Table"> | $Enums.TableStatus
   location?: Prisma.StringNullableFilter<"Table"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Table"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Table"> | Date | string
@@ -269,6 +279,7 @@ export type TableOrderByWithAggregationInput = {
   tableNumber?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
   isAvailable?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   location?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -287,6 +298,7 @@ export type TableScalarWhereWithAggregatesInput = {
   tableNumber?: Prisma.IntWithAggregatesFilter<"Table"> | number
   capacity?: Prisma.IntWithAggregatesFilter<"Table"> | number
   isAvailable?: Prisma.BoolWithAggregatesFilter<"Table"> | boolean
+  status?: Prisma.EnumTableStatusWithAggregatesFilter<"Table"> | $Enums.TableStatus
   location?: Prisma.StringNullableWithAggregatesFilter<"Table"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Table"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Table"> | Date | string
@@ -297,6 +309,7 @@ export type TableCreateInput = {
   tableNumber: number
   capacity: number
   isAvailable?: boolean
+  status?: $Enums.TableStatus
   location?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -308,6 +321,7 @@ export type TableUncheckedCreateInput = {
   tableNumber: number
   capacity: number
   isAvailable?: boolean
+  status?: $Enums.TableStatus
   location?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -319,6 +333,7 @@ export type TableUpdateInput = {
   tableNumber?: Prisma.IntFieldUpdateOperationsInput | number
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumTableStatusFieldUpdateOperationsInput | $Enums.TableStatus
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -330,6 +345,7 @@ export type TableUncheckedUpdateInput = {
   tableNumber?: Prisma.IntFieldUpdateOperationsInput | number
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumTableStatusFieldUpdateOperationsInput | $Enums.TableStatus
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -341,6 +357,7 @@ export type TableCreateManyInput = {
   tableNumber: number
   capacity: number
   isAvailable?: boolean
+  status?: $Enums.TableStatus
   location?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -351,6 +368,7 @@ export type TableUpdateManyMutationInput = {
   tableNumber?: Prisma.IntFieldUpdateOperationsInput | number
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumTableStatusFieldUpdateOperationsInput | $Enums.TableStatus
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -361,6 +379,7 @@ export type TableUncheckedUpdateManyInput = {
   tableNumber?: Prisma.IntFieldUpdateOperationsInput | number
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumTableStatusFieldUpdateOperationsInput | $Enums.TableStatus
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -381,6 +400,7 @@ export type TableCountOrderByAggregateInput = {
   tableNumber?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
   isAvailable?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   location?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -396,6 +416,7 @@ export type TableMaxOrderByAggregateInput = {
   tableNumber?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
   isAvailable?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   location?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -406,6 +427,7 @@ export type TableMinOrderByAggregateInput = {
   tableNumber?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
   isAvailable?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   location?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -454,11 +476,16 @@ export type TableUncheckedUpdateManyWithoutReservationsNestedInput = {
   deleteMany?: Prisma.TableScalarWhereInput | Prisma.TableScalarWhereInput[]
 }
 
+export type EnumTableStatusFieldUpdateOperationsInput = {
+  set?: $Enums.TableStatus
+}
+
 export type TableCreateWithoutReservationsInput = {
   id?: string
   tableNumber: number
   capacity: number
   isAvailable?: boolean
+  status?: $Enums.TableStatus
   location?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -469,6 +496,7 @@ export type TableUncheckedCreateWithoutReservationsInput = {
   tableNumber: number
   capacity: number
   isAvailable?: boolean
+  status?: $Enums.TableStatus
   location?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -503,6 +531,7 @@ export type TableScalarWhereInput = {
   tableNumber?: Prisma.IntFilter<"Table"> | number
   capacity?: Prisma.IntFilter<"Table"> | number
   isAvailable?: Prisma.BoolFilter<"Table"> | boolean
+  status?: Prisma.EnumTableStatusFilter<"Table"> | $Enums.TableStatus
   location?: Prisma.StringNullableFilter<"Table"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Table"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Table"> | Date | string
@@ -513,6 +542,7 @@ export type TableUpdateWithoutReservationsInput = {
   tableNumber?: Prisma.IntFieldUpdateOperationsInput | number
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumTableStatusFieldUpdateOperationsInput | $Enums.TableStatus
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -523,6 +553,7 @@ export type TableUncheckedUpdateWithoutReservationsInput = {
   tableNumber?: Prisma.IntFieldUpdateOperationsInput | number
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumTableStatusFieldUpdateOperationsInput | $Enums.TableStatus
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -533,6 +564,7 @@ export type TableUncheckedUpdateManyWithoutReservationsInput = {
   tableNumber?: Prisma.IntFieldUpdateOperationsInput | number
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumTableStatusFieldUpdateOperationsInput | $Enums.TableStatus
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -574,6 +606,7 @@ export type TableSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   tableNumber?: boolean
   capacity?: boolean
   isAvailable?: boolean
+  status?: boolean
   location?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -586,6 +619,7 @@ export type TableSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   tableNumber?: boolean
   capacity?: boolean
   isAvailable?: boolean
+  status?: boolean
   location?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -596,6 +630,7 @@ export type TableSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   tableNumber?: boolean
   capacity?: boolean
   isAvailable?: boolean
+  status?: boolean
   location?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -606,12 +641,13 @@ export type TableSelectScalar = {
   tableNumber?: boolean
   capacity?: boolean
   isAvailable?: boolean
+  status?: boolean
   location?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TableOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tableNumber" | "capacity" | "isAvailable" | "location" | "createdAt" | "updatedAt", ExtArgs["result"]["table"]>
+export type TableOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tableNumber" | "capacity" | "isAvailable" | "status" | "location" | "createdAt" | "updatedAt", ExtArgs["result"]["table"]>
 export type TableInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   reservations?: boolean | Prisma.Table$reservationsArgs<ExtArgs>
   _count?: boolean | Prisma.TableCountOutputTypeDefaultArgs<ExtArgs>
@@ -629,6 +665,7 @@ export type $TablePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     tableNumber: number
     capacity: number
     isAvailable: boolean
+    status: $Enums.TableStatus
     location: string | null
     createdAt: Date
     updatedAt: Date
@@ -1060,6 +1097,7 @@ export interface TableFieldRefs {
   readonly tableNumber: Prisma.FieldRef<"Table", 'Int'>
   readonly capacity: Prisma.FieldRef<"Table", 'Int'>
   readonly isAvailable: Prisma.FieldRef<"Table", 'Boolean'>
+  readonly status: Prisma.FieldRef<"Table", 'TableStatus'>
   readonly location: Prisma.FieldRef<"Table", 'String'>
   readonly createdAt: Prisma.FieldRef<"Table", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Table", 'DateTime'>
@@ -1259,6 +1297,11 @@ export type TableFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Skip the first `n` Tables.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Tables.
+   */
   distinct?: Prisma.TableScalarFieldEnum | Prisma.TableScalarFieldEnum[]
 }
 

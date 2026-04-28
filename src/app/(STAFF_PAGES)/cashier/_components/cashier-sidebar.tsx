@@ -15,14 +15,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-import {
-  Calendar,
-  LayoutDashboard,
-  Receipt,
-  ShoppingCart,
-  Table2,
-  TrendingUp,
-} from "lucide-react";
+import { Calendar, LayoutDashboard, ShoppingCart, Table2 } from "lucide-react";
 
 const data = {
   user: {
@@ -49,16 +42,6 @@ const data = {
       title: "Reservations",
       url: "/cashier/reservations",
       icon: Calendar,
-    },
-    {
-      title: "Billing",
-      url: "/cashier/billing",
-      icon: Receipt,
-    },
-    {
-      title: "Revenue",
-      url: "/cashier/revenue",
-      icon: TrendingUp,
     },
   ],
 };

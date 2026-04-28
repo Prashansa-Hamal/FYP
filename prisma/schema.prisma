@@ -34,10 +34,9 @@ enum PaymentStatus {
 }
 
 enum PaymentMethod {
-  CASH
-  CARD
-  ONLINE
-  WALLET
+  COD
+  ESEWA
+  KHALTI
 }
 
 enum OrderType {
@@ -64,26 +63,61 @@ enum PreparationStation {
   GRILL_STATION
 }
 
+enum NotificationType {
+  ORDER_PLACED
+  ORDER_CONFIRMED
+  ORDER_PREPARING
+  ORDER_READY
+  ORDER_SERVED
+  ORDER_COMPLETED
+  ORDER_CANCELLED
+  PAYMENT_RECEIVED
+  PAYMENT_FAILED
+  RESERVATION_CONFIRMED
+  RESERVATION_CANCELLED
+  LOYALTY_POINTS_EARNED
+  LOYALTY_POINTS_REDEEMED
+  GENERAL_ANNOUNCEMENT
+}
+
 model User {
-  id        String    @id @default(cuid())
-  name      String
-  email     String    @unique
-  phone     String?   @unique
-  password  String?
-  role      UserRole  @default(USER)
-  addresses Address[]
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  phone         String?   @unique
+  password      String?
+  emailVerified DateTime?
+  role          UserRole  @default(USER)
+  addresses     Address[]
+
+  loyalityPoints Int @default(0)
 
   accounts     Account[]
   carts        Cart[]
   orders       Order[]
   reservations Reservation[]
 
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  staffShifts StaffShift[]
+  notifications Notification[]
+
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  staffShifts         StaffShift[]
+  loyaltyTransactions LoyaltyTransaction[]
 
   @@index([email])
   @@index([phone])
+}
+
+model LoyaltyTransaction {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  points      Int
+  type        String // "EARNED" or "REDEEMED"
+  orderId     String? // Optional: link to order
+  order       Order?   @relation(fields: [orderId], references: [id])
+  description String?
+  createdAt   DateTime @default(now())
 }
 
 model Account {
@@ -103,6 +137,8 @@ model Account {
 model Address {
   id         String  @id @default(cuid())
   userId     String
+  name       String
+  phone      String
   street     String
   city       String
   state      String
@@ -208,8 +244,10 @@ model Order {
   cancelledAt        DateTime?
   cancellationReason String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  notifications       Notification[]
+  loyaltyTransactions LoyaltyTransaction[]
 
   @@index([userId])
   @@index([status])
@@ -288,19 +326,19 @@ model Reservation {
   @@index([status])
 }
 
-// enum TableStatus {
-//   AVAILABLE
-//   OCCUPIED
-//   RESERVED
-//   OUT_OF_SERVICE
-// }
+enum TableStatus {
+  AVAILABLE
+  OCCUPIED
+  RESERVED
+  OUT_OF_SERVICE
+}
 
 model Table {
-  id          String  @id @default(cuid())
-  tableNumber Int     @unique
+  id          String      @id @default(cuid())
+  tableNumber Int         @unique
   capacity    Int
-  isAvailable Boolean @default(true)
-  // status      TableStatus @default(AVAILABLE)
+  isAvailable Boolean     @default(true)
+  status      TableStatus @default(AVAILABLE)
   location    String? // e.g., "Window", "Patio", "Main Hall"
 
   reservations Reservation[]
@@ -371,4 +409,24 @@ model OrderStationAssignment {
   @@index([station])
   @@index([status])
   @@index([assignedTo])
+}
+
+model Notification {
+  id      String           @id @default(cuid())
+  userId  String
+  orderId String?
+  type    NotificationType
+  title   String
+  message String
+  isRead  Boolean          @default(false)
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  order Order? @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([orderId])
+  @@index([isRead])
 }

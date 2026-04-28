@@ -1,12 +1,11 @@
-import { OrderStatus, PaymentMethod } from "./enums";
+import { OrderStatus, OrderType, PaymentMethod } from "./enums";
 
-// types/order.ts
 export interface PlaceOrderRequest {
-  orderType?: "DINE_IN" | "TAKEAWAY" | "DELIVERY";
+  orderType?: OrderType;
   tableNumber?: number;
   deliveryAddressId?: string;
   specialInstructions?: string;
-  paymentMethod?: "CASH" | "CARD" | "ONLINE" | "WALLET";
+  paymentMethod?: "COD" | "ESEWA" | "KHALTI";
 }
 
 export interface OrderItemSummary {
@@ -32,9 +31,17 @@ export interface PlaceOrderResponse {
     items: OrderItemSummary[];
     createdAt: string;
   };
+  paymentInfo: PaymentInfo;
   nextSteps?: string[];
   unavailableItems?: string[];
   error?: string;
+}
+
+interface PaymentInfo {
+  requiresPayment: boolean;
+  paymentMethod: PaymentMethod;
+  amount: number;
+  initiatePayment: boolean;
 }
 
 export interface OrderItem {
@@ -43,7 +50,7 @@ export interface OrderItem {
   quantity: number;
   unitPrice: number;
   totalPrice: number;
-  specialInstructions?: string;
+  specialInstructions?: string | null;
   menuItem: {
     id: string;
     name: string;

@@ -19,7 +19,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             retry: 1,
           },
         },
-      })
+      }),
   );
 
   return (
@@ -27,7 +27,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <EdgeStoreProvider>
         <CartProvider>{children}</CartProvider>
       </EdgeStoreProvider>
-      {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       <Toaster position="bottom-right" richColors />
     </QueryClientProvider>
   );

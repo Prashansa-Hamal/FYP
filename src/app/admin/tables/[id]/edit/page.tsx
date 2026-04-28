@@ -40,7 +40,7 @@ export default function EditTablePage() {
       <Card className="w-full max-w-2xl shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-semibold">
-            Edit Table #{table.tableNumber}
+            Edit Table #{table.data.tableNumber}
           </CardTitle>
           <CardDescription>
             Update table information and availability.
@@ -51,12 +51,12 @@ export default function EditTablePage() {
 
         <CardContent className="pt-6">
           <TableForm
-            tableId={table.id}
+            tableId={table.data.id}
             defaultValues={{
-              tableNumber: table.tableNumber,
-              capacity: table.capacity,
-              isAvailable: table.isAvailable,
-              location: table.location ?? "",
+              tableNumber: table.data.tableNumber,
+              capacity: table.data.capacity,
+              isAvailable: table.data.isAvailable,
+              location: table.data.location ?? "",
             }}
           />
         </CardContent>

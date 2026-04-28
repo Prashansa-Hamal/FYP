@@ -45,10 +45,9 @@ export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
 
 
 export const PaymentMethod = {
-  CASH: 'CASH',
-  CARD: 'CARD',
-  ONLINE: 'ONLINE',
-  WALLET: 'WALLET'
+  COD: 'COD',
+  ESEWA: 'ESEWA',
+  KHALTI: 'KHALTI'
 } as const
 
 export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
@@ -85,3 +84,33 @@ export const PreparationStation = {
 } as const
 
 export type PreparationStation = (typeof PreparationStation)[keyof typeof PreparationStation]
+
+
+export const NotificationType = {
+  ORDER_PLACED: 'ORDER_PLACED',
+  ORDER_CONFIRMED: 'ORDER_CONFIRMED',
+  ORDER_PREPARING: 'ORDER_PREPARING',
+  ORDER_READY: 'ORDER_READY',
+  ORDER_SERVED: 'ORDER_SERVED',
+  ORDER_COMPLETED: 'ORDER_COMPLETED',
+  ORDER_CANCELLED: 'ORDER_CANCELLED',
+  PAYMENT_RECEIVED: 'PAYMENT_RECEIVED',
+  PAYMENT_FAILED: 'PAYMENT_FAILED',
+  RESERVATION_CONFIRMED: 'RESERVATION_CONFIRMED',
+  RESERVATION_CANCELLED: 'RESERVATION_CANCELLED',
+  LOYALTY_POINTS_EARNED: 'LOYALTY_POINTS_EARNED',
+  LOYALTY_POINTS_REDEEMED: 'LOYALTY_POINTS_REDEEMED',
+  GENERAL_ANNOUNCEMENT: 'GENERAL_ANNOUNCEMENT'
+} as const
+
+export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
+
+
+export const TableStatus = {
+  AVAILABLE: 'AVAILABLE',
+  OCCUPIED: 'OCCUPIED',
+  RESERVED: 'RESERVED',
+  OUT_OF_SERVICE: 'OUT_OF_SERVICE'
+} as const
+
+export type TableStatus = (typeof TableStatus)[keyof typeof TableStatus]

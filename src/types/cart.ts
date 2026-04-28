@@ -1,3 +1,5 @@
+import { PreparationStation } from "./enums";
+
 export interface CartItem {
   id: string;
   cartId: string;
@@ -11,6 +13,7 @@ export interface CartItem {
     description: string;
     price: number;
     imageUrl: string;
+    preparationStation?: PreparationStation;
   };
 }
 

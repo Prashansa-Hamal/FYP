@@ -11,7 +11,12 @@ interface ButtonProps {
 
 export const LogoutButton = ({ className, children }: ButtonProps) => {
   return (
-    <Button className={cn("cursor-pointer", className)} onClick={logOut}>
+    <Button
+      size="lg"
+      variant="destructive"
+      className={cn("cursor-pointer", className)}
+      onClick={logOut}
+    >
       {children}
     </Button>
   );

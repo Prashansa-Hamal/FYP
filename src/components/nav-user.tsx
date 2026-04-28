@@ -17,6 +17,20 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "./ui/button";
+import { LogOut } from "lucide-react";
+import { logOut } from "@/app/(AUTH)/_actions/logout";
 
 export function NavUser({
   user,
@@ -71,9 +85,40 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive">
-              <IconLogout />
-              Log out
+            <DropdownMenuItem asChild>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    className="w-full justify-start"
+                    size="sm"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Logout</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to logout? You will need to sign in
+                      again to access your account.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => {
+                        console.log("Logging out...");
+                        logOut();
+                      }}
+                      className="bg-red-600 hover:bg-red-700"
+                    >
+                      Logout
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

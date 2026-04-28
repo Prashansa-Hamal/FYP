@@ -340,6 +340,8 @@ export function OrdersDataTable() {
 
   const { data: ordersData, isLoading, refetch } = useOrders(filters);
 
+  console.log("Orders Data:", ordersData);
+
   const totalCount = ordersData?.pagination?.total || 0;
   const totalPages = ordersData?.pagination?.pages || 1;
 
@@ -571,7 +573,7 @@ const OrderActions = ({ row }: { row: Row<OrderRow> }) => {
             customerPhone={order.userPhone}
             tableNumber={order.tableNumber}
             orderType={order.orderType}
-            items={invoiceItems}
+            items={invoiceItems as any}
             subtotal={order.totalAmount}
             taxAmount={order.taxAmount}
             discountAmount={order.discountAmount}

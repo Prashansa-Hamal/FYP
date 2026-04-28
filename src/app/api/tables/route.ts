@@ -1,112 +1,112 @@
-import db from "@/lib/db";
-import { tableSchema } from "@/schemas";
 import { NextRequest, NextResponse } from "next/server";
+import db from "@/lib/db";
+import { getUser } from "@/data/user";
 
+// GET /api/tables - Get all tables
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams;
-
-    // ----------------------------
-    // Pagination
-    // ----------------------------
-    const page = Math.max(Number(searchParams.get("page")) || 1, 1);
-    const limit = Math.min(Number(searchParams.get("limit")) || 10, 50);
-    const skip = (page - 1) * limit;
-
-    // ----------------------------
-    // Sorting
-    // ----------------------------
-    const sortBy = searchParams.get("sortBy") ?? "tableNumber";
-    const sortOrder = searchParams.get("sortOrder") === "desc" ? "desc" : "asc";
-
-    // ----------------------------
-    // Filters
-    // ----------------------------
-    const where: any = {};
-
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get("status");
     const isAvailable = searchParams.get("isAvailable");
-    if (isAvailable !== null) {
-      where.isAvailable = isAvailable === "true";
-    }
-
     const location = searchParams.get("location");
-    if (location) {
-      where.location = location;
+
+    // Build where clause
+    const whereClause: any = {};
+
+    if (status) {
+      whereClause.status = status;
     }
 
-    // ----------------------------
-    // Queries
-    // ----------------------------
-    const [tables, total] = await Promise.all([
-      db.table.findMany({
-        where,
-        orderBy: {
-          [sortBy]: sortOrder,
-        },
-        skip,
-        take: limit,
-        select: {
-          id: true,
-          tableNumber: true,
-          capacity: true,
-          isAvailable: true,
-          location: true,
-          createdAt: true,
-          updatedAt: true,
-          _count: {
-            select: {
-              reservations: true,
-            },
-          },
-        },
-      }),
-      db.table.count({ where }),
-    ]);
+    if (isAvailable !== null) {
+      whereClause.isAvailable = isAvailable === "true";
+    }
+
+    if (location) {
+      whereClause.location = location;
+    }
+
+    const tables = await db.table.findMany({
+      where: whereClause,
+      orderBy: {
+        tableNumber: "asc",
+      },
+    });
 
     return NextResponse.json({
       success: true,
       data: tables,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
-      },
+      count: tables.length,
     });
   } catch (error) {
     console.error("Error fetching tables:", error);
     return NextResponse.json(
-      { success: false, message: "Internal Server Error" },
+      {
+        error: "Failed to fetch tables",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }
 }
 
-export async function POST(req: Request) {
+// POST /api/tables - Create a new table
+export async function POST(request: NextRequest) {
   try {
-    const body = await req.json();
+    const user = await getUser();
 
-    const parsed = tableSchema.safeParse({
-      ...body,
-      tableNumber: Number(body.tableNumber),
-      capacity: Number(body.capacity),
-    });
-
-    if (!parsed.success) {
+    // Check if user is admin
+    if (!user || user.role !== "ADMIN") {
       return NextResponse.json(
-        { error: parsed.error.flatten() },
+        { error: "Unauthorized. Admin access required." },
+        { status: 401 },
+      );
+    }
+
+    const body = await request.json();
+    const { tableNumber, capacity, location, status } = body;
+
+    // Validate required fields
+    if (!tableNumber || !capacity) {
+      return NextResponse.json(
+        { error: "Table number and capacity are required" },
         { status: 400 },
       );
     }
 
-    const table = await db.table.create({
-      data: parsed.data,
+    // Check if table number already exists
+    const existingTable = await db.table.findUnique({
+      where: { tableNumber },
     });
 
-    return NextResponse.json(table);
+    if (existingTable) {
+      return NextResponse.json(
+        { error: "Table number already exists" },
+        { status: 409 },
+      );
+    }
+
+    const table = await db.table.create({
+      data: {
+        tableNumber,
+        capacity,
+        location: location || null,
+        status: status || "AVAILABLE",
+        isAvailable: status === "AVAILABLE",
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: table,
+      message: "Table created successfully",
+    });
   } catch (error) {
+    console.error("Error creating table:", error);
     return NextResponse.json(
-      { error: "Table number must be unique" },
+      {
+        error: "Failed to create table",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }
