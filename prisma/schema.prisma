@@ -286,8 +286,9 @@ model Payment {
   paymentMethod   PaymentMethod
   status          PaymentStatus @default(PENDING)
   transactionId   String?       @unique
-  paymentGateway  String? // e.g., Stripe, PayPal
-  gatewayResponse Json? // Raw response from payment gateway
+  paymentUrl      String?       // Gateway redirect URL — stored for idempotency
+  paymentGateway  String?
+  gatewayResponse Json?
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
@@ -355,7 +356,7 @@ model Inventory {
   itemName      String    @unique
   category      String
   quantity      Float
-  unit          String // e.g., "kg", "liters", "pieces"
+  unit          String
   minThreshold  Float
   lastRestocked DateTime?
 

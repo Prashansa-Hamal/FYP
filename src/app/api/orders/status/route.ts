@@ -81,6 +81,42 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    // Guard: enforce valid status transitions
+    const allowedTransitions: Record<string, string[]> = {
+      PENDING: ["CONFIRMED", "CANCELLED"],
+      CONFIRMED: ["PREPARING", "CANCELLED"],
+      PREPARING: ["READY", "CANCELLED"],
+      READY: ["SERVED", "CANCELLED"],
+      SERVED: ["COMPLETED"],
+      COMPLETED: [],
+      CANCELLED: [],
+    };
+
+    const allowed = allowedTransitions[existingOrder.status] ?? [];
+    if (!allowed.includes(status)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: `Cannot move order from ${existingOrder.status} to ${status}. Allowed: ${allowed.join(", ") || "none"}`,
+        },
+        { status: 400 },
+      );
+    }
+
+    // Guard: cannot complete an order that hasn't been paid yet.
+    // For COD: cashier must collect cash via PATCH /api/orders/payment first.
+    // For Khalti/eSewa: payment gateway callback marks it PAID automatically.
+    if (status === "COMPLETED" && existingOrder.paymentStatus !== "PAID") {
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Cannot complete an unpaid order. Collect payment first, then mark as completed.",
+        },
+        { status: 400 },
+      );
+    }
+
     // 5. Prepare update data
     const updateData: any = {
       status,
@@ -106,10 +142,8 @@ export async function PATCH(request: NextRequest) {
       case "COMPLETED":
         updateData.completedAt = new Date();
         console.log("Set completedAt:", updateData.completedAt);
-        if (existingOrder.paymentStatus === "PENDING") {
-          updateData.paymentStatus = "PAID";
-          console.log("Updated payment status to PAID");
-        }
+        // paymentStatus is NOT auto-flipped here — payment must be collected
+        // explicitly via PATCH /api/orders/payment before reaching this point.
         break;
       case "CANCELLED":
         updateData.cancelledAt = new Date();

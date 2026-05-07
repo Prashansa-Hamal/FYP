@@ -161,36 +161,78 @@ export default function PaymentSuccessPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const pidx = searchParams.get("pidx");
-    const orderId = searchParams.get("orderId");
+    const esewaData = searchParams.get("data");   // eSewa sends base64 encoded data
+    const khaltiOrderId = searchParams.get("orderId"); // Khalti verify route sets this
 
-    if (!pidx && !orderId) {
-      setError("No payment information found");
-      setIsLoading(false);
-      return;
-    }
-
-    // Fetch payment details from your API
-    const fetchPaymentDetails = async () => {
+    const load = async () => {
       try {
-        const response = await fetch(
-          `/api/payment/verify?pidx=${pidx}&orderId=${orderId}`,
-        );
-        const data = await response.json();
+        let resolvedOrderId: string | null = null;
 
-        if (data.success) {
-          setPaymentData(data.data);
-        } else {
-          setError(data.message || "Failed to verify payment");
+        if (esewaData) {
+          // eSewa payment callback — verify and update DB
+          const res = await fetch("/api/esewa/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ encodedData: esewaData }),
+          });
+          const result = await res.json();
+          if (!result.success) {
+            setError(result.message || "eSewa payment verification failed");
+            setIsLoading(false);
+            return;
+          }
+          resolvedOrderId = result.data?.decodedData?.transaction_uuid ?? null;
+        } else if (khaltiOrderId) {
+          // Khalti — already verified by /api/khalti/verify before redirect here
+          resolvedOrderId = khaltiOrderId;
         }
-      } catch (err) {
+
+        if (!resolvedOrderId) {
+          setError("No payment information found");
+          setIsLoading(false);
+          return;
+        }
+
+        // Fetch order details to display on the success page
+        const orderRes = await fetch(`/api/orders/${resolvedOrderId}`);
+        const orderJson = await orderRes.json();
+
+        if (!orderJson.success) {
+          setError("Could not load order details");
+          setIsLoading(false);
+          return;
+        }
+
+        const o = orderJson.order;
+        setPaymentData({
+          orderId: o.id,
+          orderNumber: o.orderNumber,
+          amount: o.finalAmount,
+          paymentMethod: o.paymentMethod ?? "ESEWA",
+          transactionId:
+            o.payments?.[0]?.transactionId ?? searchParams.get("transactionId") ?? "",
+          paymentDate: o.updatedAt ?? o.createdAt,
+          orderDetails: {
+            orderType: o.orderType,
+            tableNumber: o.tableNumber,
+            items: (o.items ?? []).map((item: any) => ({
+              name: item.menuItem?.name ?? item.name ?? "Item",
+              quantity: item.quantity,
+              price: item.unitPrice ?? item.price ?? 0,
+            })),
+            totalAmount: o.totalAmount,
+            taxAmount: o.taxAmount,
+            finalAmount: o.finalAmount,
+          },
+        });
+      } catch {
         setError("Something went wrong. Please contact support.");
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchPaymentDetails();
+    load();
   }, [searchParams]);
 
   const handlePrint = () => {

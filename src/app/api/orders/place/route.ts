@@ -15,25 +15,26 @@ interface PlaceOrderRequest {
 
 export async function POST(request: NextRequest) {
   try {
-    // 1. Get user/session
+    // 1. Get user — guests are not allowed to place orders
     const user = await getUser();
-    const cookieStore = await cookies();
-    const sessionId = cookieStore.get("cart_session_id")?.value;
 
-    if (!user && !sessionId) {
+    if (!user) {
       return NextResponse.json(
         {
           success: false,
-          message: "Authentication required to place an order",
+          message: "Please log in to place an order.",
           order: null,
         },
         { status: 401 },
       );
     }
 
-    const currentUser = await db.user.findUnique({ where: { id: user?.id } });
+    const cookieStore = await cookies();
+    const sessionId = cookieStore.get("cart_session_id")?.value;
 
-    if (!currentUser && user?.id) {
+    const currentUser = await db.user.findUnique({ where: { id: user.id } });
+
+    if (!currentUser) {
       return NextResponse.json(
         { success: false, message: "User not found" },
         { status: 401 },
@@ -128,14 +129,13 @@ export async function POST(request: NextRequest) {
       0,
     );
 
-    // Fixed tax rate (adjust as needed)
     const TAX_RATE = 0.13;
     const taxAmount = subtotal * TAX_RATE;
-    const discountAmount = 0; // You can add discount logic later
-    const finalAmount = subtotal + taxAmount - discountAmount;
+    const discountAmount = 0;
+    const deliveryFee = body.orderType === "DELIVERY" ? 100 : 0;
+    const finalAmount = subtotal + taxAmount + deliveryFee - discountAmount;
 
-    // 7. Determine user ID (use 'guest' for non-authenticated)
-    const userId = user?.id || "guest";
+    const userId = user.id;
 
     // 8. Create order in transaction
     const order = await db.$transaction(async (tx) => {
@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
           taxAmount,
           discountAmount,
           finalAmount,
-          estimatedReadyTime: new Date(Date.now() + 30 * 60 * 1000), // 30 minutes from now
+          estimatedReadyTime: getEstimatedReadyTime(body.orderType || "DINE_IN"),
         },
       });
 
@@ -316,6 +316,17 @@ export async function POST(request: NextRequest) {
   }
 }
 
+function getEstimatedReadyTime(orderType: string): Date {
+  const ranges: Record<string, [number, number]> = {
+    DINE_IN:  [20, 35],
+    TAKEAWAY: [15, 25],
+    DELIVERY: [35, 55],
+  };
+  const [min, max] = ranges[orderType] ?? [20, 35];
+  const midpoint = Math.round((min + max) / 2);
+  return new Date(Date.now() + midpoint * 60 * 1000);
+}
+
 // Helper function for next steps
 function getNextSteps(orderType: string, paymentMethod?: string) {
   const steps: string[] = [];
@@ -328,15 +339,15 @@ function getNextSteps(orderType: string, paymentMethod?: string) {
 
   switch (orderType) {
     case "DINE_IN":
-      steps.push("Your order will be served within 30-45 minutes");
+      steps.push("Your order will be served within 20–35 minutes");
       break;
     case "TAKEAWAY":
-      steps.push("Your order will be ready for pickup in 30-45 minutes");
+      steps.push("Your order will be ready for pickup in 15–25 minutes");
       steps.push("Bring your order number to the counter");
       break;
     case "DELIVERY":
-      steps.push("Your order will be delivered within 30-45 minutes");
-      steps.push("Keep your phone handy for delivery updates");
+      steps.push("Your order will be delivered within 35–55 minutes");
+      steps.push("Our staff will contact you to confirm delivery details");
       break;
   }
 

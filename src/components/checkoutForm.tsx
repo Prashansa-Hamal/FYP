@@ -7,6 +7,7 @@ import {
   Truck,
   CreditCard,
   Wallet,
+  LogIn,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -16,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/contexts/CartContext";
 import { formatCurrency } from "@/lib/formatters";
 import { useTables } from "@/hooks/useTables";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import {
   Select,
   SelectContent,
@@ -28,6 +30,7 @@ import {
 export const CheckoutForm = () => {
   const router = useRouter();
   const { getCartTotal, getItemCount } = useCart();
+  const { data: currentUser, isLoading: authLoading } = useCurrentUser();
   const [orderType, setOrderType] = useState<
     "DINE_IN" | "TAKEAWAY" | "DELIVERY"
   >("DINE_IN");
@@ -39,7 +42,9 @@ export const CheckoutForm = () => {
   const [deliveryAddressId, setDeliveryAddressId] = useState<string>("");
 
   const subtotal = getCartTotal();
-  const totalAmount = subtotal;
+  const DELIVERY_FEE = 100;
+  const deliveryFee = orderType === "DELIVERY" ? DELIVERY_FEE : 0;
+  const totalAmount = subtotal + deliveryFee;
 
   const orderData = {
     orderType,
@@ -111,6 +116,51 @@ export const CheckoutForm = () => {
       description: "Pay via Khalti wallet",
     },
   ];
+
+  // Show login prompt if user is not authenticated
+  if (!authLoading && !currentUser) {
+    return (
+      <div className="space-y-4">
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 text-center">
+          <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3">
+            <LogIn className="w-6 h-6 text-amber-600" />
+          </div>
+          <h3 className="font-semibold text-gray-900 mb-1">
+            Login required to place an order
+          </h3>
+          <p className="text-sm text-gray-500 mb-4">
+            Create a free account or log in to continue. Your cart items will be
+            saved.
+          </p>
+          <div className="flex flex-col gap-2">
+            <Link href="/login">
+              <Button className="w-full bg-amber-500 hover:bg-amber-600 text-white rounded-xl">
+                <LogIn className="w-4 h-4 mr-2" />
+                Log In
+              </Button>
+            </Link>
+            <Link href="/signup">
+              <Button
+                variant="outline"
+                className="w-full border-amber-200 text-amber-700 hover:bg-amber-50 rounded-xl"
+              >
+                Create Account
+              </Button>
+            </Link>
+          </div>
+        </div>
+        <Link href="/">
+          <Button
+            variant="outline"
+            className="w-full border-gray-200 text-gray-700 hover:bg-gray-50 py-6 rounded-xl"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Continue Menu
+          </Button>
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-5">
@@ -261,8 +311,17 @@ export const CheckoutForm = () => {
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">Delivery Fee</span>
-          <span className="text-green-600 font-medium">FREE</span>
+          {orderType === "DELIVERY" ? (
+            <span className="font-medium text-gray-900">Rs. 100</span>
+          ) : (
+            <span className="text-green-600 font-medium">FREE</span>
+          )}
         </div>
+        {orderType === "DELIVERY" && (
+          <p className="text-xs text-amber-600">
+            Our staff will contact you to confirm the delivery address and timing.
+          </p>
+        )}
         <div className="pt-2 border-t border-amber-200">
           <div className="flex justify-between items-center">
             <span className="font-semibold text-gray-900">Total to Pay</span>

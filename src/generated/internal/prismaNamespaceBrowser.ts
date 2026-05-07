@@ -244,6 +244,7 @@ export const PaymentScalarFieldEnum = {
   paymentMethod: 'paymentMethod',
   status: 'status',
   transactionId: 'transactionId',
+  paymentUrl: 'paymentUrl',
   paymentGateway: 'paymentGateway',
   gatewayResponse: 'gatewayResponse',
   paidAt: 'paidAt',
