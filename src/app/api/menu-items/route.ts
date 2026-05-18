@@ -1,8 +1,9 @@
 import db from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { ItemCategory, PreparationStation } from "@/types/enums";
+import { getUser } from "@/data/user";
 
-// GET - Fetch all menu items
+// GET - Fetch all menu items (PUBLIC - no auth required)
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -93,9 +94,30 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST - Create menu item
+// POST - Create menu item (ADMIN/MANAGER ONLY)
 export async function POST(request: NextRequest) {
   try {
+    // SECURITY: Check authentication
+    const user = await getUser();
+    
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "Authentication required" },
+        { status: 401 },
+      );
+    }
+
+    // SECURITY: Only ADMIN and MANAGER can create menu items
+    if (user.role !== "ADMIN" && user.role !== "MANAGER") {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: "Unauthorized. Only administrators can create menu items." 
+        },
+        { status: 403 },
+      );
+    }
+
     const body = await request.json();
 
     // Validation
@@ -130,6 +152,9 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Audit log
+    console.log(`[MENU AUDIT] Menu item '${menuItem.name}' created by ${user.role} user ${user.id}`);
+
     return NextResponse.json({
       success: true,
       data: menuItem,
@@ -144,14 +169,38 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// DELETE - Delete item
+// DELETE - Delete item (ADMIN ONLY)
 export async function DELETE(request: NextRequest) {
   try {
+    // SECURITY: Check authentication
+    const user = await getUser();
+    
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "Authentication required" },
+        { status: 401 },
+      );
+    }
+
+    // SECURITY: Only ADMIN can delete menu items
+    if (user.role !== "ADMIN") {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: "Unauthorized. Only administrators can delete menu items." 
+        },
+        { status: 403 },
+      );
+    }
+
     const body = await request.json();
 
-    await db.menuItem.delete({
+    const deletedItem = await db.menuItem.delete({
       where: { id: body.id },
     });
+
+    // Audit log
+    console.log(`[MENU AUDIT] Menu item '${deletedItem.name}' deleted by admin user ${user.id}`);
 
     return NextResponse.json({
       success: true,
@@ -166,9 +215,30 @@ export async function DELETE(request: NextRequest) {
   }
 }
 
-// Toggle Menu Item Availability
+// PUT - Toggle Menu Item Availability (ADMIN/MANAGER ONLY)
 export async function PUT(request: NextRequest) {
   try {
+    // SECURITY: Check authentication
+    const user = await getUser();
+    
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "Authentication required" },
+        { status: 401 },
+      );
+    }
+
+    // SECURITY: Only ADMIN and MANAGER can update availability
+    if (user.role !== "ADMIN" && user.role !== "MANAGER") {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: "Unauthorized. Only administrators can update menu items." 
+        },
+        { status: 403 },
+      );
+    }
+
     const body = await request.json();
 
     const { id, isAvailable } = body;
@@ -184,6 +254,9 @@ export async function PUT(request: NextRequest) {
       where: { id },
       data: { isAvailable },
     });
+
+    // Audit log
+    console.log(`[MENU AUDIT] Menu item '${menuItem.name}' availability set to ${isAvailable} by ${user.role} user ${user.id}`);
 
     return NextResponse.json({
       success: true,
