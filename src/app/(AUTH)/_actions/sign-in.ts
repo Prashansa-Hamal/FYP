@@ -60,14 +60,18 @@ export const logIn = async (values: z.infer<typeof loginSchema>) => {
 
   const user = await getUserByEmail(email);
 
-  if (user == null) return { error: "User not found!" };
+  // SECURITY: Use generic error message to prevent email enumeration
+  // Don't reveal whether email exists or password is wrong
+  const genericError = "Invalid email or password";
+
+  if (user == null) return { error: genericError };
 
   if (!user.password)
-    return { error: "No password found with the associated user." };
+    return { error: genericError }; // Changed from specific error
 
   const isCorrectPassword = await compare(password, user.password);
 
-  if (!isCorrectPassword) return { error: "Invalid password!" };
+  if (!isCorrectPassword) return { error: genericError };
 
   // Check if email is verified
   if (!user.emailVerified) {
