@@ -15,7 +15,11 @@ import {
   XCircle,
 } from "lucide-react";
 
-// Get status configuration
+/**
+ * Get status configuration for order status display
+ * @param status - The order status string
+ * @returns Configuration object with label, icon, color, and background color
+ */
 export const getStatusConfig = (status: string) => {
   const configs: Record<
     string,
@@ -74,7 +78,11 @@ export const getStatusConfig = (status: string) => {
   );
 };
 
-// Get payment status configuration
+/**
+ * Get payment status configuration for payment display
+ * @param status - The payment status string
+ * @returns Configuration object with label, icon, color, and background color
+ */
 export const getPaymentStatusConfig = (status: string) => {
   const configs: Record<
     string,
@@ -121,7 +129,11 @@ export const getPaymentStatusConfig = (status: string) => {
   );
 };
 
-// Get order type configuration
+/**
+ * Get order type configuration for order type display
+ * @param type - The order type string (DINE_IN, TAKEAWAY, DELIVERY)
+ * @returns Configuration object with label, icon, and color
+ */
 export const getOrderTypeConfig = (type: string) => {
   const configs: Record<
     string,
@@ -152,7 +164,11 @@ export const getOrderTypeConfig = (type: string) => {
   );
 };
 
-// Get item badge based on properties
+/**
+ * Get item badges based on menu item properties
+ * @param item - The order item with menuItem properties
+ * @returns Array of badge objects with icon, text, and color
+ */
 export const getItemBadges = (item: any) => {
   const badges = [];
   if (item.menuItem.isVegetarian)
