@@ -41,3 +41,19 @@ next-env.d.ts
 # prisma
 prisma/*.db
 prisma/*.db-journal
+
+# documentation (not to be committed)
+DOCS_LOCATION.md
+QUICK_TEST_REFERENCE.md
+README_TESTING.md
+SCREENSHOT_CHECKLIST.md
+START_HERE.md
+TESTING_GUIDE.md
+TESTING_INDEX.md
+TESTING_SUMMARY.md
+TEST_CREDENTIALS.md
+daily-push.sh
+push-schedule.sh
+setup-testing.sh
+screenshots/
+docs/
