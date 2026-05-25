@@ -26,9 +26,10 @@ A comprehensive restaurant management system built with Next.js, featuring order
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- PostgreSQL database
-- Redis instance
+- Node.js 18+ or higher
+- PostgreSQL database (local or cloud)
+- Redis instance (Upstash recommended)
+- npm or yarn package manager
 
 ### Installation
 
@@ -53,6 +54,7 @@ cp .env.example .env
 ```bash
 npx prisma generate
 npx prisma db push
+npx prisma db seed  # Optional: seed with sample data
 ```
 
 5. Run development server
