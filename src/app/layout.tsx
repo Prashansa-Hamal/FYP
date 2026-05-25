@@ -12,8 +12,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Dine_Ease",
-  description: "Dine ease with us.",
+  title: "Dine_Ease - Restaurant Management System",
+  description: "Streamline your restaurant operations with Dine_Ease - comprehensive management for orders, reservations, and more.",
+  keywords: ["restaurant", "management", "orders", "reservations", "POS"],
 };
 
 export default function RootLayout({
