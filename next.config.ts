@@ -15,6 +15,10 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Enable React strict mode for better development experience
+  reactStrictMode: true,
+  // Optimize production builds
+  poweredByHeader: false,
 };
 
 export default nextConfig;
