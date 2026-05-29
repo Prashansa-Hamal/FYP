@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
       message: "Your reservations fetched successfully",
     });
   } catch (error) {
-    console.error("GET /api/reservations/my-reservations error:", error);
+    console.log("GET /api/reservations/my-reservations error:", error);
     return NextResponse.json(
       {
         success: false,

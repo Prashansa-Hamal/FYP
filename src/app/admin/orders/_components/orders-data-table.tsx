@@ -38,10 +38,18 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { UpdateOrderStatusDialog } from "./updateStatusDialoug";
 import { ProcessPaymentDialog } from "./processPaymentDialoug";
 import { OrderStatus } from "@/types/enums";
+
+export function OrdersDataTable() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <OrdersDataTableContent />
+    </Suspense>
+  );
+}
 
 // Define the order row type
 interface OrderRow {
@@ -301,7 +309,7 @@ const orderColumns: ColumnDef<OrderRow>[] = [
   },
 ];
 
-export function OrdersDataTable() {
+function OrdersDataTableContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

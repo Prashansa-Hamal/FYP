@@ -1,3 +1,4 @@
+import "dotenv/config";
 import db from "@/lib/db";
 import { createMenuItems } from "./menuItemData";
 import { createOrders } from "./ordersData";

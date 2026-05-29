@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
       count: result.length,
     });
   } catch (error) {
-    console.error("Error fetching tables with orders:", error);
+    console.log("Error fetching tables with orders:", error);
     return NextResponse.json(
       {
         error: "Failed to fetch tables",

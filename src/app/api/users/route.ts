@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     // Execute query
     const [users, total] = await Promise.all([
       db.user.findMany({
-        // ✅ Use lowercase 'user' for Prisma client
+        // Use lowercase 'user' for Prisma client
         where,
         skip,
         take: limit,
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("GET /api/users error:", error);
+    console.log("GET /api/users error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch users" },
       { status: 500 },

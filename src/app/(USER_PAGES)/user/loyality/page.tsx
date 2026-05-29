@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
   Award,
   TrendingUp,
@@ -11,12 +10,10 @@ import {
   Calendar,
   ShoppingBag,
   Star,
-  ChevronRight,
   Gift,
   Zap,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -24,6 +21,8 @@ import { useLoyaltyPoints } from "@/hooks/useLoyaltyPoints";
 
 export default function LoyaltyPage() {
   const { data, isLoading, error, refetch } = useLoyaltyPoints();
+
+  console.log("Loyalty Points Data:", data);
 
   if (isLoading) {
     return <LoyaltySkeleton />;

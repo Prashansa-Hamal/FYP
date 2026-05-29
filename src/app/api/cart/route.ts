@@ -133,7 +133,7 @@ export async function GET(request: NextRequest) {
 
     return response;
   } catch (error) {
-    console.error("GET /api/cart error:", error);
+    console.log("GET /api/cart error:", error);
     return NextResponse.json(
       {
         success: false,
@@ -251,7 +251,7 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error: any) {
-    console.error("POST /api/cart error:", error);
+    console.log("POST /api/cart error:", error);
     return NextResponse.json(
       {
         success: false,
@@ -363,7 +363,7 @@ export async function PUT(request: NextRequest) {
       message: quantity === 0 ? "Item removed from cart" : "Quantity updated",
     });
   } catch (error) {
-    console.error("PUT /api/cart error:", error);
+    console.log("PUT /api/cart error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to update cart item" },
       { status: 500 },
@@ -451,7 +451,7 @@ export async function DELETE(request: NextRequest) {
 
     return res;
   } catch (error) {
-    console.error("DELETE /api/cart error:", error);
+    console.log("DELETE /api/cart error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to delete cart" },
       { status: 500 },

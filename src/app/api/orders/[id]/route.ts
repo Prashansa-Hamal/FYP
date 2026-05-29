@@ -101,7 +101,7 @@ export async function GET(
 
     return NextResponse.json(response);
   } catch (error) {
-    console.error("GET /api/orders/[id] error:", error);
+    console.log("GET /api/orders/[id] error:", error);
     return NextResponse.json(
       {
         success: false,

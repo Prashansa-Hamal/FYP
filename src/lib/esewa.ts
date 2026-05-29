@@ -38,7 +38,7 @@ export const getEsewaPaymentHash = async ({
       signed_field_names: "total_amount,transaction_uuid,product_code",
     };
   } catch (error) {
-    console.error("Error generating eSewa payment hash:", error);
+    console.log("Error generating eSewa payment hash:", error);
     throw error;
   }
 };
@@ -131,7 +131,7 @@ export const verifyEsewaPayment = async (
       decodedData,
     };
   } catch (error) {
-    console.error("Error verifying eSewa payment:", error);
+    console.log("Error verifying eSewa payment:", error);
     return {
       success: false,
       message:

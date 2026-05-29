@@ -2,11 +2,6 @@ import * as React from "react";
 
 const MOBILE_BREAKPOINT = 768;
 
-/**
- * Custom hook to detect if the current viewport is mobile size
- * Uses a breakpoint of 768px (standard tablet/mobile boundary)
- * @returns Boolean indicating if viewport is mobile size
- */
 export function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(
     undefined

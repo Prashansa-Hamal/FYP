@@ -5,7 +5,7 @@ import {
   checkTablesAvailability,
   getAvailableTables,
 } from "@/lib/reservation-helpers";
-import { EmailService } from "@/lib/email-service";
+import { sendReservationConfirmationEmail } from "@/lib/email-service";
 
 export async function GET(request: NextRequest) {
   try {
@@ -116,7 +116,7 @@ export async function GET(request: NextRequest) {
       message: "Reservations fetched successfully",
     });
   } catch (error) {
-    console.error("GET /api/reservations error:", error);
+    console.log("GET /api/reservations error:", error);
     return NextResponse.json(
       {
         success: false,
@@ -278,7 +278,7 @@ export async function POST(request: NextRequest) {
 
     // Send confirmation email
     try {
-      await EmailService.sendReservationConfirmationEmail(
+      await sendReservationConfirmationEmail(
         currentUser.email,
         currentUser.name || "Valued Customer",
         reservationDateTime,
@@ -288,10 +288,7 @@ export async function POST(request: NextRequest) {
       );
       console.log("Reservation confirmation email sent to:", currentUser.email);
     } catch (emailError) {
-      console.error(
-        "Failed to send reservation confirmation email:",
-        emailError,
-      );
+      console.log("Failed to send reservation confirmation email:", emailError);
       // Don't fail the reservation if email fails
     }
 
@@ -301,7 +298,7 @@ export async function POST(request: NextRequest) {
       message: "Reservation created successfully",
     });
   } catch (error) {
-    console.error("POST /api/reservations error:", error);
+    console.log("POST /api/reservations error:", error);
     return NextResponse.json(
       {
         success: false,

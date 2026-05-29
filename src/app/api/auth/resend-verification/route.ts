@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       message: "Verification email sent successfully. Please check your inbox.",
     });
   } catch (error) {
-    console.error("Resend verification error:", error);
+    console.log("Resend verification error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to send verification email" },
       { status: 500 },

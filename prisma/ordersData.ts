@@ -19,22 +19,22 @@ export async function createOrders() {
   const addresses = await db.address.findMany();
   const tables = await db.table.findMany();
 
-  // Generate orders for the last 90 days
-  const startDate = subDays(new Date(), 90);
+  // Generate orders for the last 7 days (reduced for faster seeding)
+  const startDate = subDays(new Date(), 7);
   const endDate = new Date();
 
   let orderNumber = 1000;
   const orders = [];
 
-  for (let day = 0; day <= 90; day++) {
+  for (let day = 0; day <= 7; day++) {
     const currentDate = addDays(startDate, day);
 
     // Determine number of orders for this day (weekends have more orders)
     const isWeekend = currentDate.getDay() === 0 || currentDate.getDay() === 6;
-    const baseOrders = isWeekend ? 30 : 20;
+    const baseOrders = isWeekend ? 15 : 10; // Reduced from 30/20
 
     // Add some randomness
-    const numOrders = Math.floor(baseOrders + (Math.random() * 20 - 10));
+    const numOrders = Math.floor(baseOrders + (Math.random() * 5 - 2)); // Reduced randomness
 
     for (let i = 0; i < numOrders; i++) {
       // Random order time throughout the day (peak hours: 12-2pm, 6-9pm)
@@ -194,93 +194,98 @@ export async function createOrders() {
       }
 
       // Create the order
-      const order = await db.order.create({
-        data: {
-          orderNumber: `ORD-${orderNumber++}`,
-          userId: user.id,
-          tableNumber,
-          orderType,
-          status,
-          paymentStatus,
-          paymentMethod: [
-            PaymentMethod.COD,
-            PaymentMethod.ESEWA,
-            PaymentMethod.KHALTI,
-          ][Math.floor(Math.random() * 3)],
-          totalAmount,
-          taxAmount,
-          discountAmount,
-          finalAmount,
-          deliveryAddressId,
-          specialInstructions:
-            Math.random() > 0.9 ? "Please deliver to back door" : null,
-          estimatedReadyTime,
-          readyAt,
-          servedAt,
-          completedAt,
-          cancelledAt,
-          createdAt: orderDate,
-          items: {
-            create: orderItems.map((item) => ({
-              ...item,
-              isReady:
-                status === OrderStatus.READY ||
-                status === OrderStatus.SERVED ||
-                status === OrderStatus.COMPLETED,
-              readyAt:
-                status === OrderStatus.READY ||
-                status === OrderStatus.SERVED ||
-                status === OrderStatus.COMPLETED
-                  ? addMinutes(orderDate, 20 + Math.floor(Math.random() * 10))
+      try {
+        const order = await db.order.create({
+          data: {
+            orderNumber: `ORD-${orderNumber++}`,
+            userId: user.id,
+            tableNumber,
+            orderType,
+            status,
+            paymentStatus,
+            paymentMethod: [
+              PaymentMethod.COD,
+              PaymentMethod.ESEWA,
+              PaymentMethod.KHALTI,
+            ][Math.floor(Math.random() * 3)],
+            totalAmount,
+            taxAmount,
+            discountAmount,
+            finalAmount,
+            deliveryAddressId,
+            specialInstructions:
+              Math.random() > 0.9 ? "Please deliver to back door" : null,
+            estimatedReadyTime,
+            readyAt,
+            servedAt,
+            completedAt,
+            cancelledAt,
+            createdAt: orderDate,
+            items: {
+              create: orderItems.map((item) => ({
+                ...item,
+                isReady:
+                  status === OrderStatus.READY ||
+                  status === OrderStatus.SERVED ||
+                  status === OrderStatus.COMPLETED,
+                readyAt:
+                  status === OrderStatus.READY ||
+                  status === OrderStatus.SERVED ||
+                  status === OrderStatus.COMPLETED
+                    ? addMinutes(orderDate, 20 + Math.floor(Math.random() * 10))
+                    : null,
+              })),
+            },
+          },
+        });
+
+        orders.push(order);
+
+        // Create station assignments for each item
+        const orderItemsFromDb = await db.orderItem.findMany({
+          where: { orderId: order.id },
+          include: { menuItem: true },
+        });
+
+        for (const orderItem of orderItemsFromDb) {
+          await db.orderStationAssignment.create({
+            data: {
+              orderItemId: orderItem.id,
+              station: orderItem.menuItem.preparationStation,
+              assignedTo: null, // Will be assigned in staff shifts
+              status: orderItem.isReady ? "COMPLETED" : "PENDING",
+              estimatedCompletionTime: addMinutes(
+                orderDate,
+                orderItem.menuItem.preparationTime,
+              ),
+              startedAt: orderItem.isReady ? addMinutes(orderDate, 5) : null,
+              completedAt: orderItem.readyAt,
+            },
+          });
+        }
+
+        // Create payment record
+        if (order.paymentMethod) {
+          await db.payment.create({
+            data: {
+              orderId: order.id,
+              amount: finalAmount,
+              paymentMethod: order.paymentMethod,
+              status: order.paymentStatus,
+              transactionId: `TXN-${Math.random().toString(36).substring(7).toUpperCase()}`,
+              paymentGateway: ["Stripe", "PayPal", "ESEWA"][
+                Math.floor(Math.random() * 3)
+              ],
+              paidAt:
+                order.paymentStatus === PaymentStatus.PAID
+                  ? addMinutes(orderDate, 5)
                   : null,
-            })),
-          },
-        },
-      });
-
-      orders.push(order);
-
-      // Create station assignments for each item
-      const orderItemsFromDb = await db.orderItem.findMany({
-        where: { orderId: order.id },
-        include: { menuItem: true },
-      });
-
-      for (const orderItem of orderItemsFromDb) {
-        await db.orderStationAssignment.create({
-          data: {
-            orderItemId: orderItem.id,
-            station: orderItem.menuItem.preparationStation,
-            assignedTo: null, // Will be assigned in staff shifts
-            status: orderItem.isReady ? "COMPLETED" : "PENDING",
-            estimatedCompletionTime: addMinutes(
-              orderDate,
-              orderItem.menuItem.preparationTime,
-            ),
-            startedAt: orderItem.isReady ? addMinutes(orderDate, 5) : null,
-            completedAt: orderItem.readyAt,
-          },
-        });
-      }
-
-      // Create payment record
-      if (order.paymentMethod) {
-        await db.payment.create({
-          data: {
-            orderId: order.id,
-            amount: finalAmount,
-            paymentMethod: order.paymentMethod,
-            status: order.paymentStatus,
-            transactionId: `TXN-${Math.random().toString(36).substring(7).toUpperCase()}`,
-            paymentGateway: ["Stripe", "PayPal", "ESEWA"][
-              Math.floor(Math.random() * 3)
-            ],
-            paidAt:
-              order.paymentStatus === PaymentStatus.PAID
-                ? addMinutes(orderDate, 5)
-                : null,
-          },
-        });
+            },
+          });
+        }
+      } catch (error) {
+        console.error(`Error creating order ${orderNumber - 1}:`, error);
+        // Continue with next order
       }
     }
   }

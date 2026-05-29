@@ -158,7 +158,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error("GET /api/orders error:", error);
+    console.log("GET /api/orders error:", error);
     return NextResponse.json(
       {
         success: false,

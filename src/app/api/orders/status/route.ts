@@ -1,5 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
+import { NotificationType } from "@/generated/enums";
+import {
+  sendOrderCancelledEmail,
+  sendOrderCompletedEmail,
+} from "@/lib/email-service";
+
+const getNotificationTypeFromStatus = (status: string): NotificationType => {
+  switch (status) {
+    case "COMPLETED":
+      return NotificationType.ORDER_COMPLETED;
+    case "CANCELLED":
+      return NotificationType.ORDER_CANCELLED;
+    default:
+      return NotificationType.ORDER_PLACED;
+  }
+};
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -13,7 +29,7 @@ export async function PATCH(request: NextRequest) {
     const { id, status, cancellationReason } = body;
 
     if (!id || typeof id !== "string") {
-      console.error("Missing or invalid order ID:", id);
+      console.log("Missing or invalid order ID:", id);
       return NextResponse.json(
         { success: false, message: "Order ID is required" },
         { status: 400 },
@@ -32,7 +48,7 @@ export async function PATCH(request: NextRequest) {
     ];
 
     if (!validStatuses.includes(status)) {
-      console.error("Invalid status:", status);
+      console.log("Invalid status:", status);
       return NextResponse.json(
         {
           success: false,
@@ -59,14 +75,14 @@ export async function PATCH(request: NextRequest) {
         existingOrder ? `Order #${existingOrder.orderNumber}` : "Not found",
       );
     } catch (error) {
-      console.error("Database error when fetching order:", error);
+      console.log("Database error when fetching order:", error);
       throw new Error(
         `Database error: ${error instanceof Error ? error.message : "Unknown"}`,
       );
     }
 
     if (!existingOrder) {
-      console.error("Order not found with ID:", id);
+      console.log("Order not found with ID:", id);
       return NextResponse.json(
         { success: false, message: "Order not found" },
         { status: 404 },
@@ -77,42 +93,6 @@ export async function PATCH(request: NextRequest) {
       console.log("Order already has this status");
       return NextResponse.json(
         { success: false, message: "Cannot set the same status" },
-        { status: 400 },
-      );
-    }
-
-    // Guard: enforce valid status transitions
-    const allowedTransitions: Record<string, string[]> = {
-      PENDING: ["CONFIRMED", "CANCELLED"],
-      CONFIRMED: ["PREPARING", "CANCELLED"],
-      PREPARING: ["READY", "CANCELLED"],
-      READY: ["SERVED", "CANCELLED"],
-      SERVED: ["COMPLETED"],
-      COMPLETED: [],
-      CANCELLED: [],
-    };
-
-    const allowed = allowedTransitions[existingOrder.status] ?? [];
-    if (!allowed.includes(status)) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: `Cannot move order from ${existingOrder.status} to ${status}. Allowed: ${allowed.join(", ") || "none"}`,
-        },
-        { status: 400 },
-      );
-    }
-
-    // Guard: cannot complete an order that hasn't been paid yet.
-    // For COD: cashier must collect cash via PATCH /api/orders/payment first.
-    // For Khalti/eSewa: payment gateway callback marks it PAID automatically.
-    if (status === "COMPLETED" && existingOrder.paymentStatus !== "PAID") {
-      return NextResponse.json(
-        {
-          success: false,
-          message:
-            "Cannot complete an unpaid order. Collect payment first, then mark as completed.",
-        },
         { status: 400 },
       );
     }
@@ -142,8 +122,10 @@ export async function PATCH(request: NextRequest) {
       case "COMPLETED":
         updateData.completedAt = new Date();
         console.log("Set completedAt:", updateData.completedAt);
-        // paymentStatus is NOT auto-flipped here — payment must be collected
-        // explicitly via PATCH /api/orders/payment before reaching this point.
+        if (existingOrder.paymentStatus === "PENDING") {
+          updateData.paymentStatus = "PAID";
+          console.log("Updated payment status to PAID");
+        }
         break;
       case "CANCELLED":
         updateData.cancelledAt = new Date();
@@ -209,7 +191,7 @@ export async function PATCH(request: NextRequest) {
               });
               console.log("Loyalty transaction created:", transaction.id);
             } catch (error) {
-              console.error("Error in loyalty points processing:", error);
+              console.log("Error in loyalty points processing:", error);
               throw error; // Re-throw to rollback transaction
             }
           } else {
@@ -265,7 +247,7 @@ export async function PATCH(request: NextRequest) {
                 reversalTransaction.id,
               );
             } catch (error) {
-              console.error("Error in points reversal:", error);
+              console.log("Error in points reversal:", error);
               throw error;
             }
           }
@@ -275,7 +257,7 @@ export async function PATCH(request: NextRequest) {
       });
       console.log("Transaction completed successfully");
     } catch (error) {
-      console.error("Transaction failed:", error);
+      console.log("Transaction failed:", error);
       throw new Error(
         `Transaction error: ${error instanceof Error ? error.message : "Unknown"}`,
       );
@@ -286,6 +268,19 @@ export async function PATCH(request: NextRequest) {
     try {
       if (status === "COMPLETED") {
         const pointsEarned = Math.floor(existingOrder.finalAmount / 10);
+
+        // Create order status notification for user
+        await db.notification.create({
+          data: {
+            userId: existingOrder.userId,
+            type: getNotificationTypeFromStatus(status),
+            title: "Order Completed! 🎉",
+            message: `Your order #${existingOrder.orderNumber} has been completed. Thank you for dining with us!`,
+            orderId: id,
+            isRead: false,
+          },
+        });
+
         if (pointsEarned > 0) {
           await db.notification.create({
             data: {
@@ -308,6 +303,18 @@ export async function PATCH(request: NextRequest) {
           },
         });
 
+        // Create order status notification for user
+        await db.notification.create({
+          data: {
+            userId: existingOrder.userId,
+            type: getNotificationTypeFromStatus(status),
+            title: "Order Cancelled",
+            message: `Your order #${existingOrder.orderNumber} has been cancelled. ${cancellationReason ? `Reason: ${cancellationReason}` : ""}`,
+            orderId: id,
+            isRead: false,
+          },
+        });
+
         if (existingPoints) {
           await db.notification.create({
             data: {
@@ -322,8 +329,50 @@ export async function PATCH(request: NextRequest) {
         }
       }
     } catch (error) {
-      console.error("Error creating notifications:", error);
+      console.log("Error creating notifications:", error);
       // Don't throw here - notifications are not critical
+    }
+
+    // 8. Email sending logic (add this after the notification creation)
+    try {
+      if (status === "COMPLETED") {
+        // Get order items for email
+        const orderItems = await db.orderItem.findMany({
+          where: { orderId: id },
+          include: { menuItem: true },
+        });
+
+        const itemsForEmail = orderItems.map((item) => ({
+          name: item.menuItem.name,
+          quantity: item.quantity,
+          price: item.unitPrice,
+        }));
+
+        await sendOrderCompletedEmail(
+          existingOrder.user.email,
+          existingOrder.user.name || "Valued Customer",
+          existingOrder.orderNumber,
+          existingOrder.finalAmount,
+          Math.floor(existingOrder.finalAmount / 10),
+        );
+        console.log("Order completed email sent to:", existingOrder.user.email);
+      }
+
+      if (status === "CANCELLED") {
+        await sendOrderCancelledEmail(
+          existingOrder.user.email,
+          existingOrder.user.name || "Valued Customer",
+          existingOrder.orderNumber,
+          cancellationReason,
+        );
+        console.log(
+          "Order cancellation email sent to:",
+          existingOrder.user.email,
+        );
+      }
+    } catch (emailError) {
+      console.error("Failed to send email:", emailError);
+      // Don't fail the status update if email fails
     }
 
     console.log("=== ORDER STATUS UPDATE SUCCESS ===");
@@ -349,24 +398,24 @@ export async function PATCH(request: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.error("=== ORDER STATUS UPDATE ERROR ===");
-    console.error(
+    console.log("=== ORDER STATUS UPDATE ERROR ===");
+    console.log(
       "Error type:",
       error instanceof Error ? error.constructor.name : typeof error,
     );
-    console.error(
+    console.log(
       "Error message:",
       error instanceof Error ? error.message : String(error),
     );
-    console.error(
+    console.log(
       "Error stack:",
       error instanceof Error ? error.stack : "No stack trace",
     );
 
     // Check for specific Prisma errors
     if (error instanceof Error && "code" in error) {
-      console.error("Prisma error code:", (error as any).code);
-      console.error("Prisma error meta:", (error as any).meta);
+      console.log("Prisma error code:", (error as any).code);
+      console.log("Prisma error meta:", (error as any).meta);
     }
 
     return NextResponse.json(

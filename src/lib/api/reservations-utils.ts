@@ -111,7 +111,7 @@ export const reservationHooks = {
       });
       return result.data.totalAvailable > 0;
     } catch (error) {
-      console.error("Error checking availability:", error);
+      console.log("Error checking availability:", error);
       return false;
     }
   },
@@ -128,7 +128,7 @@ export const reservationHooks = {
       });
       return result.data.combinations;
     } catch (error) {
-      console.error("Error getting table suggestions:", error);
+      console.log("Error getting table suggestions:", error);
       return null;
     }
   },

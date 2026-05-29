@@ -25,6 +25,15 @@ import { ColumnDef, FilterFn, Row } from "@tanstack/react-table";
 import { Edit, Eye, Filter, MoreVertical, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+
+export default function MenuItemDataTable() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <MenuItemDataTableContent />
+    </Suspense>
+  );
+}
 
 // Custom filter functions
 const multiColumnFilterFn: FilterFn<MenuItem> = (row, filterValue) => {
@@ -150,7 +159,7 @@ const menuColumns: ColumnDef<MenuItem>[] = [
   },
 ];
 
-const MenuItemDataTable = () => {
+const MenuItemDataTableContent = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -345,8 +354,6 @@ const MenuItemDataTable = () => {
     />
   );
 };
-
-export default MenuItemDataTable;
 
 const RowActions = ({ row }: { row: Row<MenuItem> }) => {
   return (

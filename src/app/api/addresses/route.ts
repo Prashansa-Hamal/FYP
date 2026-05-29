@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       addresses,
     });
   } catch (error: any) {
-    console.error("Get addresses error:", error);
+    console.log("Get addresses error:", error);
 
     return NextResponse.json(
       {
@@ -139,9 +139,9 @@ export async function POST(request: NextRequest) {
       { status: 201 },
     );
   } catch (error: any) {
-    console.error("Create address error:", error);
+    console.log("Create address error:", error);
 
-    // ✅ Duplicate address case
+    //  Duplicate address case
     if (error.message === "DUPLICATE_ADDRESS") {
       return NextResponse.json(
         {

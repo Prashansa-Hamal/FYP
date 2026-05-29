@@ -4,7 +4,7 @@ import { getUser } from "@/data/user";
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const user = await getUser();
@@ -68,7 +68,7 @@ export async function PATCH(
       message: "Reservation checked in successfully",
     });
   } catch (error) {
-    console.error("PATCH /api/reservations/[id]/check-in error:", error);
+    console.log("PATCH /api/reservations/[id]/check-in error:", error);
     return NextResponse.json(
       {
         success: false,

@@ -24,7 +24,7 @@ export const MenuItemCard = ({
         quantity: 1,
       });
     } catch (error) {
-      console.error("Failed to add item to cart:", error);
+      console.log("Failed to add item to cart:", error);
     } finally {
       setLoadingItemId(null);
     }
@@ -40,7 +40,7 @@ export const MenuItemCard = ({
         quantity: newQuantity,
       });
     } catch (error) {
-      console.error("Failed to update quantity:", error);
+      console.log("Failed to update quantity:", error);
     } finally {
       setLoadingItemId(null);
     }

@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
       message: "Available tables fetched successfully",
     });
   } catch (error) {
-    console.error("GET /api/reservations/available-tables error:", error);
+    console.log("GET /api/reservations/available-tables error:", error);
     return NextResponse.json(
       {
         success: false,

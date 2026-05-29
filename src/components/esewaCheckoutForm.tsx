@@ -99,60 +99,56 @@ const EsewaCheckoutForm: React.FC<EsewaCheckoutFormProps> = ({
     setIsLoading(true);
     setError(null);
 
-    mutate(orderData, {
-      onSuccess: async (orderResponse) => {
-        const orderId = orderResponse.order?.id;
-        if (!orderId) {
-          setError("Order ID missing. Please try again.");
-          setIsLoading(false);
-          return;
-        }
+    try {
+      // First, place the order in your system
+      const orderSuccess = mutate(orderData, {
+        onSuccess: async () => {
+          console.log("Order success:", orderSuccess);
 
-        // Use the real orderId as transaction_uuid so the verify
-        // route can look up the order after eSewa redirects back.
-        const newSignature = generateSignature({
-          total_amount: formData.total_amount,
-          transaction_uuid: orderId,
-          product_code: formData.product_code,
-          secret: formData.secret,
-        });
+          // Optional: You can also call your API to store the payment initiation
+          // This is useful for tracking payment attempts
+          const initiateResponse = await fetch("/api/esewa/initiate", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              totalPrice: parseFloat(formData.total_amount),
+              transactionId: formData.transaction_uuid,
+            }),
+          });
 
-        // Build and submit the form programmatically with the correct values.
-        const esewaForm = document.createElement("form");
-        esewaForm.method = "POST";
-        esewaForm.action =
-          "https://rc-epay.esewa.com.np/api/epay/main/v2/form";
+          if (!initiateResponse.ok) {
+            const errorData = await initiateResponse.json();
+            console.warn("Payment initiation tracking failed:", errorData);
+            // Continue with form submission even if tracking fails
+          }
 
-        const fields: Record<string, string> = {
-          amount: formData.amount,
-          tax_amount: formData.tax_amount,
-          total_amount: formData.total_amount,
-          transaction_uuid: orderId,
-          product_service_charge: formData.product_service_charge,
-          product_delivery_charge: formData.product_delivery_charge,
-          product_code: formData.product_code,
-          success_url: formData.success_url,
-          failure_url: formData.failure_url,
-          signed_field_names: formData.signed_field_names,
-          signature: newSignature,
-        };
+          console.log("Submitting form to eSewa...");
 
-        Object.entries(fields).forEach(([key, value]) => {
-          const input = document.createElement("input");
-          input.type = "hidden";
-          input.name = key;
-          input.value = value;
-          esewaForm.appendChild(input);
-        });
+          // Submit the form to eSewa
+          const form = document.querySelector("form");
+          if (!form) {
+            console.log("Form element not found!");
+            setError("Form submission failed. Please try again.");
+            return;
+          }
 
-        document.body.appendChild(esewaForm);
-        esewaForm.submit();
-      },
-      onError: () => {
-        setError("Failed to place order. Please try again.");
-        setIsLoading(false);
-      },
-    });
+          (form as HTMLFormElement).submit();
+          console.log("Form submitted to eSewa");
+        },
+        onError: () => setError("Failed to place order. Please try again."),
+      });
+    } catch (error) {
+      console.log("Error during form submission:", error);
+      setError(
+        error instanceof Error
+          ? error.message
+          : "An error occurred. Please try again.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

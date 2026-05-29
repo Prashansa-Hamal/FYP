@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Error fetching table statistics:", error);
+    console.log("Error fetching table statistics:", error);
     return NextResponse.json(
       {
         error: "Failed to fetch statistics",

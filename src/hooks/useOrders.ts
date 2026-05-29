@@ -70,7 +70,7 @@ export const usePlaceOrder = () => {
       });
 
       // Log error for debugging
-      console.error("Order placement error:", error);
+      console.log("Order placement error:", error);
     },
   });
 };

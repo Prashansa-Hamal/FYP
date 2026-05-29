@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
 import { getUser } from "@/data/user";
 import { checkTablesAvailability } from "@/lib/reservation-helpers";
-import { EmailService } from "@/lib/email-service";
+import { sendReservationCancelledEmail } from "@/lib/email-service";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const user = await getUser();
@@ -52,7 +52,7 @@ export async function GET(
       message: "Reservation fetched successfully",
     });
   } catch (error) {
-    console.error("GET /api/reservations/[id] error:", error);
+    console.log("GET /api/reservations/[id] error:", error);
     return NextResponse.json(
       {
         success: false,
@@ -66,7 +66,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const user = await getUser();
@@ -253,7 +253,7 @@ export async function PUT(
       message: "Reservation updated successfully",
     });
   } catch (error) {
-    console.error("PUT /api/reservations/[id] error:", error);
+    console.log("PUT /api/reservations/[id] error:", error);
     return NextResponse.json(
       {
         success: false,
@@ -269,7 +269,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const user = await getUser();
@@ -374,7 +374,7 @@ export async function DELETE(
 
     // Send cancellation email to the customer
     try {
-      await EmailService.sendReservationCancelledEmail(
+      await sendReservationCancelledEmail(
         reservedBy.email,
         reservedBy.name || "Valued Customer",
         existingReservation.reservationDate,
@@ -385,7 +385,7 @@ export async function DELETE(
       );
       console.log("Reservation cancellation email sent to:", reservedBy.email);
     } catch (emailError) {
-      console.error("Failed to send cancellation email:", emailError);
+      console.log("Failed to send cancellation email:", emailError);
       // Don't fail the cancellation if email fails
     }
 
@@ -395,7 +395,7 @@ export async function DELETE(
       message: "Reservation cancelled successfully",
     });
   } catch (error) {
-    console.error("DELETE /api/reservations/[id] error:", error);
+    console.log("DELETE /api/reservations/[id] error:", error);
     return NextResponse.json(
       {
         success: false,

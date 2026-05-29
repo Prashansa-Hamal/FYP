@@ -238,7 +238,7 @@ export default function MenuItemDetaisCard({ id }: MenuItemDetaisCardProps) {
       setIsEditing(false);
       setHasUnsavedChanges(false);
     } catch (err) {
-      console.error("Update failed:", err);
+      console.log("Update failed:", err);
     }
   };
 

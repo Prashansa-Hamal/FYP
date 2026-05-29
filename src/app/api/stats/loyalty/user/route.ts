@@ -128,7 +128,7 @@ export async function GET(request: NextRequest) {
       data: stats,
     });
   } catch (error) {
-    console.error("Error fetching user loyalty stats:", error);
+    console.log("Error fetching user loyalty stats:", error);
     return NextResponse.json(
       { error: "Failed to fetch user loyalty statistics" },
       { status: 500 },

@@ -4,8 +4,10 @@ import { getUser } from "@/data/user";
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
+
   try {
     const user = await getUser();
 
@@ -13,11 +15,9 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const notificationId = params.id;
-
     // Check if notification exists and belongs to user
     const notification = await db.notification.findUnique({
-      where: { id: notificationId },
+      where: { id },
     });
 
     if (!notification) {
@@ -47,7 +47,7 @@ export async function PATCH(
 
     // Mark as read
     const updated = await db.notification.update({
-      where: { id: notificationId },
+      where: { id },
       data: { isRead: true },
     });
 
@@ -57,7 +57,7 @@ export async function PATCH(
       data: updated,
     });
   } catch (error) {
-    console.error("Error marking notification as read:", error);
+    console.log("Error marking notification as read:", error);
     return NextResponse.json(
       { error: "Failed to mark notification as read" },
       { status: 500 },

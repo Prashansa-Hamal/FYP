@@ -5,9 +5,10 @@ import { getUser } from "@/data/user";
 // PATCH /api/tables/[id]/status - Update table status
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     const user = await getUser();
 
     // Check if user is admin or staff
@@ -45,7 +46,7 @@ export async function PATCH(
     }
 
     const table = await db.table.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         status,
         isAvailable: status === "AVAILABLE",
@@ -68,7 +69,7 @@ export async function PATCH(
       message: `Table status updated to ${status}`,
     });
   } catch (error) {
-    console.error("Error updating table status:", error);
+    console.log("Error updating table status:", error);
     return NextResponse.json(
       {
         error: "Failed to update table status",

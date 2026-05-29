@@ -5,11 +5,13 @@ import { getUser } from "@/data/user";
 // GET /api/tables/[id] - Get a single table
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
+
     const table = await db.table.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         reservations: {
           where: {
@@ -35,7 +37,7 @@ export async function GET(
       data: table,
     });
   } catch (error) {
-    console.error("Error fetching table:", error);
+    console.log("Error fetching table:", error);
     return NextResponse.json(
       {
         error: "Failed to fetch table",
@@ -49,9 +51,10 @@ export async function GET(
 // PUT /api/tables/[id] - Update a table
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     const user = await getUser();
 
     // Check if user is admin
@@ -67,7 +70,7 @@ export async function PUT(
 
     // Check if table exists
     const existingTable = await db.table.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!existingTable) {
@@ -89,7 +92,7 @@ export async function PUT(
     }
 
     const table = await db.table.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         tableNumber: tableNumber !== undefined ? tableNumber : undefined,
         capacity: capacity !== undefined ? capacity : undefined,
@@ -106,7 +109,7 @@ export async function PUT(
       message: "Table updated successfully",
     });
   } catch (error) {
-    console.error("Error updating table:", error);
+    console.log("Error updating table:", error);
     return NextResponse.json(
       {
         error: "Failed to update table",
@@ -120,9 +123,10 @@ export async function PUT(
 // DELETE /api/tables/[id] - Delete a table
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     const user = await getUser();
 
     // Check if user is admin
@@ -135,7 +139,7 @@ export async function DELETE(
 
     // Check if table exists
     const existingTable = await db.table.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         reservations: {
           where: {
@@ -161,7 +165,7 @@ export async function DELETE(
     }
 
     await db.table.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({
@@ -169,7 +173,7 @@ export async function DELETE(
       message: "Table deleted successfully",
     });
   } catch (error) {
-    console.error("Error deleting table:", error);
+    console.log("Error deleting table:", error);
     return NextResponse.json(
       {
         error: "Failed to delete table",

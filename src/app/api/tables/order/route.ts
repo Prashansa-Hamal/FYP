@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, data: latestOrder });
   } catch (error) {
-    console.error("Error fetching table order:", error);
+    console.log("Error fetching table order:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch table order" },
       { status: 500 },

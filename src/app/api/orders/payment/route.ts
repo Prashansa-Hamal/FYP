@@ -1,32 +1,9 @@
 import db from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { PAYMENT_METHODS } from "@/types/enums";
-import { getUser } from "@/data/user";
 
 export async function PATCH(request: NextRequest) {
   try {
-    // SECURITY: Check authentication
-    const user = await getUser();
-    
-    if (!user) {
-      return NextResponse.json(
-        { success: false, message: "Authentication required" },
-        { status: 401 },
-      );
-    }
-
-    // SECURITY: Only CASHIER, MANAGER, and ADMIN can mark orders as paid
-    const authorizedRoles = ["CASHIER", "MANAGER", "ADMIN"];
-    if (!authorizedRoles.includes(user.role)) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          message: "Unauthorized. Only cashiers and managers can process payments." 
-        },
-        { status: 403 },
-      );
-    }
-
     const body = await request.json();
     const { id, paymentMethod } = body;
 
@@ -80,9 +57,6 @@ export async function PATCH(request: NextRequest) {
       data: updateData,
     });
 
-    // Create audit log
-    console.log(`[PAYMENT AUDIT] Order ${id} marked as paid by ${user.role} user ${user.id} using ${paymentMethod}`);
-
     return NextResponse.json(
       {
         success: true,
@@ -92,7 +66,7 @@ export async function PATCH(request: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.error("Error updating payment status:", error);
+    console.log("Error updating payment status:", error);
 
     return NextResponse.json(
       {

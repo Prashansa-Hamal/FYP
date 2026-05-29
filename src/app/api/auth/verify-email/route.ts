@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
         type: decoded.type,
       });
     } catch (jwtError) {
-      console.error("JWT verification failed:", jwtError);
+      console.log("JWT verification failed:", jwtError);
       return NextResponse.redirect(
         `${process.env.NEXT_PUBLIC_APP_URL}/verify-email?error=Invalid or expired token`,
       );
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
       `${process.env.NEXT_PUBLIC_APP_URL}/verify-email?success=true`,
     );
   } catch (error) {
-    console.error("Email verification error:", error);
+    console.log("Email verification error:", error);
     return NextResponse.redirect(
       `${process.env.NEXT_PUBLIC_APP_URL}/verify-email?error=Verification failed. Please try again.`,
     );

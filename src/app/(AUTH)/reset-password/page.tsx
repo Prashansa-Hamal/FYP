@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,6 +20,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Phone, Wifi, Eye, EyeOff, CheckCircle } from "lucide-react";
 import Link from "next/link";
 
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordPageContent />
+    </Suspense>
+  );
+}
+
 const resetPasswordSchema = z
   .object({
     newPassword: z.string().min(6, "Password must be at least 6 characters"),
@@ -34,7 +42,7 @@ const resetPasswordSchema = z
 
 type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
 
-export default function ResetPasswordPage() {
+function ResetPasswordPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get("token");

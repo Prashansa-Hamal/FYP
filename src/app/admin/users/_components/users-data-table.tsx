@@ -22,7 +22,15 @@ import { UserRole } from "@/types/enums";
 import { ColumnDef, FilterFn, Row } from "@tanstack/react-table";
 import { Edit, Eye, Filter, MoreVertical, Trash2 } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
+
+export default function UsersDataTable() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <UsersDataTableContent />
+    </Suspense>
+  );
+}
 
 export type UserTableRow = {
   id: string;
@@ -111,7 +119,7 @@ const userColumns: ColumnDef<UserTableRow>[] = [
   },
 ];
 
-const UsersDataTable = () => {
+const UsersDataTableContent = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -228,9 +236,6 @@ const UsersDataTable = () => {
     />
   );
 };
-
-export default UsersDataTable;
-
 const RowActions = ({ row }: { row: Row<UserTableRow> }) => {
   return (
     <DropdownMenu>

@@ -27,7 +27,7 @@ export const ImageInput = ({
     setIsUploading(true);
     setProgress(0);
 
-    const res = await edgestore.dineEase.upload({
+    const res = await edgestore.publicFiles.upload({
       file,
       onProgressChange: setProgress,
     });

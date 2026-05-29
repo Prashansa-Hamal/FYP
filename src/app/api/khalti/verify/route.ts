@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
 
     // 2. Validate required parameters
     if (!callbackData.pidx) {
-      console.error("❌ Missing pidx in callback");
+      console.log("❌ Missing pidx in callback");
       return NextResponse.redirect(
         new URL(
           "/payment/failed?reason=invalid_callback",
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (!callbackData.purchase_order_id) {
-      console.error("❌ Missing purchase_order_id in callback");
+      console.log("❌ Missing purchase_order_id in callback");
       return NextResponse.redirect(
         new URL(
           "/payment/failed?reason=missing_order_id",
@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
     // 3. Get secret key for lookup
     const secretKey = process.env.KHALTI_SECRET_KEY;
     if (!secretKey) {
-      console.error("❌ KHALTI_SECRET_KEY not configured");
+      console.log("❌ KHALTI_SECRET_KEY not configured");
       return NextResponse.redirect(
         new URL(
           "/payment/failed?reason=configuration_error",
@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
     console.log("📥 Lookup verification result:", lookupData);
 
     if (!lookupResponse.ok) {
-      console.error("❌ Lookup verification failed:", lookupData);
+      console.log("❌ Lookup verification failed:", lookupData);
       return NextResponse.redirect(
         new URL(
           `/payment/failed?orderId=${callbackData.purchase_order_id}&reason=verification_failed`,
@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
 
     switch (lookupData.status) {
       case "Completed":
-        console.log("✅ Payment completed and verified");
+        console.log(" Payment completed and verified");
 
         // Update payment in database
         await db.$transaction(async (tx) => {
@@ -239,7 +239,7 @@ export async function GET(req: NextRequest) {
         );
     }
   } catch (error) {
-    console.error("💥 Callback error:", error);
+    console.log("💥 Callback error:", error);
 
     // Log error to your error tracking service
     // if (process.env.SENTRY_DSN) { ... }
@@ -252,6 +252,6 @@ export async function GET(req: NextRequest) {
     );
   } finally {
     const duration = Date.now() - startTime;
-    console.log(`✅ Callback processed in ${duration}ms`);
+    console.log(` Callback processed in ${duration}ms`);
   }
 }

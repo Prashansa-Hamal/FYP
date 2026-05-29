@@ -181,7 +181,7 @@ export function UpdateReservationDialog({
           }
         }
       } catch (error) {
-        console.error("Error checking table availability:", error);
+        console.log("Error checking table availability:", error);
       } finally {
         setCheckingTableAvailability(false);
       }

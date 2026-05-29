@@ -1,16 +1,12 @@
 "use client";
 
 import { CartProvider } from "@/contexts/CartContext";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 import { EdgeStoreProvider } from "@/lib/edgestore";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useState } from "react";
 import { Toaster } from "sonner";
 
-/**
- * Root providers component that wraps the application with necessary context providers
- * Includes React Query, EdgeStore, Cart context, and toast notifications
- */
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
     () =>
@@ -29,10 +25,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <EdgeStoreProvider>
-        <CartProvider>{children}</CartProvider>
+        <NotificationProvider>
+          <CartProvider>{children}</CartProvider>
+        </NotificationProvider>
+        <Toaster position="bottom-right" richColors />
       </EdgeStoreProvider>
-      <Toaster position="bottom-right" richColors />
-      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }

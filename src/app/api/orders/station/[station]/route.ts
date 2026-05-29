@@ -192,7 +192,7 @@ export async function GET(
       fetchedAt: new Date().toISOString(),
     });
   } catch (error: any) {
-    console.error(`GET /api/orders/station/[station] error:`, error);
+    console.log(`GET /api/orders/station/[station] error:`, error);
     return NextResponse.json(
       {
         success: false,

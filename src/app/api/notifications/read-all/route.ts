@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
       count: result.count,
     });
   } catch (error) {
-    console.error("Error marking all notifications as read:", error);
+    console.log("Error marking all notifications as read:", error);
     return NextResponse.json(
       { error: "Failed to mark notifications as read" },
       { status: 500 },

@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
       count: tables.length,
     });
   } catch (error) {
-    console.error("Error fetching tables:", error);
+    console.log("Error fetching tables:", error);
     return NextResponse.json(
       {
         error: "Failed to fetch tables",
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
       message: "Table created successfully",
     });
   } catch (error) {
-    console.error("Error creating table:", error);
+    console.log("Error creating table:", error);
     return NextResponse.json(
       {
         error: "Failed to create table",

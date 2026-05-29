@@ -1,9 +1,8 @@
 import db from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { ItemCategory, PreparationStation } from "@/types/enums";
-import { getUser } from "@/data/user";
 
-// GET - Fetch all menu items (PUBLIC - no auth required)
+// GET - Fetch all menu items
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -86,7 +85,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("GET /api/menu-items error:", error);
+    console.log("GET /api/menu-items error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch menu items" },
       { status: 500 },
@@ -94,30 +93,9 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST - Create menu item (ADMIN/MANAGER ONLY)
+// POST - Create menu item
 export async function POST(request: NextRequest) {
   try {
-    // SECURITY: Check authentication
-    const user = await getUser();
-    
-    if (!user) {
-      return NextResponse.json(
-        { success: false, message: "Authentication required" },
-        { status: 401 },
-      );
-    }
-
-    // SECURITY: Only ADMIN and MANAGER can create menu items
-    if (user.role !== "ADMIN" && user.role !== "MANAGER") {
-      return NextResponse.json(
-        { 
-          success: false, 
-          message: "Unauthorized. Only administrators can create menu items." 
-        },
-        { status: 403 },
-      );
-    }
-
     const body = await request.json();
 
     // Validation
@@ -152,16 +130,13 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Audit log
-    console.log(`[MENU AUDIT] Menu item '${menuItem.name}' created by ${user.role} user ${user.id}`);
-
     return NextResponse.json({
       success: true,
       data: menuItem,
       message: "Menu item created successfully",
     });
   } catch (error) {
-    console.error("POST /api/menu-items error:", error);
+    console.log("POST /api/menu-items error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to create menu item" },
       { status: 500 },
@@ -169,45 +144,21 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// DELETE - Delete item (ADMIN ONLY)
+// DELETE - Delete item
 export async function DELETE(request: NextRequest) {
   try {
-    // SECURITY: Check authentication
-    const user = await getUser();
-    
-    if (!user) {
-      return NextResponse.json(
-        { success: false, message: "Authentication required" },
-        { status: 401 },
-      );
-    }
-
-    // SECURITY: Only ADMIN can delete menu items
-    if (user.role !== "ADMIN") {
-      return NextResponse.json(
-        { 
-          success: false, 
-          message: "Unauthorized. Only administrators can delete menu items." 
-        },
-        { status: 403 },
-      );
-    }
-
     const body = await request.json();
 
-    const deletedItem = await db.menuItem.delete({
+    await db.menuItem.delete({
       where: { id: body.id },
     });
-
-    // Audit log
-    console.log(`[MENU AUDIT] Menu item '${deletedItem.name}' deleted by admin user ${user.id}`);
 
     return NextResponse.json({
       success: true,
       message: "Menu item deleted successfully",
     });
   } catch (error) {
-    console.error("DELETE /api/menu-items/[id] error:", error);
+    console.log("DELETE /api/menu-items/[id] error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to delete menu item" },
       { status: 500 },
@@ -215,30 +166,9 @@ export async function DELETE(request: NextRequest) {
   }
 }
 
-// PUT - Toggle Menu Item Availability (ADMIN/MANAGER ONLY)
+// Toggle Menu Item Availability
 export async function PUT(request: NextRequest) {
   try {
-    // SECURITY: Check authentication
-    const user = await getUser();
-    
-    if (!user) {
-      return NextResponse.json(
-        { success: false, message: "Authentication required" },
-        { status: 401 },
-      );
-    }
-
-    // SECURITY: Only ADMIN and MANAGER can update availability
-    if (user.role !== "ADMIN" && user.role !== "MANAGER") {
-      return NextResponse.json(
-        { 
-          success: false, 
-          message: "Unauthorized. Only administrators can update menu items." 
-        },
-        { status: 403 },
-      );
-    }
-
     const body = await request.json();
 
     const { id, isAvailable } = body;
@@ -255,16 +185,13 @@ export async function PUT(request: NextRequest) {
       data: { isAvailable },
     });
 
-    // Audit log
-    console.log(`[MENU AUDIT] Menu item '${menuItem.name}' availability set to ${isAvailable} by ${user.role} user ${user.id}`);
-
     return NextResponse.json({
       success: true,
       data: menuItem,
       message: "Availability updated successfully",
     });
   } catch (error) {
-    console.error("PUT /api/menu-items error:", error);
+    console.log("PUT /api/menu-items error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to update availability" },
       { status: 500 },

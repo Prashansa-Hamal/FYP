@@ -109,7 +109,7 @@ export default function MenuItemForm() {
 
       router.push("/menu-items");
     } catch (error) {
-      console.error("Failed to create menu item:", error);
+      console.log("Failed to create menu item:", error);
     }
   }
 
@@ -260,7 +260,7 @@ export default function MenuItemForm() {
                                 const value = e.target.value;
                                 const numericValue = Number(value);
                                 field.onChange(
-                                  isNaN(numericValue) ? "" : numericValue
+                                  isNaN(numericValue) ? "" : numericValue,
                                 );
                               }}
                             />
@@ -293,7 +293,7 @@ export default function MenuItemForm() {
                               const value = e.target.value;
                               const numericValue = Number(value);
                               field.onChange(
-                                isNaN(numericValue) ? "" : numericValue
+                                isNaN(numericValue) ? "" : numericValue,
                               );
                             }}
                           />
@@ -322,7 +322,7 @@ export default function MenuItemForm() {
                               const value = e.target.value;
                               const numericValue = Number(value);
                               field.onChange(
-                                isNaN(numericValue) ? "" : numericValue
+                                isNaN(numericValue) ? "" : numericValue,
                               );
                             }}
                           />
@@ -578,7 +578,7 @@ export default function MenuItemForm() {
 
                       const handleSelectChange = (selectedOptions: any) => {
                         const ingredients = selectedOptions.map(
-                          (option: any) => option.value
+                          (option: any) => option.value,
                         );
                         onChange(ingredients);
                       };
@@ -661,7 +661,7 @@ export default function MenuItemForm() {
 
                       const handleSelectChange = (selectedOptions: any) => {
                         const tags = selectedOptions.map(
-                          (option: any) => option.value
+                          (option: any) => option.value,
                         );
                         onChange(tags);
                       };

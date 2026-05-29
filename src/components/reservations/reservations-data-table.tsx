@@ -36,7 +36,7 @@ import {
   Phone,
 } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { UpdateReservationDialog } from "./update-reservation-dialog";
 import { format } from "date-fns";
 
@@ -47,6 +47,14 @@ import {
   useReservations,
 } from "@/hooks/useReservations";
 import { ReservationDetailsDialog } from "./reservationDetailsDialog";
+
+export function ReservationsDataTable() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ReservationsDataTableContent />
+    </Suspense>
+  );
+}
 
 // Define the reservation row type
 export interface ReservationRow {
@@ -480,7 +488,7 @@ const DateRangeFilter = ({
 };
 
 // Main Reservations Data Table Component
-export function ReservationsDataTable() {
+export function ReservationsDataTableContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

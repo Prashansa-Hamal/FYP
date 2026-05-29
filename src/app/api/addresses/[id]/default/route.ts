@@ -62,7 +62,7 @@ export async function PATCH(
       address: updatedAddress,
     });
   } catch (error: any) {
-    console.error("Set default address error:", error);
+    console.log("Set default address error:", error);
 
     if (error.code === "P2025") {
       return NextResponse.json(

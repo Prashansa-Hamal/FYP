@@ -5,9 +5,18 @@ import EsewaCheckoutForm from "@/components/esewaCheckoutForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+
+import { Suspense, useState } from "react";
 
 export default function PaymentPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PaymentPageContent />
+    </Suspense>
+  );
+}
+
+function PaymentPageContent() {
   const searchParams = useSearchParams();
   const [orderId, setOrderId] = useState("");
 

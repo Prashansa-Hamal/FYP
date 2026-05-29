@@ -16,7 +16,7 @@ export async function createNotifications() {
     NotificationType.ORDER_PREPARING,
     NotificationType.ORDER_SERVED,
     NotificationType.ORDER_CANCELLED,
-    NotificationType.GENERAL,
+    
   ];
 
   // Create notifications for users

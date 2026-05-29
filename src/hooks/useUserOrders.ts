@@ -60,7 +60,7 @@ async function fetchUserOrders(
 
   if (!response.ok) {
     const errorData = await response.json();
-    console.error("Error response:", errorData);
+    console.log("Error response:", errorData);
     throw new Error(errorData.error || "Failed to fetch orders");
   }
 

@@ -14,6 +14,7 @@ import {
   CustomerAcquisitionItem,
   PaymentMethodItem,
   StaffPerformanceItem,
+  StockLevelItem,
   RealtimeStats,
   DateRangeParams,
   TopItemsParams,
@@ -53,6 +54,8 @@ export const statsKeys = {
   paymentsMethod: () => [...statsKeys.all, "payments-method"] as const,
 
   staffPerformance: () => [...statsKeys.all, "staff-performance"] as const,
+
+  inventoryStock: () => [...statsKeys.all, "inventory-stock"] as const,
 
   realtimeCurrent: () => [...statsKeys.all, "realtime-current"] as const,
 };
@@ -218,6 +221,19 @@ export const useStaffPerformance = () =>
       const data = await res.json();
       return data.data;
     },
+  });
+
+//   Inventory
+export const useStockLevels = () =>
+  useQuery({
+    queryKey: statsKeys.inventoryStock(),
+    queryFn: async (): Promise<StockLevelItem[]> => {
+      const res = await fetch("/api/stats/inventory/stock-levels");
+      if (!res.ok) throw new Error("Failed to fetch stock levels");
+      const data = await res.json();
+      return data.data;
+    },
+    refetchInterval: 60000,
   });
 
 //   Realtime

@@ -74,7 +74,7 @@
 // app/payment/failed/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -92,6 +92,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
+export default function PaymentFailedPage() {
+  return (
+    <Suspense fallback={<PaymentFailedSkeleton />}>
+      <PaymentFailedPageContent />
+    </Suspense>
+  );
+}
+
 interface PaymentFailedData {
   orderId?: string;
   orderNumber?: string;
@@ -102,7 +110,7 @@ interface PaymentFailedData {
   retryUrl?: string;
 }
 
-export default function PaymentFailedPage() {
+function PaymentFailedPageContent() {
   const searchParams = useSearchParams();
   const [paymentData, setPaymentData] = useState<PaymentFailedData | null>(
     null,

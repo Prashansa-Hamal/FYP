@@ -45,7 +45,7 @@ export async function GET(
       address,
     });
   } catch (error: any) {
-    console.error("Get address error:", error);
+    console.log("Get address error:", error);
     return NextResponse.json(
       {
         success: false,
@@ -151,7 +151,7 @@ export async function PUT(
       address: updatedAddress,
     });
   } catch (error: any) {
-    console.error("Update address error:", error);
+    console.log("Update address error:", error);
 
     if (error.code === "P2025") {
       return NextResponse.json(
@@ -230,7 +230,7 @@ export async function DELETE(
       message: "Address deleted successfully",
     });
   } catch (error: any) {
-    console.error("Delete address error:", error);
+    console.log("Delete address error:", error);
 
     return NextResponse.json(
       {

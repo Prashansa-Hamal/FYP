@@ -9,10 +9,6 @@ import { cartApi } from "@/lib/api/cart";
 import { Cart, CartItem, CartApiResponse } from "@/types/cart";
 import { toast } from "sonner";
 
-/**
- * Cart context type definition
- * Provides cart state and operations for managing shopping cart
- */
 interface CartContextType {
   cart: Cart | null;
   cartItems: CartItem[];
@@ -48,11 +44,6 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-/**
- * Hook to access cart context
- * @throws Error if used outside CartProvider
- * @returns Cart context with state and operations
- */
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {

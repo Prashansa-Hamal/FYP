@@ -33,11 +33,11 @@ export default function TableForm({ defaultValues, tableId }: Props) {
   });
 
   const createMutation = useCreateTable();
-  const updateMutation = useUpdateTable(tableId ?? "");
+  const updateMutation = useUpdateTable();
 
   const onSubmit = (data: TableFormValues) => {
     if (tableId) {
-      updateMutation.mutate(data);
+      updateMutation.mutate({ id: tableId, data });
     } else {
       createMutation.mutate(data);
     }

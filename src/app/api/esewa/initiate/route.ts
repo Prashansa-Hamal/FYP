@@ -32,7 +32,7 @@ export async function POST(req: Request) {
       transactionId: transactionId,
     });
   } catch (error) {
-    console.error("Error initiating eSewa payment:", error);
+    console.log("Error initiating eSewa payment:", error);
     return NextResponse.json(
       {
         success: false,

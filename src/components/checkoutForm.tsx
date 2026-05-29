@@ -7,7 +7,6 @@ import {
   Truck,
   CreditCard,
   Wallet,
-  LogIn,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -17,7 +16,6 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/contexts/CartContext";
 import { formatCurrency } from "@/lib/formatters";
 import { useTables } from "@/hooks/useTables";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
 import {
   Select,
   SelectContent,
@@ -26,11 +24,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { useLoyaltyPoints } from "@/hooks/useLoyaltyPoints";
+import { Switch } from "./ui/switch";
+import { Label } from "./ui/label";
+import { useAuth } from "@/hooks/useAuth";
+import { LoginDialog } from "./dialogs/LoginDialog";
+
+const VAT_RATE = 0.13;
+const POINTS_TO_CASH_RATE = 10;
 
 export const CheckoutForm = () => {
   const router = useRouter();
+  const {
+    data: authData,
+    isLoading: isAuthLoading,
+    refetch: refetchAuth,
+  } = useAuth();
   const { getCartTotal, getItemCount } = useCart();
-  const { data: currentUser, isLoading: authLoading } = useCurrentUser();
   const [orderType, setOrderType] = useState<
     "DINE_IN" | "TAKEAWAY" | "DELIVERY"
   >("DINE_IN");
@@ -40,11 +50,27 @@ export const CheckoutForm = () => {
     "COD" | "KHALTI" | "ESEWA"
   >("COD");
   const [deliveryAddressId, setDeliveryAddressId] = useState<string>("");
+  const [applyPoints, setApplyPoints] = useState(false);
+  const [showLoginDialog, setShowLoginDialog] = useState(false);
+
+  const { data: tablesData, isLoading: tablesLoading } = useTables();
+  const { data: loyaltyResponse, refetch: refetchLoyalty } = useLoyaltyPoints();
+  const userPoints = loyaltyResponse?.data?.points ?? 0;
 
   const subtotal = getCartTotal();
-  const DELIVERY_FEE = 100;
-  const deliveryFee = orderType === "DELIVERY" ? DELIVERY_FEE : 0;
-  const totalAmount = subtotal + deliveryFee;
+  const vatAmount = subtotal * VAT_RATE;
+
+  const getLoyaltyDiscount = () => {
+    if (!applyPoints || userPoints === 0 || !authData?.isAuthenticated)
+      return 0;
+    const maxDiscountFromPoints = subtotal * 0.5;
+    const maxDiscountFromBalance = userPoints / POINTS_TO_CASH_RATE;
+    return Math.min(maxDiscountFromPoints, maxDiscountFromBalance);
+  };
+
+  const loyaltyDiscount = getLoyaltyDiscount();
+  const pointsToUse = Math.floor(loyaltyDiscount * POINTS_TO_CASH_RATE);
+  const totalAmount = subtotal + vatAmount - loyaltyDiscount;
 
   const orderData = {
     orderType,
@@ -53,9 +79,8 @@ export const CheckoutForm = () => {
     specialInstruction,
     paymentMethod,
     deliveryAddressId,
+    isPointsApplied: applyPoints,
   };
-
-  const { data: tablesData, isLoading: tablesLoading } = useTables();
 
   const params = new URLSearchParams(
     Object.entries(orderData).reduce(
@@ -75,89 +100,28 @@ export const CheckoutForm = () => {
     return true;
   };
 
-  const orderTypeOptions = [
-    {
-      value: "DINE_IN",
-      label: "Dine In",
-      icon: Utensils,
-      description: "Enjoy at our restaurant",
-    },
-    {
-      value: "TAKEAWAY",
-      label: "Takeaway",
-      icon: Package,
-      description: "Pick up your order",
-    },
-    {
-      value: "DELIVERY",
-      label: "Delivery",
-      icon: Truck,
-      description: "Get it delivered",
-    },
-  ];
+  const handleProceedToCheckout = () => {
+    if (!authData?.isAuthenticated) {
+      setShowLoginDialog(true);
+    } else {
+      router.push(`/checkout?${params.toString()}`);
+    }
+  };
 
-  const paymentOptions = [
-    {
-      value: "COD",
-      label: "Cash on Delivery",
-      icon: Wallet,
-      description: "Pay when you receive",
-    },
-    {
-      value: "KHALTI",
-      label: "Khalti",
-      icon: CreditCard,
-      description: "Pay via Khalti wallet",
-    },
-    {
-      value: "ESEWA",
-      label: "eSewa",
-      icon: CreditCard,
-      description: "Pay via Khalti wallet",
-    },
-  ];
+  const handleLoginSuccess = async () => {
+    // Refresh auth state
+    await refetchAuth();
+    // Refresh loyalty points
+    await refetchLoyalty();
+  };
 
-  // Show login prompt if user is not authenticated
-  if (!authLoading && !currentUser) {
+  // Show loading state while checking authentication
+  if (isAuthLoading) {
     return (
-      <div className="space-y-4">
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 text-center">
-          <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3">
-            <LogIn className="w-6 h-6 text-amber-600" />
-          </div>
-          <h3 className="font-semibold text-gray-900 mb-1">
-            Login required to place an order
-          </h3>
-          <p className="text-sm text-gray-500 mb-4">
-            Create a free account or log in to continue. Your cart items will be
-            saved.
-          </p>
-          <div className="flex flex-col gap-2">
-            <Link href="/login">
-              <Button className="w-full bg-amber-500 hover:bg-amber-600 text-white rounded-xl">
-                <LogIn className="w-4 h-4 mr-2" />
-                Log In
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <Button
-                variant="outline"
-                className="w-full border-amber-200 text-amber-700 hover:bg-amber-50 rounded-xl"
-              >
-                Create Account
-              </Button>
-            </Link>
-          </div>
-        </div>
-        <Link href="/">
-          <Button
-            variant="outline"
-            className="w-full border-gray-200 text-gray-700 hover:bg-gray-50 py-6 rounded-xl"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Continue Menu
-          </Button>
-        </Link>
+      <div className="space-y-5">
+        <div className="h-32 w-full animate-pulse bg-gray-100 rounded-xl" />
+        <div className="h-24 w-full animate-pulse bg-gray-100 rounded-xl" />
+        <div className="h-40 w-full animate-pulse bg-gray-100 rounded-xl" />
       </div>
     );
   }
@@ -170,7 +134,26 @@ export const CheckoutForm = () => {
           Order Type
         </label>
         <div className="grid grid-cols-3 gap-2">
-          {orderTypeOptions.map((type) => (
+          {[
+            {
+              value: "DINE_IN",
+              label: "Dine In",
+              icon: Utensils,
+              description: "Enjoy at our restaurant",
+            },
+            {
+              value: "TAKEAWAY",
+              label: "Takeaway",
+              icon: Package,
+              description: "Pick up your order",
+            },
+            {
+              value: "DELIVERY",
+              label: "Delivery",
+              icon: Truck,
+              description: "Get it delivered",
+            },
+          ].map((type) => (
             <button
               key={type.value}
               type="button"
@@ -209,16 +192,15 @@ export const CheckoutForm = () => {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Table Number <span className="text-red-500">*</span>
           </label>
-
           <Select
             value={tableNumber}
-            onValueChange={(value) => setTableNumber(value)}
+            onValueChange={setTableNumber}
             disabled={tablesLoading}
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select Table Number" />
             </SelectTrigger>
-            <SelectContent className="w-full">
+            <SelectContent>
               <SelectGroup>
                 {tablesData?.data.map((table) => (
                   <SelectItem key={table.id} value={String(table.tableNumber)}>
@@ -237,11 +219,7 @@ export const CheckoutForm = () => {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Delivery Address <span className="text-red-500">*</span>
           </label>
-          <AddressSelect
-            onChange={(addressId: string) => {
-              setDeliveryAddressId(addressId);
-            }}
-          />
+          <AddressSelect onChange={setDeliveryAddressId} />
         </div>
       )}
 
@@ -265,7 +243,26 @@ export const CheckoutForm = () => {
           Payment Method
         </label>
         <div className="grid grid-cols-3 gap-2">
-          {paymentOptions.map((method) => (
+          {[
+            {
+              value: "COD",
+              label: "Cash on Delivery",
+              icon: Wallet,
+              description: "Pay when you receive",
+            },
+            {
+              value: "KHALTI",
+              label: "Khalti",
+              icon: CreditCard,
+              description: "Pay via Khalti wallet",
+            },
+            {
+              value: "ESEWA",
+              label: "eSewa",
+              icon: CreditCard,
+              description: "Pay via eSewa wallet",
+            },
+          ].map((method) => (
             <button
               key={method.value}
               type="button"
@@ -299,6 +296,61 @@ export const CheckoutForm = () => {
         </div>
       </div>
 
+      {/* Loyalty Points Section - Only show for logged in users */}
+      {authData?.isAuthenticated && userPoints > 0 && (
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-200">
+          <div className="flex items-start justify-between">
+            <div className="flex items-start gap-3">
+              <div className="bg-amber-500 rounded-full p-2">
+                <span className="text-white text-sm">⭐</span>
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900">Loyalty Points</h4>
+                <p className="text-sm text-gray-600">
+                  You have{" "}
+                  <span className="font-bold text-amber-600">{userPoints}</span>{" "}
+                  points
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {userPoints} points = Rs.{" "}
+                  {(userPoints / POINTS_TO_CASH_RATE).toFixed(2)} discount
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch
+                id="apply-points"
+                checked={applyPoints}
+                onCheckedChange={setApplyPoints}
+              />
+              <Label
+                htmlFor="apply-points"
+                className="text-sm font-medium text-gray-700 cursor-pointer"
+              >
+                Apply Points
+              </Label>
+            </div>
+          </div>
+
+          {applyPoints && loyaltyDiscount > 0 && (
+            <div className="mt-3 pt-3 border-t border-amber-200">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Points to use:</span>
+                <span className="font-medium text-amber-600">
+                  {pointsToUse} points
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Points remaining after:</span>
+                <span className="font-medium text-gray-700">
+                  {userPoints - pointsToUse} points
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Order Summary */}
       <div className="bg-amber-50/50 rounded-xl p-4 space-y-2">
         <div className="flex justify-between text-sm">
@@ -310,17 +362,25 @@ export const CheckoutForm = () => {
           </span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Delivery Fee</span>
-          {orderType === "DELIVERY" ? (
-            <span className="font-medium text-gray-900">Rs. 100</span>
-          ) : (
-            <span className="text-green-600 font-medium">FREE</span>
-          )}
+          <span className="text-gray-600">VAT (13%)</span>
+          <span className="font-medium text-gray-900">
+            {formatCurrency(vatAmount)}
+          </span>
         </div>
-        {orderType === "DELIVERY" && (
-          <p className="text-xs text-amber-600">
-            Our staff will contact you to confirm the delivery address and timing.
-          </p>
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-600">Delivery Fee</span>
+          <span className="text-green-600 font-medium">FREE</span>
+        </div>
+        {applyPoints && authData?.isAuthenticated && loyaltyDiscount > 0 && (
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-600 flex items-center gap-1">
+              <span className="text-amber-500">🎉</span>
+              Loyalty Discount
+            </span>
+            <span className="text-green-600 font-medium">
+              -{formatCurrency(loyaltyDiscount)}
+            </span>
+          </div>
         )}
         <div className="pt-2 border-t border-amber-200">
           <div className="flex justify-between items-center">
@@ -330,27 +390,68 @@ export const CheckoutForm = () => {
             </div>
           </div>
         </div>
+
+        {/* Points to Earn */}
+        {authData?.isAuthenticated && !applyPoints && (
+          <div className="mt-2 pt-2 border-t border-amber-100">
+            <div className="flex justify-between text-xs">
+              <span className="text-gray-500 flex items-center gap-1">
+                <span className="text-amber-500">⭐</span>
+                Points you'll earn on this order:
+              </span>
+              <span className="font-medium text-amber-600">
+                {Math.floor(totalAmount)} points
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Action Buttons */}
+      {/* Action Buttons - Conditional based on auth */}
       <div className="space-y-3 pt-2">
-        <Button
-          onClick={() => router.push(`/checkout?${params.toString()}`)}
-          disabled={!canPlaceOrder()}
-          className="w-full bg-amber-500 hover:bg-amber-600 text-white py-6 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
-        >
-          Proceed to Checkout
-        </Button>
+        {!authData?.isAuthenticated ? (
+          <>
+            {/* Login Button for guest users */}
+            <Button
+              onClick={handleProceedToCheckout}
+              className="w-full bg-amber-500 hover:bg-amber-600 text-white py-6 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+            >
+              Login to Place Order
+            </Button>
+            <p className="text-xs text-center text-gray-500">
+              Already have items in cart? Login to complete your order
+            </p>
+          </>
+        ) : (
+          <>
+            {/* Checkout Button for logged in users */}
+            <Button
+              onClick={handleProceedToCheckout}
+              disabled={!canPlaceOrder()}
+              className="w-full bg-amber-500 hover:bg-amber-600 text-white py-6 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+            >
+              Proceed to Checkout
+            </Button>
+          </>
+        )}
+
         <Link href="/">
           <Button
             variant="outline"
             className="w-full border-gray-200 text-gray-700 hover:bg-gray-50 py-6 rounded-xl"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Continue Menu
+            Continue Shopping
           </Button>
         </Link>
       </div>
+
+      {/* Login Dialog Modal */}
+      <LoginDialog
+        open={showLoginDialog}
+        onOpen={setShowLoginDialog}
+        onSuccess={handleLoginSuccess}
+      />
     </div>
   );
 };

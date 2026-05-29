@@ -24,7 +24,7 @@ export async function GET(
       data: menuItem,
     });
   } catch (error) {
-    console.error("GET /api/menu-items/[id] error:", error);
+    console.log("GET /api/menu-items/[id] error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch menu item" },
       { status: 500 },
@@ -69,7 +69,7 @@ export async function PUT(
       message: "Menu item updated successfully",
     });
   } catch (error) {
-    console.error("PUT /api/menu-items/[id] error:", error);
+    console.log("PUT /api/menu-items/[id] error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to update menu item" },
       { status: 500 },

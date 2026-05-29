@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       message: "Verification link has been sent to your email.",
     });
   } catch (error) {
-    console.error("Forgot password error:", error);
+    console.log("Forgot password error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to process request" },
       { status: 500 },

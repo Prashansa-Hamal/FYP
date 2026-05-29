@@ -7,6 +7,8 @@ export async function POST(request: NextRequest) {
   try {
     const { token, newPassword, confirmPassword } = await request.json();
 
+    console.log("Reset password request received with token:", token);
+
     if (!token || !newPassword || !confirmPassword) {
       return NextResponse.json(
         { success: false, message: "All fields are required" },
@@ -53,7 +55,7 @@ export async function POST(request: NextRequest) {
         "Password reset successfully. You can now login with your new password.",
     });
   } catch (error) {
-    console.error("Reset password error:", error);
+    console.log("Reset password error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to reset password" },
       { status: 500 },

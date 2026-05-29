@@ -27,17 +27,26 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { OrderType } from "@/types/enums";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import EsewaCheckoutForm from "@/components/esewaCheckoutForm";
 
 export default function CartSummaryContent() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CartSummaryContents />
+    </Suspense>
+  );
+}
+
+function CartSummaryContents() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const orderType = searchParams.get("orderType");
   const deliveryAddressId = searchParams.get("deliveryAddressId");
   const specialInstruction = searchParams.get("specialInstruction");
+  const isPointsApplied = searchParams.get("isPointsApplied");
 
   if (!orderType) return <div>Error....</div>;
 
@@ -45,7 +54,10 @@ export default function CartSummaryContent() {
     orderType: orderType as OrderType,
     addressId: deliveryAddressId!,
     specialInstruction: specialInstruction!,
+    isPointsApplied: isPointsApplied === "true" ? true : false,
   });
+
+  console.log("Cart Summary Data:", data);
 
   useEffect(() => {
     refetch();
@@ -401,6 +413,14 @@ export default function CartSummaryContent() {
                       <div className="flex justify-between text-sm text-green-600">
                         <span>Discount</span>
                         <span>-{formatCurrency(summary.discountAmount)}</span>
+                      </div>
+                    )}
+                    {summary.loyaltyDiscountAmount > 0 && (
+                      <div className="flex justify-between text-sm text-green-600">
+                        <span>Loyalty Discount</span>
+                        <span>
+                          -{formatCurrency(summary.loyaltyDiscountAmount)}
+                        </span>
                       </div>
                     )}
                     <Separator className="bg-amber-100" />

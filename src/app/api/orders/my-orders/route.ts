@@ -203,7 +203,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Error fetching user orders:", error);
+    console.log("Error fetching user orders:", error);
 
     return NextResponse.json(
       {

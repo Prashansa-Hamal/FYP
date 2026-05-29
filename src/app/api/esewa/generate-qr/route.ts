@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     if (!esewaId || !amount || amount <= 0) {
       return NextResponse.json(
         { error: "Esewa ID and amount are required." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -59,14 +59,14 @@ export async function POST(request: Request) {
       note: "QR contains JSON data in eSewa format: {eSewa_id, name, amount, tid, note, timestamp}",
     });
   } catch (error) {
-    console.error("QR generation error:", error);
+    console.log("QR generation error:", error);
     return NextResponse.json(
       {
         success: false,
         error: "Failed to generate QR code",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

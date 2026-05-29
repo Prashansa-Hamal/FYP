@@ -196,7 +196,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Error fetching leaderboard:", error);
+    console.log("Error fetching leaderboard:", error);
     return NextResponse.json(
       { error: "Failed to fetch leaderboard" },
       { status: 500 },

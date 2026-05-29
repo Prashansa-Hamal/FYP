@@ -2,12 +2,7 @@
 
 import { useState } from "react";
 import { Bell, CheckCheck, X } from "lucide-react";
-import {
-  useNotifications,
-  useUnreadCount,
-  useMarkAsRead,
-  useMarkAllAsRead,
-} from "@/hooks/useNotifications";
+import { useNotificationContext } from "@/contexts/NotificationContext";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -21,22 +16,17 @@ import { cn } from "@/lib/utils";
 
 export function NotificationBell() {
   const [open, setOpen] = useState(false);
-  const { data: unreadCount } = useUnreadCount();
-  const { data, refetch } = useNotifications({ limit: 10 });
-  const markAsRead = useMarkAsRead();
-  const markAllAsRead = useMarkAllAsRead();
+  const { unreadCount, notifications, markAsRead, markAllAsRead, isLoading } =
+    useNotificationContext();
 
-  const notifications = data?.data.notifications || [];
   const totalUnread = unreadCount || 0;
 
   const handleMarkAsRead = async (id: string) => {
-    await markAsRead.mutateAsync(id);
-    refetch();
+    await markAsRead(id);
   };
 
   const handleMarkAllAsRead = async () => {
-    await markAllAsRead.mutateAsync();
-    refetch();
+    await markAllAsRead();
   };
 
   const getNotificationIcon = (type: string) => {
@@ -66,14 +56,17 @@ export function NotificationBell() {
           {" "}
           <Bell className="w-5 h-5 text-gray-700" />
           {totalUnread > 0 && (
-            <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs rounded-full">
+            <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-amber-500 text-white text-xs rounded-full">
               {totalUnread > 9 ? "9+" : totalUnread}
             </Badge>
           )}
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-96 p-0">
+      <DropdownMenuContent
+        align="end"
+        className="w-96 p-0 flex flex-col relative"
+      >
         <div className="flex items-center justify-between p-3 border-b">
           <h3 className="font-semibold text-gray-900">Notifications</h3>
           {totalUnread > 0 && (
@@ -89,7 +82,7 @@ export function NotificationBell() {
           )}
         </div>
 
-        <ScrollArea className="max-h-96">
+        <ScrollArea className="h-[400px]">
           {notifications.length === 0 ? (
             <div className="p-8 text-center text-gray-500 text-sm">
               No notifications
@@ -141,7 +134,7 @@ export function NotificationBell() {
         </ScrollArea>
 
         {notifications.length > 0 && (
-          <div className="p-2 border-t text-center">
+          <div className="p-2 border-t text-center fixed bottom-0 bg-white w-full">
             <a
               href="/notifications"
               className="text-xs text-amber-600 hover:text-amber-700"

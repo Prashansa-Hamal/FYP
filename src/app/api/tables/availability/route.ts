@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Error checking availability:", error);
+    console.log("Error checking availability:", error);
     return NextResponse.json(
       {
         error: "Failed to check availability",

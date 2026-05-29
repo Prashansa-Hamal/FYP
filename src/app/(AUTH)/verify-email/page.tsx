@@ -1,7 +1,6 @@
-// app/verify-email/page.tsx (Fixed version)
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +16,14 @@ import Link from "next/link";
 import { useEmailVerification } from "@/hooks/useAuthActions";
 
 export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <VerifyEmailPageContent />
+    </Suspense>
+  );
+}
+
+function VerifyEmailPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get("token");

@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     const validated = lookupSchema.safeParse(body);
 
     if (!validated.success) {
-      console.error("❌ Validation error:", validated.error);
+      console.log("❌ Validation error:", validated.error);
       return NextResponse.json(
         {
           success: false,
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     // 2. Check secret key
     const secretKey = process.env.KHALTI_SECRET_KEY;
     if (!secretKey) {
-      console.error("❌ KHALTI_SECRET_KEY not found");
+      console.log("❌ KHALTI_SECRET_KEY not found");
       return NextResponse.json(
         {
           success: false,
@@ -79,7 +79,7 @@ export async function POST(req: Request) {
         errorData = { detail: responseText };
       }
 
-      console.error("❌ Khalti lookup API error:", errorData);
+      console.log("❌ Khalti lookup API error:", errorData);
 
       // Log to monitoring
       // await logToMonitoring('khalti_lookup_error', { pidx, error: errorData });
@@ -97,7 +97,7 @@ export async function POST(req: Request) {
 
     // 6. Parse and validate Khalti response
     const data = JSON.parse(responseText);
-    console.log("✅ Khalti lookup success:", {
+    console.log("Khalti lookup success:", {
       status: data.status,
       total_amount: data.total_amount,
       transaction_id: data.transaction_id,
@@ -123,7 +123,7 @@ export async function POST(req: Request) {
       fee_npr: data.fee / 100,
     });
   } catch (error) {
-    console.error("💥 Lookup server error:", error);
+    console.log("💥 Lookup server error:", error);
 
     // Log to error tracking
     // if (process.env.SENTRY_DSN) { ... }
@@ -140,6 +140,6 @@ export async function POST(req: Request) {
     );
   } finally {
     const duration = Date.now() - startTime;
-    console.log(`✅ Lookup completed in ${duration}ms`);
+    console.log(` Lookup completed in ${duration}ms`);
   }
 }

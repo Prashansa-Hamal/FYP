@@ -20,31 +20,68 @@ export async function GET() {
     readyOrders,
     completedOrders,
     cancelledOrders,
+    lowStockItems,
     activeStaff,
     totalCustomers,
     newCustomersToday,
   ] = await Promise.all([
+    // Today's revenue
     db.order.aggregate({
-      where: { createdAt: { gte: today }, paymentStatus: "PAID" },
+      where: {
+        createdAt: { gte: today },
+        paymentStatus: "PAID",
+      },
       _sum: { finalAmount: true },
       _count: true,
     }),
+    // Week's revenue
     db.order.aggregate({
-      where: { createdAt: { gte: weekAgo }, paymentStatus: "PAID" },
+      where: {
+        createdAt: { gte: weekAgo },
+        paymentStatus: "PAID",
+      },
       _sum: { finalAmount: true },
     }),
+    // Month's revenue
     db.order.aggregate({
-      where: { createdAt: { gte: monthAgo }, paymentStatus: "PAID" },
+      where: {
+        createdAt: { gte: monthAgo },
+        paymentStatus: "PAID",
+      },
       _sum: { finalAmount: true },
     }),
+    // Pending orders count
     db.order.count({ where: { status: "PENDING" } }),
+    // Preparing orders count
     db.order.count({ where: { status: "PREPARING" } }),
+    // Ready orders count
     db.order.count({ where: { status: "READY" } }),
+    // Completed orders count
     db.order.count({ where: { status: "COMPLETED" } }),
+    // Cancelled orders count
     db.order.count({ where: { status: "CANCELLED" } }),
-    db.staffShift.count({ where: { shiftDate: { gte: today }, checkedOutAt: null } }),
+    // Low stock items
+    db.inventory.count({
+      where: {
+        quantity: { lte: db.inventory.fields.minThreshold },
+      },
+    }),
+    // Active staff (on shift today)
+    db.staffShift.count({
+      where: {
+        shiftDate: { gte: today },
+        checkedOutAt: null,
+      },
+    }),
+    // Total customers
     db.user.count({ where: { role: "USER" } }),
-    db.user.count({ where: { role: "USER", createdAt: { gte: today } } }),
+    // New customers today
+    db.user.count({
+      where: {
+        role: "USER",
+        createdAt: { gte: today },
+      },
+    }),
   ]);
 
   const lastWeekOrders = await db.order.aggregate({
@@ -89,6 +126,11 @@ export async function GET() {
           _count: true,
         })
         .then((res) => res.length),
+    },
+    inventory: {
+      lowStock: lowStockItems,
+      outOfStock: await db.inventory.count({ where: { quantity: 0 } }),
+      totalItems: await db.inventory.count(),
     },
     staff: {
       active: activeStaff,

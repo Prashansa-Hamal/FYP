@@ -28,6 +28,11 @@ export interface DashboardOverview {
     newToday: number;
     active: number;
   };
+  inventory: {
+    lowStock: number;
+    outOfStock: number;
+    totalItems: number;
+  };
   staff: {
     active: number;
     onShift: number;
@@ -162,6 +167,20 @@ export interface StaffPerformanceItem {
   averageTimeMinutes: number;
   completedOnTime: number;
   lateCompletions: number;
+}
+
+//   Inventory
+
+export interface StockLevelItem {
+  category: string;
+  items: {
+    name: string;
+    currentStock: number;
+    minThreshold: number;
+    status: "good" | "low" | "critical";
+    usageRate: number;
+    daysRemaining: number;
+  }[];
 }
 
 //   Realtime

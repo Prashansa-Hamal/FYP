@@ -67,9 +67,9 @@ export function StatsCards({ overview, isLoading }: StatsCardsProps) {
       bgColor: "bg-purple-100",
     },
     {
-      title: "Staff on Shift",
-      value: overview?.staff.onShift.toString() || "0",
-      description: `${overview?.staff.total || 0} total staff`,
+      title: "Low Stock Items",
+      value: overview?.inventory.lowStock.toString() || "0",
+      description: `${overview?.inventory.outOfStock} out of stock`,
       icon: Package,
       trend: 0,
       iconColor: "text-orange-600",
